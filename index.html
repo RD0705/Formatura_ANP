@@ -254,6 +254,10 @@
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3.5 12c0-1.9 1.6-3.5 3.5-3.5s3.5 1.6 3.5 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none"/><circle cx="11" cy="5" r="1.5" stroke="currentColor" stroke-width="1" fill="none"/></svg>
         Crianças
       </button>
+      <button class="tab-btn" onclick="switchTab('votacao')" id="tab-votacao" style="display: flex; align-items: center; gap: 6px;">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm6-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM4 10V2l6-1v9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Música
+      </button>
       <button class="tab-btn" onclick="switchTab('admin')" id="tab-admin" style="display: flex; align-items: center; gap: 6px;">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1a3 3 0 1 1 0 6 3 3 0 0 1 0-6zM2 12.5c0-2.5 2.2-4 5-4s5 1.5 5 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none"/></svg>
         Admin
@@ -503,8 +507,11 @@
         </form>
       </div>
 
-      <!-- Card 2: Votação Musical -->
-      <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 36px 32px; position: relative; margin-top: 20px;">
+    </div>
+
+    <!-- ========== TAB: VOTAÇÃO ========== -->
+    <div id="view-votacao" style="display: none; max-width: 720px; margin: 0 auto;" class="fade-in">
+      <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 36px 32px; position: relative;">
         <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #2563eb, #60a5fa, #2563eb);"></div>
         <h2 style="font-size: 18px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">🎵 Votação Musical</h2>
         <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 28px;">Vote no estilo musical que mais quer ouvir no dia da formatura!</p>
@@ -784,16 +791,19 @@
     // TAB SWITCHING
     // ==========================================
     function switchTab(tab) {
-      ['registro', 'permuta', 'criancas', 'admin'].forEach(t => {
-        document.getElementById('tab-' + t).classList.remove('active');
+      ['registro', 'permuta', 'criancas', 'votacao', 'admin'].forEach(t => {
+        const tabEl = document.getElementById('tab-' + t);
+        if (tabEl) tabEl.classList.remove('active');
       });
       document.getElementById('view-registro').style.display = 'none';
       document.getElementById('view-permuta').style.display = 'none';
       document.getElementById('view-criancas').style.display = 'none';
+      document.getElementById('view-votacao').style.display = 'none';
       document.getElementById('view-admin').style.display = 'none';
       document.getElementById('view-sucesso').style.display = 'none';
 
-      document.getElementById('tab-' + tab).classList.add('active');
+      const activeTab = document.getElementById('tab-' + tab);
+      if (activeTab) activeTab.classList.add('active');
 
       if (tab === 'registro') {
         document.getElementById('view-registro').style.display = 'block';
@@ -802,6 +812,8 @@
         loadPermuta();
       } else if (tab === 'criancas') {
         document.getElementById('view-criancas').style.display = 'block';
+      } else if (tab === 'votacao') {
+        document.getElementById('view-votacao').style.display = 'block';
       } else if (tab === 'admin') {
         document.getElementById('view-admin').style.display = 'block';
       }
