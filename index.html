@@ -245,6 +245,57 @@
 
   <!-- MAIN -->
   <main style="max-width: 1100px; margin: 0 auto; padding: 32px 20px 60px; position: relative; z-index: 10;">
+    
+<!-- CONTAGEM REGRESSIVA -->
+<section class="gold-glow fade-in" style="max-width:720px;margin:0 auto 28px;padding:28px 20px;text-align:center;background:var(--pf-card);border:1px solid var(--pf-gold-dim);border-radius:14px;">
+
+  <p style="color:var(--pf-gold);font-size:12px;letter-spacing:2px;margin-bottom:10px;">
+    CONTAGEM REGRESSIVA
+  </p>
+
+  <h2 id="countdown-title" style="font-size:20px;color:var(--pf-text);margin-bottom:8px;">
+    Solenidade de Formatura — APF
+  </h2>
+
+  <p id="countdown-sub" style="color:var(--pf-muted);font-size:13px;margin-bottom:24px;">
+    18 de dezembro de 2026
+  </p>
+
+  <div id="countdown-grid" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;">
+    <div><strong id="cd-dias">00</strong><p>Dias</p></div>
+    <div><strong id="cd-horas">00</strong><p>Horas</p></div>
+    <div><strong id="cd-min">00</strong><p>Minutos</p></div>
+    <div><strong id="cd-seg">00</strong><p>Segundos</p></div>
+  </div>
+
+  <p id="countdown-done" style="display:none;color:var(--pf-gold);font-size:20px;">
+    Chegou o grande dia! Parabéns, formandos!
+  </p>
+</section>
+
+<style>
+  #countdown-grid > div {
+    background:var(--pf-black);
+    border:1px solid var(--pf-border);
+    border-radius:10px;
+    padding:16px 4px;
+    min-width:0;
+  }
+  #countdown-grid strong {
+    display:block;
+    font-size:clamp(20px,5vw,36px);
+    color:var(--pf-gold);
+    font-weight:800;
+    font-variant-numeric:tabular-nums;
+  }
+  #countdown-grid p {
+    color:var(--pf-muted);
+    font-size:11px;
+    margin-top:5px;
+    text-transform:uppercase;
+  }
+</style>
+
 
     <!-- TABS -->
     <div style="display: flex; justify-content: center; margin-bottom: 32px; flex-wrap: wrap; gap: 0;" class="fade-in">
@@ -1773,9 +1824,9 @@
     // CONTAGEM REGRESSIVA
     // ==========================================
     // >>> EDITE AQUI: data/hora do evento (formato AAAA-MM-DDTHH:MM:SS-03:00, horário de Brasília)
-    const EVENTO_DATA = new Date('2026-12-18T19:00:00-03:00');
-    const EVENTO_NOME = 'Solenidade de Formatura — APF';
-    const EVENTO_LOCAL = ''; // opcional. Ex: 'Auditório da ANP, Brasília - DF'
+    const EVENTO_DATA = new Date('2026-12-18T00:00:00-03:00');
+    const EVENTO_NOME = 'Formatura — APF';
+    const EVENTO_LOCAL = 'A definir'; // opcional. Ex: 'Auditório da ANP, Brasília - DF'
  
     (function iniciarContagem() {
       const elTitle = document.getElementById('countdown-title');
