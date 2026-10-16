@@ -500,32 +500,8 @@
 
     <!-- ========== TAB: PERMUTA ========== -->
     <div id="view-permuta" style="display: none; max-width: 720px; margin: 0 auto;" class="fade-in">
-      <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 32px; position: relative; overflow: hidden;">
-        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--pf-gold-dim), var(--pf-gold), var(--pf-gold-dim));"></div>
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
-          <div>
-            <h2 style="font-size: 18px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Permuta de Ingressos — Solenidade</h2>
-            <p style="font-size: 13px; color: var(--pf-muted);">Alunos com interesse em vender ingressos excedentes</p>
-          </div>
-          <button onclick="loadPermuta()" style="padding: 8px 16px; background: var(--pf-black); border: 1px solid var(--pf-border); color: var(--pf-muted); border-radius: 8px; font-size: 12px; cursor: pointer; font-family: inherit; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 6px;" onmouseover="this.style.borderColor='var(--pf-gold-dim)'; this.style.color='var(--pf-text)'" onmouseout="this.style.borderColor='var(--pf-border)'; this.style.color='var(--pf-muted)'">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M13 7A6 6 0 1 1 7 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 1l3 0 0 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Atualizar
-          </button>
-        </div>
-        <div style="background: rgba(201,169,78,0.06); border: 1px solid rgba(201,169,78,0.15); border-radius: 8px; padding: 14px 16px; margin-bottom: 20px;">
-          <p style="font-size: 12px; color: var(--pf-gold); line-height: 1.6;">
-            <strong>Como funciona:</strong> Alunos que possuem ingressos excedentes da solenidade podem marcá-los como disponíveis para venda. Clique no cartão de um colega para ver os detalhes.
-          </p>
-        </div>
-        <div id="permuta-list" style="display: flex; flex-direction: column; gap: 10px;">
-          <div style="text-align: center; padding: 40px 20px;">
-            <p style="font-size: 13px; color: var(--pf-muted);">Clique em "Atualizar" para carregar.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Disponibilizar Ingressos -->
-      <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 28px 32px; margin-top: 20px; position: relative; overflow: hidden;">
+      <!-- Disponibilizar Ingressos (no topo, para quem quer anunciar) -->
+      <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 28px 32px; margin-bottom: 20px; position: relative; overflow: hidden;">
         <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--pf-gold-dim), var(--pf-gold), var(--pf-gold-dim));"></div>
         <h3 style="font-size: 16px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Disponibilizar Ingressos para Venda</h3>
         <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 20px;">Informe sua matrícula para gerenciar a disponibilidade dos seus ingressos da solenidade.</p>
@@ -552,6 +528,31 @@
           <button onclick="salvarPermuta()" style="padding: 12px 24px; background: linear-gradient(135deg, var(--pf-gold-dim), var(--pf-gold)); color: var(--pf-black); border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s; white-space: nowrap;" onmouseover="this.style.background='linear-gradient(135deg, var(--pf-gold), var(--pf-gold-bright))'" onmouseout="this.style.background='linear-gradient(135deg, var(--pf-gold-dim), var(--pf-gold))'">Salvar</button>
         </div>
       </div>
+
+      <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 32px; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--pf-gold-dim), var(--pf-gold), var(--pf-gold-dim));"></div>
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <h2 style="font-size: 18px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Permuta de Ingressos — Solenidade</h2>
+            <p style="font-size: 13px; color: var(--pf-muted);">Alunos com interesse em vender ingressos excedentes</p>
+          </div>
+          <button onclick="loadPermuta()" style="padding: 8px 16px; background: var(--pf-black); border: 1px solid var(--pf-border); color: var(--pf-muted); border-radius: 8px; font-size: 12px; cursor: pointer; font-family: inherit; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 6px;" onmouseover="this.style.borderColor='var(--pf-gold-dim)'; this.style.color='var(--pf-text)'" onmouseout="this.style.borderColor='var(--pf-border)'; this.style.color='var(--pf-muted)'">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M13 7A6 6 0 1 1 7 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 1l3 0 0 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Atualizar
+          </button>
+        </div>
+        <div style="background: rgba(201,169,78,0.06); border: 1px solid rgba(201,169,78,0.15); border-radius: 8px; padding: 14px 16px; margin-bottom: 20px;">
+          <p style="font-size: 12px; color: var(--pf-gold); line-height: 1.6;">
+            <strong>Como funciona:</strong> Alunos que possuem ingressos excedentes da solenidade podem marcá-los como disponíveis para venda. Clique no cartão de um colega para ver os detalhes.
+          </p>
+        </div>
+        <div id="permuta-list" style="display: flex; flex-direction: column; gap: 10px;">
+          <div style="text-align: center; padding: 40px 20px;">
+            <p style="font-size: 13px; color: var(--pf-muted);">Clique em "Atualizar" para carregar.</p>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- ========== TAB: ADMIN ========== -->
