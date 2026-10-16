@@ -395,7 +395,7 @@
                     <label style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
                       Celular / WhatsApp (opcional)
                     </label>
-                    <input type="text" id="tel-vender-solenidade" placeholder="Ex: (61) 99999-9999">
+                    <input type="tel" id="tel-vender-solenidade" placeholder="Ex: (61) 99999-9999" inputmode="tel" autocomplete="tel-national" maxlength="15">
                   </div>
                 </div>
               </div>
@@ -542,7 +542,7 @@
           </div>
           <div style="flex: 1; min-width: 170px;">
             <label style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Celular / WhatsApp</label>
-            <input type="text" id="permuta-telefone" placeholder="Ex: (61) 99999-9999">
+            <input type="tel" id="permuta-telefone" placeholder="Ex: (61) 99999-9999" inputmode="tel" autocomplete="tel-national" maxlength="15">
           </div>
           <button onclick="salvarPermuta()" style="padding: 12px 24px; background: linear-gradient(135deg, var(--pf-gold-dim), var(--pf-gold)); color: var(--pf-black); border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s; white-space: nowrap;" onmouseover="this.style.background='linear-gradient(135deg, var(--pf-gold), var(--pf-gold-bright))'" onmouseout="this.style.background='linear-gradient(135deg, var(--pf-gold-dim), var(--pf-gold))'">Salvar</button>
         </div>
@@ -1110,6 +1110,35 @@
       showToast('Dados removidos deste aparelho.', 'success');
     }
 
+    // ==========================================
+    // TELEFONE: máscara (DD) 9XXXX-XXXX e validação
+    // ==========================================
+    function formatarTelefone(valor) {
+      let d = String(valor || '').replace(/\D/g, '');
+      if (d.length > 11 && d.startsWith('55')) d = d.slice(2); // aceita +55 colado
+      d = d.slice(0, 11);
+      if (d.length === 0) return '';
+      if (d.length <= 2) return '(' + d;
+      const meio = d.length > 10 ? 7 : 6; // celular (11 dígitos) ou fixo (10)
+      if (d.length <= meio) return '(' + d.slice(0, 2) + ') ' + d.slice(2);
+      return '(' + d.slice(0, 2) + ') ' + d.slice(2, meio) + '-' + d.slice(meio);
+    }
+
+    // Telefone é opcional: vazio é válido; preenchido precisa de DDD + 8 ou 9 dígitos.
+    function telefoneValido(valor) {
+      const d = String(valor || '').replace(/\D/g, '');
+      if (d.length === 0) return true;
+      if (d.length !== 10 && d.length !== 11) return false;
+      if (d.charAt(0) === '0' || d.charAt(1) === '0') return false; // DDD inválido
+      if (d.length === 11 && d.charAt(2) !== '9') return false;     // celular começa com 9
+      return true;
+    }
+
+    ['tel-vender-solenidade', 'permuta-telefone'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', () => { el.value = formatarTelefone(el.value); });
+    });
+
     async function handleSubmitCriancas(e) {
       e.preventDefault();
       const nome = document.getElementById('cri-nome').value.trim();
@@ -1216,6 +1245,7 @@
 
       if (!nome || !matricula) { showToast('Preencha todos os campos obrigatórios.', 'error'); return; }
       if (!solenidade && !baile) { showToast('Selecione pelo menos um evento de interesse.', 'error'); return; }
+      if (venderSol && !telefoneValido(telVenderSol)) { showToast('Telefone inválido. Use DDD + número, ex: (61) 99999-9999.', 'error'); document.getElementById('tel-vender-solenidade').focus(); return; }
       if (baile && qtdBaile < 1) { showToast('Informe a quantidade de convites para o baile.', 'error'); document.getElementById('qtd-baile').focus(); return; }
       if (venderSol && (qtdVenderSol < 1 || qtdVenderSol > 4)) { showToast('Informe quantos ingressos deseja vender (1 a 4).', 'error'); document.getElementById('qtd-vender-solenidade').focus(); return; }
 
@@ -1317,7 +1347,7 @@
         if (aluno.vender_solenidade) {
           document.getElementById('qtd-vender-solenidade').value = aluno.qtd_vender_solenidade || 0;
           if (document.getElementById('tel-vender-solenidade')) {
-            document.getElementById('tel-vender-solenidade').value = aluno.telefone_contato || '';
+            document.getElementById('tel-vender-solenidade').value = formatarTelefone(aluno.telefone_contato);
           }
         }
         
@@ -1508,6 +1538,7 @@
       
       if (!matricula) { showToast('Informe seu código de aluno.', 'error'); return; }
       if (isNaN(qtd) || qtd < 0 || qtd > 4) { showToast('A quantidade deve ser entre 0 e 4.', 'error'); return; }
+      if (!telefoneValido(telefone)) { showToast('Telefone inválido. Use DDD + número, ex: (61) 99999-9999.', 'error'); document.getElementById('permuta-telefone').focus(); return; }
       
       try {
         const ehVendido = (status === 'vendido');
