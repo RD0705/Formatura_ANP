@@ -1286,6 +1286,10 @@
     // ==========================================
     // PERMUTA
     // ==========================================
+    // Dados da listagem ficam em memória (e não no HTML), para não embutir
+    // nome/telefone/código de aluno dentro de atributos onclick.
+    let permutaCache = [];
+
     async function loadPermuta() {
       const listEl = document.getElementById('permuta-list');
       listEl.innerHTML = '<div style="text-align: center; padding: 40px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="display:inline-block;animation:spin 1s linear infinite;margin-bottom:12px"><circle cx="12" cy="12" r="10" stroke="#2a2a30" stroke-width="2.5" fill="none"/><path d="M12 2a10 10 0 0 1 10 10" stroke="#c9a94e" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg><p style="font-size:13px;color:#8a8a8e">Carregando...</p></div>';
@@ -1295,29 +1299,46 @@
           listEl.innerHTML = '<div style="text-align:center;padding:40px"><p style="font-size:14px;color:#8a8a8e;font-weight:500">Nenhum aluno disponibilizou ingressos ainda.</p><p style="font-size:12px;color:#8a8a8e;margin-top:4px;opacity:0.7">Utilize o formulário abaixo para disponibilizar seus ingressos.</p></div>';
           return;
         }
-        listEl.innerHTML = data.map(a => {
+        permutaCache = data;
+        listEl.innerHTML = data.map((a, idx) => {
           const vendido = !!a.permuta_vendido;
+          const qtd = Number(a.qtd_vender_solenidade) || 0;
           const cardStyle = vendido
             ? 'opacity: 0.55; border: 1px solid rgba(231,76,60,0.3); background: rgba(20,20,24,0.6);'
             : 'border: 1px solid var(--pf-border); background: var(--pf-card);';
           const badgeHtml = vendido
-            ? '<span style="display:inline-block;background:rgba(231,76,60,0.15);border:1px solid #c0392b;color:#e74c3c;font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px;">VENDIDO (' + a.qtd_vender_solenidade + ')</span>'
-            : '<span style="display:inline-block;background:rgba(201,169,78,0.12);border:1px solid #8a7535;color:#c9a94e;font-size:13px;font-weight:700;padding:6px 14px;border-radius:20px;">' + a.qtd_vender_solenidade + ' ingresso' + (a.qtd_vender_solenidade > 1 ? 's' : '') + ' · DISPONÍVEL</span>';
+            ? '<span style="display:inline-block;background:rgba(231,76,60,0.15);border:1px solid #c0392b;color:#e74c3c;font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px;">VENDIDO (' + qtd + ')</span>'
+            : '<span style="display:inline-block;background:rgba(201,169,78,0.12);border:1px solid #8a7535;color:#c9a94e;font-size:13px;font-weight:700;padding:6px 14px;border-radius:20px;">' + qtd + ' ingresso' + (qtd > 1 ? 's' : '') + ' · DISPONÍVEL</span>';
 
-          return '<div class="permuta-card" style="' + cardStyle + '" onclick="contatoPermuta(\'' + a.nome_completo.replace(/'/g, "\\'") + '\',\'' + a.matricula.replace(/'/g, "\\'") + '\',' + a.qtd_vender_solenidade + ',' + vendido + ',\'' + (a.telefone_contato || '').replace(/'/g, "\\'") + '\')">' +
+          return '<div class="permuta-card" data-idx="' + idx + '" style="' + cardStyle + '">' +
             '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">' +
               '<div style="display:flex;align-items:center;gap:12px">' +
                 '<div style="width:40px;height:40px;border-radius:50%;background:' + (vendido ? '#333' : 'linear-gradient(135deg,#8a7535,#c9a94e)') + ';display:flex;align-items:center;justify-content:center;font-weight:800;color:' + (vendido ? '#888' : '#0a0a0a') + ';font-size:16px;flex-shrink:0">' +
-                  a.nome_completo.charAt(0).toUpperCase() +
+                  escXml(String(a.nome_completo || '?').charAt(0).toUpperCase()) +
                 '</div>' +
                 '<div>' +
-                  '<p style="font-size:14px;font-weight:600;color:' + (vendido ? '#aaa' : '#e8e6e3') + '">' + a.nome_completo + '</p>' +
+                  '<p style="font-size:14px;font-weight:600;color:' + (vendido ? '#aaa' : '#e8e6e3') + '">' + escXml(a.nome_completo) + '</p>' +
                 '</div>' +
               '</div>' +
               badgeHtml +
             '</div>' +
           '</div>';
         }).join('');
+
+        // Clique no cartão: lê os dados da memória (nada de dados do usuário em atributos HTML)
+        listEl.querySelectorAll('.permuta-card').forEach(card => {
+          card.addEventListener('click', () => {
+            const a = permutaCache[Number(card.dataset.idx)];
+            if (!a) return;
+            contatoPermuta(
+              String(a.nome_completo || ''),
+              String(a.matricula || ''),
+              Number(a.qtd_vender_solenidade) || 0,
+              !!a.permuta_vendido,
+              String(a.telefone_contato || '')
+            );
+          });
+        });
       } catch (err) {
         listEl.innerHTML = '<div style="text-align:center;padding:30px"><p style="font-size:14px;color:#d9a3a3">Erro ao carregar. Tente novamente.</p></div>';
       }
@@ -1362,7 +1383,7 @@
           
           <div style="text-align:center">
             <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#8a7535,#c9a94e);display:flex;align-items:center;justify-content:center;font-weight:800;color:#0a0a0a;font-size:22px;margin:0 auto 16px">
-              ${nome.charAt(0).toUpperCase()}
+              ${escXml(nome.charAt(0).toUpperCase())}
             </div>
             <h3 style="font-size:18px;font-weight:700;color:#e8e6e3;margin-bottom:16px">${escXml(nome)}</h3>
             
@@ -1537,13 +1558,13 @@
           const dateStr = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
           return '<tr>' +
             '<td style="color:#8a8a8e;font-size:12px">' + (i + 1) + '</td>' +
-            '<td style="font-weight:600">' + a.nome_completo + '</td>' +
-            '<td><code style="background:#1a1a1f;padding:2px 8px;border-radius:4px;font-size:12px;color:#c9a94e">' + a.matricula + '</code></td>' +
+            '<td style="font-weight:600">' + escXml(a.nome_completo) + '</td>' +
+            '<td><code style="background:#1a1a1f;padding:2px 8px;border-radius:4px;font-size:12px;color:#c9a94e">' + escXml(a.matricula) + '</code></td>' +
             '<td>' + (a.solenidade ? '<span class="badge-sim">Sim</span>' : '<span class="badge-nao">Não</span>') + '</td>' +
             '<td>' + (a.interesse_mais_solenidade ? '<span class="badge-sim">Sim</span>' : '<span class="badge-nao">—</span>') + '</td>' +
             '<td>' + (a.baile ? '<span class="badge-sim">Sim</span>' : '<span class="badge-nao">Não</span>') + '</td>' +
             '<td>' + (a.vender_solenidade ? (a.permuta_vendido ? '<span style="display:inline-block;background:rgba(231,76,60,0.15);border:1px solid #c0392b;color:#e74c3c;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;">Vendido</span>' : '<span class="badge-sim">Disponível</span>') : '<span class="badge-nao">—</span>') + '</td>' +
-            '<td style="text-align:center;font-weight:600;color:' + (a.qtd_vender_solenidade > 0 ? '#27ae60' : '#8a8a8e') + '">' + a.qtd_vender_solenidade + '</td>' +
+            '<td style="text-align:center;font-weight:600;color:' + (a.qtd_vender_solenidade > 0 ? '#27ae60' : '#8a8a8e') + '">' + (Number(a.qtd_vender_solenidade) || 0) + '</td>' +
             '<td style="font-size:12px;color:#8a8a8e;white-space:nowrap">' + dateStr + '</td>' +
             '</tr>';
         }).join('');
@@ -1635,7 +1656,7 @@
               '<td><code style="background:#1a1a1f;padding:2px 8px;border-radius:4px;font-size:12px;color:#a78bfa">' + escXml(a.numero_camiseta) + '</code></td>' +
               '<td>' + escXml(a.turma) + '</td>' +
               '<td>' + (a.interesse_criancas ? '<span class="badge-sim" style="background:rgba(139,92,246,0.15);color:#a78bfa">Sim</span>' : '<span class="badge-nao">Não</span>') + '</td>' +
-              '<td style="text-align:center;font-weight:600;color:' + (a.qtd_criancas > 0 ? '#c4b5fd' : '#8a8a8e') + '">' + a.qtd_criancas + '</td>' +
+              '<td style="text-align:center;font-weight:600;color:' + (a.qtd_criancas > 0 ? '#c4b5fd' : '#8a8a8e') + '">' + (Number(a.qtd_criancas) || 0) + '</td>' +
               '<td>' + (a.interesse_espaco_kids ? '<span class="badge-sim" style="background:rgba(139,92,246,0.15);color:#a78bfa">Sim</span>' : '<span class="badge-nao">Não</span>') + '</td>' +
               '<td style="font-size:12px;color:#8a8a8e;white-space:nowrap">' + dateStr + '</td>' +
               '</tr>';
