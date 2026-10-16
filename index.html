@@ -107,6 +107,8 @@
       font-weight: 800;
     }
     .checkbox-custom:hover { border-color: var(--pf-gold-dim); }
+    .checkbox-custom:focus-visible { outline: 2px solid var(--pf-gold); outline-offset: 3px; }
+    input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--pf-gold); outline-offset: 2px; }
 
     .tab-btn {
       padding: 12px 20px;
@@ -325,14 +327,14 @@
 
         <form id="formRegistro" onsubmit="handleSubmit(event)">
           <div style="margin-bottom: 20px;">
-            <label style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+            <label for="nome" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
               Nome Completo <span style="color: var(--pf-danger);">*</span>
             </label>
             <input type="text" id="nome" placeholder="Ex: João Carlos da Silva" required>
           </div>
 
           <div style="margin-bottom: 24px;">
-            <label style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+            <label for="matricula" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
               Código de Aluno <span style="color: var(--pf-danger);">*</span>
             </label>
             <input type="text" id="matricula" placeholder="Número da Camiseta" required>
@@ -344,9 +346,9 @@
           <!-- Solenidade -->
           <div style="background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 10px; padding: 18px 20px; margin-bottom: 14px; transition: all 0.2s;" id="box-solenidade">
             <div id="btn-solenidade" style="display: flex; align-items: flex-start; gap: 14px; cursor: pointer; -webkit-tap-highlight-color: transparent;">
-              <input type="checkbox" class="checkbox-custom" id="chk-solenidade" style="margin-top: 2px; pointer-events: none;">
+              <input type="checkbox" class="checkbox-custom" id="chk-solenidade" aria-labelledby="lbl-solenidade" style="margin-top: 2px; pointer-events: none;">
               <div style="flex: 1;">
-                <span style="font-size: 15px; font-weight: 600; color: var(--pf-text);">Solenidade de Formatura</span>
+                <span id="lbl-solenidade" style="font-size: 15px; font-weight: 600; color: var(--pf-text);">Solenidade de Formatura</span>
                 <p style="font-size: 12px; color: var(--pf-muted); margin-top: 4px;">Cerimônia oficial de colação de grau</p>
               </div>
             </div>
@@ -363,8 +365,8 @@
               </div>
               <div style="margin-top: 14px; padding-left: 4px;">
                 <div id="btn-mais-solenidade" style="display: flex; align-items: center; gap: 10px; cursor: pointer; -webkit-tap-highlight-color: transparent;">
-                  <input type="checkbox" class="checkbox-custom" id="chk-mais-solenidade" style="width: 18px; height: 18px; pointer-events: none;">
-                  <span style="font-size: 13px; color: var(--pf-text);">Tenho interesse em <strong style="color: var(--pf-gold);">mais ingressos</strong> além dos 4 (permutar com colegas)</span>
+                  <input type="checkbox" class="checkbox-custom" id="chk-mais-solenidade" aria-labelledby="lbl-mais-solenidade" style="width: 18px; height: 18px; pointer-events: none;">
+                  <span id="lbl-mais-solenidade" style="font-size: 13px; color: var(--pf-text);">Tenho interesse em <strong style="color: var(--pf-gold);">mais ingressos</strong> além dos 4 (permutar com colegas)</span>
                 </div>
               </div>
 
@@ -372,8 +374,8 @@
               <div style="height: 1px; background: var(--pf-border); margin: 16px 0;"></div>
               <div style="padding-left: 4px;">
                 <div id="btn-vender-solenidade" style="display: flex; align-items: center; gap: 10px; cursor: pointer; -webkit-tap-highlight-color: transparent;">
-                  <input type="checkbox" class="checkbox-custom" id="chk-vender-solenidade" style="width: 18px; height: 18px; pointer-events: none;">
-                  <span style="font-size: 13px; color: var(--pf-text);">Desejo <strong style="color: var(--pf-gold);">disponibilizar ingressos para venda</strong> a colegas</span>
+                  <input type="checkbox" class="checkbox-custom" id="chk-vender-solenidade" aria-labelledby="lbl-vender-solenidade" style="width: 18px; height: 18px; pointer-events: none;">
+                  <span id="lbl-vender-solenidade" style="font-size: 13px; color: var(--pf-text);">Desejo <strong style="color: var(--pf-gold);">disponibilizar ingressos para venda</strong> a colegas</span>
                 </div>
               </div>
               <div id="field-vender-solenidade" style="display: none; margin-top: 12px; padding-left: 4px;">
@@ -386,13 +388,13 @@
                 </div>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px;">
                   <div>
-                    <label style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    <label for="qtd-vender-solenidade" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
                       Quantos ingressos deseja vender? (0 a 4) <span style="color: var(--pf-danger);">*</span>
                     </label>
                     <input type="number" id="qtd-vender-solenidade" min="0" max="4" placeholder="0 a 4">
                   </div>
                   <div>
-                    <label style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    <label for="tel-vender-solenidade" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
                       Celular / WhatsApp (opcional)
                     </label>
                     <input type="tel" id="tel-vender-solenidade" placeholder="Ex: (61) 99999-9999" inputmode="tel" autocomplete="tel-national" maxlength="15">
@@ -405,9 +407,9 @@
           <!-- Baile -->
           <div style="background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 10px; padding: 18px 20px; margin-bottom: 24px; transition: all 0.2s;" id="box-baile">
             <div id="btn-baile" style="display: flex; align-items: flex-start; gap: 14px; cursor: pointer; -webkit-tap-highlight-color: transparent;">
-              <input type="checkbox" class="checkbox-custom" id="chk-baile" style="margin-top: 2px; pointer-events: none;">
+              <input type="checkbox" class="checkbox-custom" id="chk-baile" aria-labelledby="lbl-baile" style="margin-top: 2px; pointer-events: none;">
               <div style="flex: 1;">
-                <span style="font-size: 15px; font-weight: 600; color: var(--pf-text);">Baile de Formatura</span>
+                <span id="lbl-baile" style="font-size: 15px; font-weight: 600; color: var(--pf-text);">Baile de Formatura</span>
                 <p style="font-size: 12px; color: var(--pf-muted); margin-top: 4px;">Evento de celebração e confraternização</p>
               </div>
             </div>
@@ -419,7 +421,7 @@
                 </svg>
                 <p style="font-size: 13px; color: #7aabe0;">Aquisição de convites livre — sem limite de quantidade.</p>
               </div>
-              <label style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+              <label for="qtd-baile" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
                 Quantidade de Convites Desejados <span style="color: var(--pf-danger);">*</span>
               </label>
               <input type="number" id="qtd-baile" min="1" placeholder="Informe a quantidade" style="max-width: 260px;">
@@ -447,7 +449,7 @@
         <p style="font-size: 12px; color: var(--pf-muted); margin-bottom: 20px;">Já se registrou? Digite sua matrícula para carregar e editar seus dados.</p>
         <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
           <div style="flex: 1; min-width: 200px;">
-            <label style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Código de Aluno</label>
+            <label for="consulta-matricula" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Código de Aluno</label>
             <input type="text" id="consulta-matricula" placeholder="Número da Camiseta">
           </div>
           <button id="btn-consultar" style="padding: 11px 24px; background: linear-gradient(135deg, #1e3a5c, #2c5aa0); border: 1px solid #2c5aa0; color: #fff; border-radius: 8px; font-size: 13px; cursor: pointer; font-family: inherit; font-weight: 600; transition: all 0.2s; white-space: nowrap;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
@@ -526,22 +528,22 @@
         <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 20px;">Informe sua matrícula para gerenciar a disponibilidade dos seus ingressos da solenidade.</p>
         <div style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap;">
           <div style="flex: 1; min-width: 170px;">
-            <label style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Seu Código de Aluno</label>
+            <label for="permuta-matricula" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Seu Código de Aluno</label>
             <input type="text" id="permuta-matricula" placeholder="Número da Camiseta">
           </div>
           <div style="min-width: 110px;">
-            <label style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Qtd. (0–4)</label>
+            <label for="permuta-qtd" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Qtd. (0–4)</label>
             <input type="number" id="permuta-qtd" min="0" max="4" placeholder="0 a 4">
           </div>
           <div style="min-width: 130px;">
-            <label style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Situação</label>
+            <label for="permuta-status" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Situação</label>
             <select id="permuta-status" style="width: 100%; padding: 11px 14px; background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 8px; color: var(--pf-text); font-size: 14px; font-family: inherit; outline: none;">
               <option value="disponivel">Disponível</option>
               <option value="vendido">Vendido</option>
             </select>
           </div>
           <div style="flex: 1; min-width: 170px;">
-            <label style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Celular / WhatsApp</label>
+            <label for="permuta-telefone" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Celular / WhatsApp</label>
             <input type="tel" id="permuta-telefone" placeholder="Ex: (61) 99999-9999" inputmode="tel" autocomplete="tel-national" maxlength="15">
           </div>
           <button onclick="salvarPermuta()" style="padding: 12px 24px; background: linear-gradient(135deg, var(--pf-gold-dim), var(--pf-gold)); color: var(--pf-black); border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s; white-space: nowrap;" onmouseover="this.style.background='linear-gradient(135deg, var(--pf-gold), var(--pf-gold-bright))'" onmouseout="this.style.background='linear-gradient(135deg, var(--pf-gold-dim), var(--pf-gold))'">Salvar</button>
@@ -561,16 +563,16 @@
 
         <form id="formCriancas">
           <div style="margin-bottom: 20px;">
-            <label style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Nome Completo <span style="color: var(--pf-danger);">*</span></label>
+            <label for="cri-nome" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Nome Completo <span style="color: var(--pf-danger);">*</span></label>
             <input type="text" id="cri-nome" placeholder="Ex: João Carlos da Silva" required>
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
             <div>
-              <label style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Nº da Camiseta <span style="color: var(--pf-danger);">*</span></label>
+              <label for="cri-camiseta" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Nº da Camiseta <span style="color: var(--pf-danger);">*</span></label>
               <input type="text" id="cri-camiseta" placeholder="Ex: 042" required>
             </div>
             <div>
-              <label style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Turma <span style="color: var(--pf-danger);">*</span></label>
+              <label for="cri-turma" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Turma <span style="color: var(--pf-danger);">*</span></label>
               <input type="text" id="cri-turma" placeholder="Ex: Turma Alpha" required>
             </div>
           </div>
@@ -579,22 +581,22 @@
 
           <div style="background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 10px; padding: 18px 20px; margin-bottom: 24px; transition: all 0.2s;" id="box-criancas">
             <div id="btn-criancas" style="display: flex; align-items: flex-start; gap: 14px; cursor: pointer; -webkit-tap-highlight-color: transparent;">
-              <input type="checkbox" class="checkbox-custom" id="chk-criancas" style="margin-top: 2px; pointer-events: none;">
+              <input type="checkbox" class="checkbox-custom" id="chk-criancas" aria-labelledby="lbl-criancas" style="margin-top: 2px; pointer-events: none;">
               <div style="flex: 1;">
-                <span style="font-size: 15px; font-weight: 600; color: var(--pf-text);">Tenho interesse em levar crianças</span>
+                <span id="lbl-criancas" style="font-size: 15px; font-weight: 600; color: var(--pf-text);">Tenho interesse em levar crianças</span>
                 <p style="font-size: 12px; color: var(--pf-muted); margin-top: 4px;">Marque se pretende levar crianças ao evento de formatura</p>
               </div>
             </div>
             <div id="field-criancas" style="display: none; margin-top: 14px;">
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 14px;">
                 <div>
-                  <label style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Quantidade de Crianças <span style="color: var(--pf-danger);">*</span></label>
+                  <label for="cri-qtd" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Quantidade de Crianças <span style="color: var(--pf-danger);">*</span></label>
                   <input type="number" id="cri-qtd" min="1" placeholder="Ex: 2">
                 </div>
                 <div style="display: flex; align-items: flex-end; padding-bottom: 4px;">
                   <div id="btn-espaco-kids" style="display: flex; align-items: center; gap: 10px; cursor: pointer; -webkit-tap-highlight-color: transparent;">
-                    <input type="checkbox" class="checkbox-custom" id="chk-espaco-kids" style="width: 18px; height: 18px; pointer-events: none;">
-                    <span style="font-size: 13px; color: var(--pf-text);">Interesse no <strong style="color: #a78bfa;">Espaço Kids</strong></span>
+                    <input type="checkbox" class="checkbox-custom" id="chk-espaco-kids" aria-labelledby="lbl-espaco-kids" style="width: 18px; height: 18px; pointer-events: none;">
+                    <span id="lbl-espaco-kids" style="font-size: 13px; color: var(--pf-text);">Interesse no <strong style="color: #a78bfa;">Espaço Kids</strong></span>
                   </div>
                 </div>
               </div>
@@ -624,17 +626,17 @@
         <form id="formVotacao">
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
             <div>
-              <label style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Nome Completo <span style="color: var(--pf-danger);">*</span></label>
+              <label for="vot-nome" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Nome Completo <span style="color: var(--pf-danger);">*</span></label>
               <input type="text" id="vot-nome" placeholder="Seu nome" required>
             </div>
             <div>
-              <label style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Nº da Camiseta <span style="color: var(--pf-danger);">*</span></label>
+              <label for="vot-camiseta" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Nº da Camiseta <span style="color: var(--pf-danger);">*</span></label>
               <input type="text" id="vot-camiseta" placeholder="Ex: 042" required>
             </div>
           </div>
 
           <div style="margin-bottom: 20px;">
-            <label style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Estilo Musical <span style="color: var(--pf-danger);">*</span></label>
+            <label for="vot-estilo" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Estilo Musical <span style="color: var(--pf-danger);">*</span></label>
             <select id="vot-estilo" style="width: 100%; padding: 11px 14px; background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 8px; color: var(--pf-text); font-size: 14px; font-family: inherit; outline: none; transition: all 0.2s; -webkit-appearance: none; appearance: none;" required>
               <option value="" disabled selected>Selecione um estilo</option>
               <option value="Sertanejo">Sertanejo</option>
@@ -650,7 +652,7 @@
           </div>
 
           <div id="field-outro-estilo" style="display: none; margin-bottom: 20px;">
-            <label style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Qual estilo? <span style="color: var(--pf-danger);">*</span></label>
+            <label for="vot-outro" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Qual estilo? <span style="color: var(--pf-danger);">*</span></label>
             <input type="text" id="vot-outro" placeholder="Digite o estilo musical">
           </div>
 
@@ -682,11 +684,11 @@
 
           <form onsubmit="handleLogin(event)">
             <div style="margin-bottom: 16px;">
-              <label style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Usuário</label>
+              <label for="admin-user" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Usuário</label>
               <input type="text" id="admin-user" placeholder="Informe o usuário" autocomplete="off">
             </div>
             <div style="margin-bottom: 24px;">
-              <label style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Senha</label>
+              <label for="admin-pass" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Senha</label>
               <input type="password" id="admin-pass" placeholder="Informe a senha" autocomplete="off">
             </div>
             <button type="submit" id="btn-login"
@@ -966,61 +968,25 @@
     // BIND EVENTS (CSP compliant, no inline onclick)
     // ==========================================
     (function bindEvents() {
-      const btnSol = document.getElementById('btn-solenidade');
-      if (btnSol) {
-        btnSol.addEventListener('click', function() {
-          const c = document.getElementById('chk-solenidade');
-          c.checked = !c.checked;
-          toggleSolenidade();
+      // Clique na linha alterna o checkbox. Se o evento veio do próprio checkbox
+      // (teclado: Espaço), o navegador já alternou; só executamos a ação.
+      function ligarCheckbox(rowId, chkId, depois, isolar) {
+        const row = document.getElementById(rowId);
+        if (!row) return;
+        row.addEventListener('click', function(e) {
+          if (isolar) e.stopPropagation();
+          const c = document.getElementById(chkId);
+          if (e.target !== c) c.checked = !c.checked;
+          if (depois) depois();
         });
       }
+      ligarCheckbox('btn-solenidade', 'chk-solenidade', toggleSolenidade, false);
+      ligarCheckbox('btn-mais-solenidade', 'chk-mais-solenidade', null, true);
+      ligarCheckbox('btn-vender-solenidade', 'chk-vender-solenidade', toggleVenderSolenidade, true);
+      ligarCheckbox('btn-baile', 'chk-baile', toggleBaile, false);
+      ligarCheckbox('btn-criancas', 'chk-criancas', toggleCriancas, false);
+      ligarCheckbox('btn-espaco-kids', 'chk-espaco-kids', null, true);
 
-      const btnMaisSol = document.getElementById('btn-mais-solenidade');
-      if (btnMaisSol) {
-        btnMaisSol.addEventListener('click', function(e) {
-          e.stopPropagation();
-          const c = document.getElementById('chk-mais-solenidade');
-          c.checked = !c.checked;
-        });
-      }
-
-      const btnVenderSol = document.getElementById('btn-vender-solenidade');
-      if (btnVenderSol) {
-        btnVenderSol.addEventListener('click', function(e) {
-          e.stopPropagation();
-          const c = document.getElementById('chk-vender-solenidade');
-          c.checked = !c.checked;
-          toggleVenderSolenidade();
-        });
-      }
-
-      const btnBaile = document.getElementById('btn-baile');
-      if (btnBaile) {
-        btnBaile.addEventListener('click', function() {
-          const c = document.getElementById('chk-baile');
-          c.checked = !c.checked;
-          toggleBaile();
-        });
-      }
-
-      const btnCriancas = document.getElementById('btn-criancas');
-      if (btnCriancas) {
-        btnCriancas.addEventListener('click', function() {
-          const c = document.getElementById('chk-criancas');
-          c.checked = !c.checked;
-          toggleCriancas();
-        });
-      }
-      
-      const btnEspacoKids = document.getElementById('btn-espaco-kids');
-      if (btnEspacoKids) {
-        btnEspacoKids.addEventListener('click', function(e) {
-          e.stopPropagation();
-          const c = document.getElementById('chk-espaco-kids');
-          c.checked = !c.checked;
-        });
-      }
-      
       const votEstilo = document.getElementById('vot-estilo');
       if (votEstilo) {
         votEstilo.addEventListener('change', toggleOutroEstilo);
@@ -1928,6 +1894,8 @@
       if (existing) existing.remove();
       const toast = document.createElement('div');
       toast.className = 'toast toast-' + type;
+      toast.setAttribute('role', type === 'error' ? 'alert' : 'status');
+      toast.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
       toast.innerHTML = '<div style="display:flex;align-items:center;gap:10px">' +
         (type === 'success'
           ? '<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" stroke="#27ae60" stroke-width="1.5" fill="none"/><polyline points="5,9 8,12 13,6" stroke="#27ae60" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'
@@ -1990,6 +1958,8 @@
       if (existing) existing.remove();
       const toast = document.createElement('div');
       toast.className = 'toast toast-' + type;
+      toast.setAttribute('role', type === 'error' ? 'alert' : 'status');
+      toast.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
       toast.innerHTML = '<div style="display:flex;align-items:center;gap:10px">' +
         (type === 'success'
           ? '<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" stroke="#27ae60" stroke-width="1.5" fill="none"/><polyline points="5,9 8,12 13,6" stroke="#27ae60" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'
