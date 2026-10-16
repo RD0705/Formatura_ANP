@@ -849,6 +849,10 @@
     <p style="font-size: 11px; color: var(--pf-muted); letter-spacing: 0.5px;">
       © 2026 — Polícia Federal do Brasil &nbsp;·&nbsp; Academia Nacional de Polícia &nbsp;·&nbsp; Sistema de Formatura APF
     </p>
+    <p id="ident-lembrada" style="display: none; margin-top: 8px; font-size: 11px; color: var(--pf-muted);">
+      Seu nome e camiseta estão salvos neste aparelho para preencher os formulários.
+      <button type="button" onclick="esquecerIdentidade()" style="background: none; border: none; padding: 0; color: var(--pf-gold); text-decoration: underline; cursor: pointer; font: inherit;">Não sou eu / limpar</button>
+    </p>
   </footer>
 
   <script>
@@ -1028,6 +1032,8 @@
       const formVot = document.getElementById('formVotacao');
       if (formVot) formVot.addEventListener('submit', handleSubmitVotacao);
 
+      preencherIdentidade();
+
       const btnConsultar = document.getElementById('btn-consultar');
       if (btnConsultar) {
         btnConsultar.addEventListener('click', consultarRegistro);
@@ -1060,6 +1066,48 @@
       const field = document.getElementById('field-outro-estilo');
       field.style.display = val === 'Outro' ? 'block' : 'none';
       if (val !== 'Outro') document.getElementById('vot-outro').value = '';
+    }
+
+    // ==========================================
+    // IDENTIDADE LEMBRADA (nome + camiseta, só neste navegador)
+    // ==========================================
+    const IDENT_KEY = 'anp_identidade';
+    const IDENT_CAMPOS = [['nome', 'matricula'], ['cri-nome', 'cri-camiseta'], ['vot-nome', 'vot-camiseta']];
+
+    function lerIdentidade() {
+      try {
+        const o = JSON.parse(localStorage.getItem(IDENT_KEY) || 'null');
+        if (o && typeof o.nome === 'string' && typeof o.camiseta === 'string') return o;
+      } catch (e) {}
+      return null;
+    }
+
+    function salvarIdentidade(nome, camiseta) {
+      try { localStorage.setItem(IDENT_KEY, JSON.stringify({ nome: nome, camiseta: camiseta })); } catch (e) {}
+      preencherIdentidade();
+    }
+
+    // Preenche só campos vazios, sem sobrescrever o que a pessoa já digitou.
+    function preencherIdentidade() {
+      const id = lerIdentidade();
+      const aviso = document.getElementById('ident-lembrada');
+      if (aviso) aviso.style.display = id ? 'block' : 'none';
+      if (!id) return;
+      IDENT_CAMPOS.forEach(([n, c]) => {
+        const en = document.getElementById(n), ec = document.getElementById(c);
+        if (en && !en.value) en.value = id.nome;
+        if (ec && !ec.value) ec.value = id.camiseta;
+      });
+    }
+
+    function esquecerIdentidade() {
+      try { localStorage.removeItem(IDENT_KEY); } catch (e) {}
+      IDENT_CAMPOS.forEach(([n, c]) => {
+        [n, c].forEach(i => { const el = document.getElementById(i); if (el) el.value = ''; });
+      });
+      const aviso = document.getElementById('ident-lembrada');
+      if (aviso) aviso.style.display = 'none';
+      showToast('Dados removidos deste aparelho.', 'success');
     }
 
     async function handleSubmitCriancas(e) {
@@ -1098,7 +1146,9 @@
         if (!res.ok) throw new Error();
         
         showToast('Registro de crianças atualizado com sucesso!', 'success');
+        salvarIdentidade(nome, camiseta);
         document.getElementById('formCriancas').reset();
+        preencherIdentidade();
         document.getElementById('chk-criancas').checked = false;
         toggleCriancas();
       } catch (err) {
@@ -1138,7 +1188,9 @@
         if (!res.ok) throw new Error();
         
         showToast('Voto registrado com sucesso!', 'success');
+        salvarIdentidade(nome, camiseta);
         document.getElementById('formVotacao').reset();
+        preencherIdentidade();
         toggleOutroEstilo();
       } catch (err) {
         showToast('Erro ao salvar voto. Tente novamente.', 'error');
@@ -1198,6 +1250,7 @@
         }
 
         showToast('Registro salvo com sucesso!', 'success');
+        salvarIdentidade(nome, matricula);
       } catch (err) {
         showToast('Erro ao registrar. Tente novamente.', 'error');
       } finally { setLoading(false); }
@@ -1217,6 +1270,7 @@
 
     function resetForm() {
       document.getElementById('formRegistro').reset();
+      preencherIdentidade();
       document.getElementById('alert-solenidade').style.display = 'none';
       document.getElementById('field-baile').style.display = 'none';
       document.getElementById('field-vender-solenidade').style.display = 'none';
