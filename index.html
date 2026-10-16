@@ -1294,7 +1294,7 @@
       const listEl = document.getElementById('permuta-list');
       listEl.innerHTML = '<div style="text-align: center; padding: 40px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="display:inline-block;animation:spin 1s linear infinite;margin-bottom:12px"><circle cx="12" cy="12" r="10" stroke="#2a2a30" stroke-width="2.5" fill="none"/><path d="M12 2a10 10 0 0 1 10 10" stroke="#c9a94e" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg><p style="font-size:13px;color:#8a8a8e">Carregando...</p></div>';
       try {
-        const data = await supabaseRequest('GET', TABLE + '?vender_solenidade=eq.true&qtd_vender_solenidade=gt.0&select=*&order=permuta_vendido.asc,criado_em.desc');
+        const data = await supabaseRequest('GET', TABLE + '?vender_solenidade=eq.true&qtd_vender_solenidade=gt.0&select=nome_completo,qtd_vender_solenidade,permuta_vendido,telefone_contato,criado_em&order=permuta_vendido.asc,criado_em.desc');
         if (!data || data.length === 0) {
           listEl.innerHTML = '<div style="text-align:center;padding:40px"><p style="font-size:14px;color:#8a8a8e;font-weight:500">Nenhum aluno disponibilizou ingressos ainda.</p><p style="font-size:12px;color:#8a8a8e;margin-top:4px;opacity:0.7">Utilize o formulário abaixo para disponibilizar seus ingressos.</p></div>';
           return;
@@ -1332,7 +1332,6 @@
             if (!a) return;
             contatoPermuta(
               String(a.nome_completo || ''),
-              String(a.matricula || ''),
               Number(a.qtd_vender_solenidade) || 0,
               !!a.permuta_vendido,
               String(a.telefone_contato || '')
@@ -1344,7 +1343,7 @@
       }
     }
 
-    function contatoPermuta(nome, matricula, qtd, vendido, telefone) {
+    function contatoPermuta(nome, qtd, vendido, telefone) {
       const modal = document.createElement('div');
       modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(4px)';
       modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
@@ -1419,22 +1418,29 @@
             showToast('Informe seu Código de Aluno para confirmar.', 'error');
             return;
           }
-          if (digitado.toLowerCase() !== matricula.toLowerCase()) {
-            showToast('Código de Aluno incorreto. Apenas o anunciante pode alterar.', 'error');
-            return;
-          }
           btnAlterar.disabled = true;
           btnAlterar.textContent = 'Atualizando...';
           try {
-            await supabaseRequest('PATCH', TABLE + '?matricula=eq.' + encodeURIComponent(matricula), {
-              permuta_vendido: !vendido
-            });
+            // A conferência acontece no servidor: o PATCH só atinge a linha se
+            // código de aluno E nome baterem. O código não vem mais na listagem.
+            const r = await supabaseRequest('PATCH',
+              TABLE + '?matricula=eq.' + encodeURIComponent(digitado) +
+              '&nome_completo=eq.' + encodeURIComponent(nome) +
+              '&vender_solenidade=eq.true',
+              { permuta_vendido: !vendido });
+            if (!r || r.length === 0) {
+              showToast('Código de Aluno incorreto. Apenas o anunciante pode alterar.', 'error');
+              btnAlterar.disabled = false;
+              btnAlterar.textContent = toggleActionText;
+              return;
+            }
             showToast(vendido ? 'Ingressos marcados como DISPONÍVEIS!' : 'Ingressos marcados como VENDIDOS!', 'success');
             modal.remove();
             loadPermuta();
           } catch (err) {
             showToast('Erro ao atualizar status. Tente novamente.', 'error');
             btnAlterar.disabled = false;
+            btnAlterar.textContent = toggleActionText;
           }
         };
       }
@@ -1458,7 +1464,11 @@
         };
         if (telefone) patchData.telefone_contato = telefone;
 
-        await supabaseRequest('PATCH', TABLE + '?matricula=eq.' + encodeURIComponent(matricula), patchData);
+        const alterados = await supabaseRequest('PATCH', TABLE + '?matricula=eq.' + encodeURIComponent(matricula), patchData);
+        if (!alterados || alterados.length === 0) {
+          showToast('Código de aluno não encontrado. Faça primeiro o registro de presença.', 'error');
+          return;
+        }
         
         let msg = '';
         if (qtd === 0) {
