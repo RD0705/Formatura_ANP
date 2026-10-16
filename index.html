@@ -564,6 +564,20 @@
         <h2 style="font-size: 18px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Registro — Crianças e Espaço Kids</h2>
         <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 28px;">Informe se você pretende levar crianças ao evento de formatura.</p>
 
+        <!-- Consultar / Editar registro de crianças -->
+        <div style="background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 10px; padding: 16px 18px; margin-bottom: 24px;">
+          <p style="font-size: 12px; font-weight: 700; color: #a78bfa; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Já se registrou?</p>
+          <p style="font-size: 12px; color: var(--pf-muted); margin-bottom: 12px;">Digite o número da camiseta para carregar seus dados e editar.</p>
+          <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 160px;">
+              <label for="cri-consulta-camiseta" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Nº da Camiseta</label>
+              <input type="text" id="cri-consulta-camiseta" placeholder="Ex: 042">
+            </div>
+            <button type="button" id="btn-cri-consultar" style="padding: 11px 24px; background: linear-gradient(135deg, #4c1d95, #7c3aed); border: 1px solid #7c3aed; color: #fff; border-radius: 8px; font-size: 13px; cursor: pointer; font-family: inherit; font-weight: 600; white-space: nowrap;">Consultar</button>
+          </div>
+          <p id="cri-consulta-msg" role="status" style="display: none; font-size: 12px; margin-top: 12px;"></p>
+        </div>
+
         <form id="formCriancas">
           <div style="margin-bottom: 20px;">
             <label for="cri-nome" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Nome Completo <span style="color: var(--pf-danger);">*</span></label>
@@ -576,7 +590,9 @@
             </div>
             <div>
               <label for="cri-turma" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Turma <span style="color: var(--pf-danger);">*</span></label>
-              <input type="text" id="cri-turma" placeholder="Ex: Turma Alpha" required>
+              <select id="cri-turma" style="width: 100%; padding: 11px 14px; background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 8px; color: var(--pf-text); font-size: 14px; font-family: inherit; outline: none; transition: all 0.2s; -webkit-appearance: none; appearance: none;" required>
+                <option value="">Selecione</option>
+              </select>
             </div>
           </div>
 
@@ -1108,16 +1124,79 @@
       if (el) el.addEventListener('input', () => { el.value = formatarTelefone(el.value); });
     });
 
+    // ==========================================
+    // TURMA: padronização e seletor
+    // ==========================================
+    const TURMAS = 'ABCDEFGHIJ'.split(''); // ajuste aqui se houver mais turmas
+
+    // Padroniza a turma: retorna apenas a primeira letra (A, B, C...)
+    // "Turma Bravo" -> "B" | "Bravo" -> "B" | "B" -> "B" | "turma: c" -> "C"
+    function normalizarTurma(valor) {
+      if (!valor) return 'N/A';
+      const t = String(valor)
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove acentos
+        .trim()
+        .replace(/^turma[\s:\-–—]*/i, '');               // remove "Turma" no início
+      const m = t.match(/[A-Za-z]/);
+      return m ? m[0].toUpperCase() : 'N/A';
+    }
+
+    (function montarSeletorTurma() {
+      const sel = document.getElementById('cri-turma');
+      if (!sel) return;
+      TURMAS.forEach(t => {
+        const o = document.createElement('option');
+        o.value = t; o.textContent = 'Turma ' + t;
+        sel.appendChild(o);
+      });
+    })();
+
+    // ==========================================
+    // CRIANÇAS: consulta / edição
+    // ==========================================
+    async function consultarCriancas() {
+      const cam = document.getElementById('cri-consulta-camiseta').value.trim();
+      const msg = document.getElementById('cri-consulta-msg');
+      const mostrar = (texto, cor) => { msg.style.display = 'block'; msg.style.color = cor; msg.textContent = texto; };
+      if (!cam) { showToast('Informe o número da camiseta para consultar.', 'error'); return; }
+      mostrar('Consultando...', 'var(--pf-muted)');
+      try {
+        const data = await supabaseRequest('GET', TABLE_CRIANCAS + '?numero_camiseta=eq.' + encodeURIComponent(cam) + '&select=nome_completo,numero_camiseta,turma,interesse_criancas,qtd_criancas,interesse_espaco_kids');
+        if (!data || data.length === 0) { mostrar('Nenhum registro encontrado para este número de camiseta.', '#d9a3a3'); return; }
+        const r = data[0];
+        document.getElementById('cri-nome').value = r.nome_completo || '';
+        document.getElementById('cri-camiseta').value = r.numero_camiseta || '';
+        const turma = normalizarTurma(r.turma);
+        const sel = document.getElementById('cri-turma');
+        if (turma !== 'N/A' && !Array.from(sel.options).some(o => o.value === turma)) {
+          const o = document.createElement('option'); o.value = turma; o.textContent = 'Turma ' + turma; sel.appendChild(o);
+        }
+        sel.value = turma !== 'N/A' ? turma : '';
+        document.getElementById('chk-criancas').checked = !!r.interesse_criancas;
+        toggleCriancas();
+        if (r.interesse_criancas) {
+          document.getElementById('cri-qtd').value = Number(r.qtd_criancas) || '';
+          document.getElementById('chk-espaco-kids').checked = !!r.interesse_espaco_kids;
+        }
+        mostrar('Dados carregados no formulário abaixo. Altere o que quiser e clique em "Registrar" para salvar.', 'var(--pf-success)');
+        document.getElementById('formCriancas').scrollIntoView({ behavior: 'smooth' });
+      } catch (err) {
+        mostrar('Erro ao consultar. Tente novamente.', '#d9a3a3');
+      }
+    }
+
+    document.getElementById('btn-cri-consultar').addEventListener('click', consultarCriancas);
+
     async function handleSubmitCriancas(e) {
       e.preventDefault();
       const nome = document.getElementById('cri-nome').value.trim();
       const camiseta = document.getElementById('cri-camiseta').value.trim();
-      const turma = document.getElementById('cri-turma').value.trim();
+      const turma = normalizarTurma(document.getElementById('cri-turma').value);
       const interesse = document.getElementById('chk-criancas').checked;
       const qtd = parseInt(document.getElementById('cri-qtd').value) || 0;
       const espacoKids = document.getElementById('chk-espaco-kids').checked;
 
-      if (!nome || !camiseta || !turma) { showToast('Preencha os campos obrigatórios.', 'error'); return; }
+      if (!nome || !camiseta || turma === 'N/A') { showToast('Preencha os campos obrigatórios, incluindo a turma.', 'error'); return; }
       if (interesse && qtd < 1) { showToast('Informe a quantidade de crianças.', 'error'); return; }
 
       const btn = document.getElementById('btn-submit-cri');
@@ -1701,7 +1780,7 @@
         const turmas = {};
         adminCriancasData.forEach(d => {
           if (d.interesse_criancas) {
-            const t = d.turma.toUpperCase().trim() || 'N/A';
+            const t = normalizarTurma(d.turma);
             turmas[t] = (turmas[t] || 0) + (d.qtd_criancas || 0);
           }
         });
@@ -1718,7 +1797,7 @@
               '<td style="color:#8a8a8e;font-size:12px">' + (i + 1) + '</td>' +
               '<td style="font-weight:600">' + escXml(a.nome_completo) + '</td>' +
               '<td><code style="background:#1a1a1f;padding:2px 8px;border-radius:4px;font-size:12px;color:#a78bfa">' + escXml(a.numero_camiseta) + '</code></td>' +
-              '<td>' + escXml(a.turma) + '</td>' +
+              '<td><strong>' + escXml(normalizarTurma(a.turma)) + '</strong></td>' +
               '<td>' + (a.interesse_criancas ? '<span class="badge-sim" style="background:rgba(139,92,246,0.15);color:#a78bfa">Sim</span>' : '<span class="badge-nao">Não</span>') + '</td>' +
               '<td style="text-align:center;font-weight:600;color:' + (a.qtd_criancas > 0 ? '#c4b5fd' : '#8a8a8e') + '">' + (Number(a.qtd_criancas) || 0) + '</td>' +
               '<td>' + (a.interesse_espaco_kids ? '<span class="badge-sim" style="background:rgba(139,92,246,0.15);color:#a78bfa">Sim</span>' : '<span class="badge-nao">Não</span>') + '</td>' +
@@ -1861,7 +1940,7 @@
       xml += '<Worksheet ss:Name="Crianças e Espaço Kids"><Table>\n';
       xml += '<Row><Cell ss:StyleID="header"><Data ss:Type="String">Nome</Data></Cell><Cell ss:StyleID="header"><Data ss:Type="String">Camiseta</Data></Cell><Cell ss:StyleID="header"><Data ss:Type="String">Turma</Data></Cell><Cell ss:StyleID="header"><Data ss:Type="String">Leva Crianças</Data></Cell><Cell ss:StyleID="header"><Data ss:Type="String">Quantidade</Data></Cell><Cell ss:StyleID="header"><Data ss:Type="String">Espaço Kids</Data></Cell><Cell ss:StyleID="header"><Data ss:Type="String">Data Registro</Data></Cell></Row>\n';
       adminCriancasData.forEach(a => {
-        xml += `<Row><Cell><Data ss:Type="String">${escXml(a.nome_completo)}</Data></Cell><Cell><Data ss:Type="String">${escXml(a.numero_camiseta)}</Data></Cell><Cell><Data ss:Type="String">${escXml(a.turma)}</Data></Cell><Cell><Data ss:Type="String">${a.interesse_criancas?'Sim':'Não'}</Data></Cell><Cell><Data ss:Type="Number">${a.qtd_criancas}</Data></Cell><Cell><Data ss:Type="String">${a.interesse_espaco_kids?'Sim':'Não'}</Data></Cell><Cell><Data ss:Type="String">${new Date(a.criado_em).toLocaleString('pt-BR')}</Data></Cell></Row>\n`;
+        xml += `<Row><Cell><Data ss:Type="String">${escXml(a.nome_completo)}</Data></Cell><Cell><Data ss:Type="String">${escXml(a.numero_camiseta)}</Data></Cell><Cell><Data ss:Type="String">${escXml(normalizarTurma(a.turma))}</Data></Cell><Cell><Data ss:Type="String">${a.interesse_criancas?'Sim':'Não'}</Data></Cell><Cell><Data ss:Type="Number">${a.qtd_criancas}</Data></Cell><Cell><Data ss:Type="String">${a.interesse_espaco_kids?'Sim':'Não'}</Data></Cell><Cell><Data ss:Type="String">${new Date(a.criado_em).toLocaleString('pt-BR')}</Data></Cell></Row>\n`;
       });
       xml += '</Table></Worksheet></Workbook>';
       const blob = new Blob([xml], { type: 'application/vnd.ms-excel' });
