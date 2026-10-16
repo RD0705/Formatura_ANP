@@ -400,7 +400,7 @@
                     <label for="tel-vender-solenidade" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
                       Celular / WhatsApp (opcional)
                     </label>
-                    <input type="tel" id="tel-vender-solenidade" placeholder="Ex: (61) 99999-9999" inputmode="tel" autocomplete="tel-national" maxlength="15">
+                    <input type="tel" id="tel-vender-solenidade" placeholder="Ex: (61) 99999-9999" inputmode="tel" autocomplete="tel-national" maxlength="22">
                   </div>
                 </div>
               </div>
@@ -523,7 +523,7 @@
           </div>
           <div style="flex: 1; min-width: 170px;">
             <label for="permuta-telefone" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Celular / WhatsApp</label>
-            <input type="tel" id="permuta-telefone" placeholder="Ex: (61) 99999-9999" inputmode="tel" autocomplete="tel-national" maxlength="15">
+            <input type="tel" id="permuta-telefone" placeholder="Ex: (61) 99999-9999" inputmode="tel" autocomplete="tel-national" maxlength="22">
           </div>
           <button onclick="salvarPermuta()" style="padding: 12px 24px; background: linear-gradient(135deg, var(--pf-gold-dim), var(--pf-gold)); color: var(--pf-black); border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s; white-space: nowrap;" onmouseover="this.style.background='linear-gradient(135deg, var(--pf-gold), var(--pf-gold-bright))'" onmouseout="this.style.background='linear-gradient(135deg, var(--pf-gold-dim), var(--pf-gold))'">Salvar</button>
         </div>
@@ -1099,9 +1099,22 @@
     // ==========================================
     // TELEFONE: máscara (DD) 9XXXX-XXXX e validação
     // ==========================================
+    // Interpreta um telefone brasileiro em qualquer formato (com +55, com 0, com/sem máscara).
+    // Retorna { nacional: 'DDNNNNNNNNN', tipo: 'celular' | 'fixo' | 'invalido' }.
+    // Celular antigo de 8 dígitos (sem o 9) recebe o 9, como a operadora e o WhatsApp esperam.
+    function analisarTelefone(valor) {
+      let d = String(valor || '').replace(/\D/g, '').replace(/^0+/, '');
+      if (d.length > 11 && d.startsWith('55')) d = d.slice(2);
+      if (d.length === 10 && '6789'.includes(d.charAt(2))) d = d.slice(0, 2) + '9' + d.slice(2);
+      const dddOk = d.length >= 2 && d.charAt(0) !== '0' && d.charAt(1) !== '0';
+      if (dddOk && d.length === 11 && d.charAt(2) === '9') return { nacional: d, tipo: 'celular' };
+      if (dddOk && d.length === 10 && '2345'.includes(d.charAt(2))) return { nacional: d, tipo: 'fixo' };
+      return { nacional: d, tipo: 'invalido' };
+    }
+
     function formatarTelefone(valor) {
-      let d = String(valor || '').replace(/\D/g, '');
-      if (d.length > 11 && d.startsWith('55')) d = d.slice(2); // aceita +55 colado
+      let d = String(valor || '').replace(/\D/g, '').replace(/^0+/, '');
+      if (d.length > 11 && d.startsWith('55')) d = d.slice(2); // aceita +55 digitado ou colado
       d = d.slice(0, 11);
       if (d.length === 0) return '';
       if (d.length <= 2) return '(' + d;
@@ -1110,14 +1123,20 @@
       return '(' + d.slice(0, 2) + ') ' + d.slice(2, meio) + '-' + d.slice(meio);
     }
 
-    // Telefone é opcional: vazio é válido; preenchido precisa de DDD + 8 ou 9 dígitos.
+    // Para exibir um telefone já salvo: só reformata se for um número que dá para interpretar;
+    // caso contrário mostra o texto original, sem alterar nem cortar nada.
+    function telefoneParaExibir(valor) {
+      const r = analisarTelefone(valor);
+      if (r.tipo === 'invalido') return String(valor || '');
+      return formatarTelefone(r.nacional);
+    }
+
+    // Telefone é opcional: vazio é válido; preenchido precisa ser celular (11 dígitos com 9) ou fixo (10).
     function telefoneValido(valor) {
-      const d = String(valor || '').replace(/\D/g, '');
-      if (d.length === 0) return true;
-      if (d.length !== 10 && d.length !== 11) return false;
-      if (d.charAt(0) === '0' || d.charAt(1) === '0') return false; // DDD inválido
-      if (d.length === 11 && d.charAt(2) !== '9') return false;     // celular começa com 9
-      return true;
+      if (String(valor || '').replace(/\D/g, '').length === 0) return true;
+      const d = String(valor).replace(/\D/g, '').replace(/^0+/, '');
+      if (d.length === 10 && '6789'.includes(d.charAt(2))) return false; // celular sem o 9
+      return analisarTelefone(valor).tipo !== 'invalido';
     }
 
     ['tel-vender-solenidade', 'permuta-telefone'].forEach(id => {
@@ -1396,7 +1415,7 @@
         if (aluno.vender_solenidade) {
           document.getElementById('qtd-vender-solenidade').value = aluno.qtd_vender_solenidade || 0;
           if (document.getElementById('tel-vender-solenidade')) {
-            document.getElementById('tel-vender-solenidade').value = formatarTelefone(aluno.telefone_contato);
+            document.getElementById('tel-vender-solenidade').value = telefoneParaExibir(aluno.telefone_contato);
           }
         }
         
@@ -1488,22 +1507,30 @@
       const toggleActionText = vendido ? 'Reabrir como DISPONÍVEL' : 'Marcar como VENDIDO';
       const toggleActionColor = vendido ? 'linear-gradient(135deg, #1e3a5c, #2c5aa0)' : 'linear-gradient(135deg, #78281f, #c0392b)';
 
-      const apenasDigitos = (telefone || '').replace(/\D/g, '');
+      const tel = analisarTelefone(telefone);
+      const telTexto = telefoneParaExibir(telefone);
+      const btnBase = 'display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:13px;padding:9px 18px;border-radius:6px;';
+      let acaoContato;
+      if (tel.tipo === 'celular') {
+        acaoContato = `
+              <a href="https://wa.me/55${tel.nacional}" target="_blank" rel="noopener noreferrer" style="${btnBase}background:#25d366;color:#0a0a0a;transition:opacity 0.2s;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.173.086.275.072.376-.044.101-.116.433-.506.549-.68.116-.174.231-.145.39-.087s1.011.477 1.184.564.289.13.332.203c.043.072.043.419-.101.824z"/></svg>
+                Conversar no WhatsApp
+              </a>`;
+      } else if (tel.tipo === 'fixo') {
+        acaoContato = `
+              <a href="tel:+55${tel.nacional}" style="${btnBase}background:var(--pf-gold);color:#0a0a0a;">
+                Ligar para o Colega
+              </a>`;
+      } else {
+        acaoContato = '<p style="font-size:12px;color:#d9a3a3;line-height:1.5;">Este número parece incompleto (sem DDD ou dígitos faltando), então não é possível abrir o WhatsApp. Confirme o número com o colega.</p>';
+      }
       const contatoHtml = (telefone && telefone.trim())
         ? `
           <div style="background:rgba(39,174,96,0.08);border:1px solid rgba(39,174,96,0.3);border-radius:10px;padding:16px;margin-bottom:20px;text-align:center;">
             <p style="font-size:11px;font-weight:700;color:#27ae60;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Contato do Vendedor</p>
-            <p style="font-size:16px;font-weight:700;color:#e8e6e3;margin-bottom:10px;">${escXml(telefone)}</p>
-            ${apenasDigitos.length >= 8 ? `
-              <a href="https://wa.me/55${apenasDigitos.length > 11 ? apenasDigitos.replace(/^55/, '') : apenasDigitos}" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;background:#25d366;color:#0a0a0a;text-decoration:none;font-weight:700;font-size:13px;padding:9px 18px;border-radius:6px;transition:opacity 0.2s;">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.173.086.275.072.376-.044.101-.116.433-.506.549-.68.116-.174.231-.145.39-.087s1.011.477 1.184.564.289.13.332.203c.043.072.043.419-.101.824z"/></svg>
-                Conversar no WhatsApp
-              </a>
-            ` : `
-              <a href="tel:${apenasDigitos}" style="display:inline-flex;align-items:center;gap:6px;background:var(--pf-gold);color:#0a0a0a;text-decoration:none;font-weight:700;font-size:13px;padding:9px 18px;border-radius:6px;">
-                Ligar para o Colega
-              </a>
-            `}
+            <p style="font-size:16px;font-weight:700;color:#e8e6e3;margin-bottom:10px;">${escXml(telTexto)}</p>
+            ${acaoContato}
           </div>
         `
         : '<p style="font-size:13px;color:#8a8a8e;line-height:1.6;margin-bottom:20px">Nenhum telefone informado pelo colega. Entre em contato diretamente para negociar.</p>';
