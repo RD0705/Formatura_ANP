@@ -1207,6 +1207,19 @@
 
     document.getElementById('btn-cri-consultar').addEventListener('click', consultarCriancas);
 
+    // Traduz o erro do servidor (PostgREST/Postgres) para uma mensagem que o usuário entenda.
+    function mensagemErro(err, padrao) {
+      let info = {};
+      try { info = JSON.parse(err && err.message); } catch (e) {}
+      const code = String(info.code || '');
+      if (code === '23505') return 'Já existe um registro com este código. Use "Consultar" para carregar e editar.';
+      if (code === '42501' || /row-level security/i.test(info.message || '')) return 'Sem permissão para salvar este registro.';
+      if (code === '23514') return 'Algum valor está fora do permitido (confira as quantidades).';
+      if (code === '23502') return 'Falta preencher um campo obrigatório.';
+      if (err instanceof TypeError || /failed to fetch|networkerror/i.test(String(err && err.message))) return 'Sem conexão com o servidor. Verifique sua internet e tente de novo.';
+      return padrao;
+    }
+
     async function handleSubmitCriancas(e) {
       e.preventDefault();
       const nome = document.getElementById('cri-nome').value.trim();
@@ -1239,8 +1252,8 @@
           'Content-Type': 'application/json',
           'Prefer': 'resolution=merge-duplicates,return=representation'
         };
-        const res = await fetch(SUPABASE_URL + '/rest/v1/' + TABLE_CRIANCAS, { method: 'POST', headers, body: JSON.stringify(body) });
-        if (!res.ok) throw new Error();
+        const res = await fetch(SUPABASE_URL + '/rest/v1/' + TABLE_CRIANCAS + '?on_conflict=numero_camiseta', { method: 'POST', headers, body: JSON.stringify(body) });
+        if (!res.ok) throw new Error(await res.text());
         
         showToast('Registro de crianças atualizado com sucesso!', 'success');
         salvarIdentidade(nome, camiseta);
@@ -1249,7 +1262,7 @@
         document.getElementById('chk-criancas').checked = false;
         toggleCriancas();
       } catch (err) {
-        showToast('Erro ao salvar. Tente novamente.', 'error');
+        showToast(mensagemErro(err, 'Erro ao salvar. Tente novamente.'), 'error');
       } finally {
         btn.disabled = false; txt.style.display = 'inline'; spin.style.display = 'none';
       }
@@ -1281,8 +1294,8 @@
           'Content-Type': 'application/json',
           'Prefer': 'resolution=merge-duplicates,return=representation'
         };
-        const res = await fetch(SUPABASE_URL + '/rest/v1/' + TABLE_VOTACAO, { method: 'POST', headers, body: JSON.stringify(body) });
-        if (!res.ok) throw new Error();
+        const res = await fetch(SUPABASE_URL + '/rest/v1/' + TABLE_VOTACAO + '?on_conflict=numero_camiseta', { method: 'POST', headers, body: JSON.stringify(body) });
+        if (!res.ok) throw new Error(await res.text());
         
         showToast('Voto registrado com sucesso!', 'success');
         salvarIdentidade(nome, camiseta);
@@ -1290,7 +1303,7 @@
         preencherIdentidade();
         toggleOutroEstilo();
       } catch (err) {
-        showToast('Erro ao salvar voto. Tente novamente.', 'error');
+        showToast(mensagemErro(err, 'Erro ao salvar voto. Tente novamente.'), 'error');
       } finally {
         btn.disabled = false; txt.style.display = 'inline'; spin.style.display = 'none';
       }
@@ -1313,7 +1326,7 @@
 
       if (!nome || !matricula) { showToast('Preencha todos os campos obrigatórios.', 'error'); return; }
       if (!solenidade && !baile) { showToast('Selecione pelo menos um evento de interesse.', 'error'); return; }
-      if (venderSol && !telefoneValido(telVenderSol)) { showToast('Telefone inválido. Use DDD + número, ex: (61) 99999-9999.', 'error'); document.getElementById('tel-vender-solenidade').focus(); return; }
+      if (venderSol && telVenderSol !== telefoneCarregado && !telefoneValido(telVenderSol)) { showToast('Telefone inválido. Use DDD + número, ex: (61) 99999-9999.', 'error'); document.getElementById('tel-vender-solenidade').focus(); return; }
       if (baile && qtdBaile < 1) { showToast('Informe a quantidade de convites para o baile.', 'error'); document.getElementById('qtd-baile').focus(); return; }
       if (venderSol && (qtdVenderSol < 1 || qtdVenderSol > 4)) { showToast('Informe quantos ingressos deseja vender (1 a 4).', 'error'); document.getElementById('qtd-vender-solenidade').focus(); return; }
 
@@ -1334,7 +1347,7 @@
           'Content-Type': 'application/json',
           'Prefer': 'resolution=merge-duplicates,return=representation'
         };
-        const res = await fetch(SUPABASE_URL + '/rest/v1/' + TABLE, { method: 'POST', headers, body: JSON.stringify(body) });
+        const res = await fetch(SUPABASE_URL + '/rest/v1/' + TABLE + '?on_conflict=matricula', { method: 'POST', headers, body: JSON.stringify(body) });
         if (!res.ok) throw new Error(await res.text());
 
         document.getElementById('view-registro').style.display = 'none';
@@ -1350,7 +1363,7 @@
         showToast('Registro salvo com sucesso!', 'success');
         salvarIdentidade(nome, matricula);
       } catch (err) {
-        showToast('Erro ao registrar. Tente novamente.', 'error');
+        showToast(mensagemErro(err, 'Erro ao registrar. Tente novamente.'), 'error');
       } finally { setLoading(false); }
     }
 
@@ -1366,7 +1379,11 @@
       if (loading) btn.classList.add('btn-loading'); else btn.classList.remove('btn-loading');
     }
 
+    // Telefone carregado pela consulta; se o usuário não mexer nele, não é revalidado.
+    let telefoneCarregado = null;
+
     function resetForm() {
+      telefoneCarregado = null;
       document.getElementById('formRegistro').reset();
       preencherIdentidade();
       document.getElementById('alert-solenidade').style.display = 'none';
@@ -1416,6 +1433,7 @@
           document.getElementById('qtd-vender-solenidade').value = aluno.qtd_vender_solenidade || 0;
           if (document.getElementById('tel-vender-solenidade')) {
             document.getElementById('tel-vender-solenidade').value = telefoneParaExibir(aluno.telefone_contato);
+            telefoneCarregado = document.getElementById('tel-vender-solenidade').value.trim();
           }
         }
         
