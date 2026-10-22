@@ -314,6 +314,10 @@
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm6-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM4 10V2l6-1v9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Música
       </button>
+      <button class="tab-btn" id="tab-valores" style="display: flex; align-items: center; gap: 6px;">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.3"/><path d="M8.6 5.2C8.3 4.6 7.7 4.3 7 4.3c-.9 0-1.6.5-1.6 1.2 0 1.7 3.2.8 3.2 2.5 0 .7-.7 1.2-1.6 1.2-.8 0-1.5-.3-1.8-1M7 3.3v1M7 9.7v1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        Valores
+      </button>
       <button class="tab-btn" onclick="switchTab('admin')" id="tab-admin" style="display: flex; align-items: center; gap: 6px;">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1a3 3 0 1 1 0 6 3 3 0 0 1 0-6zM2 12.5c0-2.5 2.2-4 5-4s5 1.5 5 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none"/></svg>
         Admin
@@ -336,11 +340,20 @@
             <input type="text" id="nome" placeholder="Ex: João Carlos da Silva" required>
           </div>
 
-          <div style="margin-bottom: 24px;">
+          <div style="margin-bottom: 20px;">
             <label for="matricula" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
               Código de Aluno <span style="color: var(--pf-danger);">*</span>
             </label>
             <input type="text" id="matricula" placeholder="Número da Camiseta" required>
+          </div>
+
+          <div style="margin-bottom: 24px;">
+            <label for="turma" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+              Turma <span style="color: var(--pf-danger);">*</span>
+            </label>
+            <select id="turma" class="js-turma" style="width: 100%; padding: 11px 14px; background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 8px; color: var(--pf-text); font-size: 14px; font-family: inherit; outline: none; transition: all 0.2s; -webkit-appearance: none; appearance: none;" required>
+              <option value="">Selecione</option>
+            </select>
           </div>
 
           <div style="height: 1px; background: var(--pf-border); margin: 8px 0 24px;"></div>
@@ -591,7 +604,7 @@
             </div>
             <div>
               <label for="cri-turma" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Turma <span style="color: var(--pf-danger);">*</span></label>
-              <select id="cri-turma" style="width: 100%; padding: 11px 14px; background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 8px; color: var(--pf-text); font-size: 14px; font-family: inherit; outline: none; transition: all 0.2s; -webkit-appearance: none; appearance: none;" required>
+              <select id="cri-turma" class="js-turma" style="width: 100%; padding: 11px 14px; background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 8px; color: var(--pf-text); font-size: 14px; font-family: inherit; outline: none; transition: all 0.2s; -webkit-appearance: none; appearance: none;" required>
                 <option value="">Selecione</option>
               </select>
             </div>
@@ -683,6 +696,115 @@
         </form>
       </div>
     </div>
+    <!-- ========== TAB: VALORES ========== -->
+    <div id="view-valores" style="display: none; max-width: 720px; margin: 0 auto;" class="fade-in">
+
+      <!-- Valores -->
+      <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 32px; position: relative; overflow: hidden; margin-bottom: 20px;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--pf-gold-dim), var(--pf-gold), var(--pf-gold-dim));"></div>
+        <h2 style="font-size: 18px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Valores da Formatura</h2>
+        <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 24px;">Valores conforme a apresentação do projeto. São duas formas de calcular o baile; a turma vota na que prefere.</p>
+
+        <div style="background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 10px; padding: 16px 18px; margin-bottom: 20px;">
+          <p style="font-size: 12px; font-weight: 700; color: var(--pf-gold); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Plano Solenidade</p>
+          <p style="font-size: 24px; font-weight: 800; color: var(--pf-text);">R$ 597,71</p>
+          <p style="font-size: 12px; color: var(--pf-muted); margin-top: 4px;">Igual para todos os formandos, em qualquer uma das opções do baile.</p>
+        </div>
+
+        <p style="font-size: 12px; font-weight: 700; color: var(--pf-gold); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Baile — escolha da base de cálculo</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px;">
+
+          <div style="background: var(--pf-black); border: 1px solid #2c5aa0; border-radius: 10px; padding: 18px;">
+            <p style="font-size: 11px; font-weight: 700; color: #7aabe0; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Opção 1 · Base de Cálculo 1</p>
+            <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 10px;">Base de <strong style="color: var(--pf-text);">3.200 convidados</strong></p>
+            <p style="font-size: 12px; color: var(--pf-muted);">Cota única</p>
+            <p style="font-size: 22px; font-weight: 800; color: var(--pf-text); margin-bottom: 10px;">R$ 828,80</p>
+            <p style="font-size: 12px; color: var(--pf-muted);">Formando + 4 convidados (5 cotas)</p>
+            <p style="font-size: 18px; font-weight: 700; color: var(--pf-gold-bright); margin-bottom: 12px;">R$ 4.144,00</p>
+            <p style="font-size: 12px; color: #d9a3a3; line-height: 1.6;"><strong>Desvantagens:</strong><br>• Obrigatório chegar a 3.200 convidados<br>• Sem venda de ingressos extras, somente cotas</p>
+          </div>
+
+          <div style="background: var(--pf-black); border: 1px solid #7c3aed; border-radius: 10px; padding: 18px;">
+            <p style="font-size: 11px; font-weight: 700; color: #a78bfa; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Opção 2 · Base de Cálculo 2</p>
+            <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 10px;">Base de <strong style="color: var(--pf-text);">500 aderidos</strong></p>
+            <p style="font-size: 12px; color: var(--pf-muted);">Custo fixo por formando</p>
+            <p style="font-size: 22px; font-weight: 800; color: var(--pf-text); margin-bottom: 10px;">R$ 1.967,64</p>
+            <p style="font-size: 12px; color: var(--pf-muted);">Ingresso extra sentado · circulante</p>
+            <p style="font-size: 15px; font-weight: 700; color: var(--pf-text); margin-bottom: 8px;">R$ 580,00 · R$ 440,00</p>
+            <p style="font-size: 12px; color: var(--pf-muted);">Formando + 4 ingressos extras sentados</p>
+            <p style="font-size: 18px; font-weight: 700; color: var(--pf-gold-bright); margin-bottom: 12px;">R$ 4.287,64</p>
+            <p style="font-size: 12px; color: #a3d9b1; line-height: 1.6;"><strong>Vantagens:</strong><br>• Se passar de 500 aderidos, sobra dinheiro<br>• Também dá para escolher ingresso circulante</p>
+          </div>
+        </div>
+
+        <p style="font-size: 12px; color: var(--pf-muted); line-height: 1.6; margin-top: 14px;">
+          Diferença entre as opções (formando + 4 convidados): <strong style="color: var(--pf-text);">R$ 143,64</strong> a mais na Opção 2 com ingressos sentados.
+          Com 4 ingressos circulantes, a Opção 2 ficaria em R$ 3.727,64 (R$ 1.967,64 + 4 × R$ 440,00).
+        </p>
+      </div>
+
+      <!-- Parcelamento -->
+      <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 28px 32px; position: relative; overflow: hidden; margin-bottom: 20px;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--pf-gold-dim), var(--pf-gold), var(--pf-gold-dim));"></div>
+        <h3 style="font-size: 16px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Formas de pagamento</h3>
+        <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 16px;">Boleto ou cartão, em até 8x. Toque em um item para ver as parcelas.</p>
+        <div id="valores-parcelas" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        <p style="font-size: 11px; color: var(--pf-muted); line-height: 1.6; margin-top: 14px;">As parcelas da apresentação estão calculadas sobre o plano base da Opção 2. A apresentação não traz parcelamento para a Opção 1.</p>
+      </div>
+
+      <!-- Votação -->
+      <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 28px 32px; position: relative; overflow: hidden; margin-bottom: 20px;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #7c3aed, #a78bfa, #7c3aed);"></div>
+        <h3 style="font-size: 16px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Vote na melhor opção</h3>
+        <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 18px;">Qual base seguiremos? Todos pagando igual. Um voto por formando cadastrado, e você pode mudar o seu depois.</p>
+
+        <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 180px;">
+            <label for="pag-camiseta" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Número da Camiseta</label>
+            <input type="text" id="pag-camiseta" placeholder="Ex: 042">
+          </div>
+          <button type="button" id="btn-pag-verificar" style="padding: 11px 24px; background: linear-gradient(135deg, #4c1d95, #7c3aed); border: 1px solid #7c3aed; color: #fff; border-radius: 8px; font-size: 13px; cursor: pointer; font-family: inherit; font-weight: 600; white-space: nowrap;">Verificar</button>
+        </div>
+
+        <div id="pag-aviso" role="status" style="display: none; margin-top: 16px; padding: 14px 16px; border-radius: 10px; font-size: 13px; line-height: 1.6;"></div>
+
+        <div id="pag-voto-form" style="display: none; margin-top: 18px;">
+          <p id="pag-identidade" style="font-size: 14px; color: var(--pf-text); margin-bottom: 12px;"></p>
+          <div id="pag-turma-box" style="display: none; margin-bottom: 14px;">
+            <label for="pag-turma" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Sua turma</label>
+            <select id="pag-turma" class="js-turma" style="width: 100%; padding: 11px 14px; background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 8px; color: var(--pf-text); font-size: 14px; font-family: inherit; outline: none; -webkit-appearance: none; appearance: none;">
+              <option value="">Selecione</option>
+            </select>
+          </div>
+          <fieldset style="border: none; padding: 0; margin: 0 0 16px;">
+            <legend style="font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Sua escolha</legend>
+            <label style="display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 10px; margin-bottom: 8px; cursor: pointer;">
+              <input type="radio" name="pag-opcao" value="base1" style="margin-top: 3px; accent-color: #c9a94e;">
+              <span style="font-size: 13px; color: var(--pf-text);"><strong>Opção 1</strong> — cota única de R$ 828,80 (base de 3.200 convidados)</span>
+            </label>
+            <label style="display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 10px; cursor: pointer;">
+              <input type="radio" name="pag-opcao" value="base2" style="margin-top: 3px; accent-color: #c9a94e;">
+              <span style="font-size: 13px; color: var(--pf-text);"><strong>Opção 2</strong> — custo fixo de R$ 1.967,64 + ingressos extras (base de 500 aderidos)</span>
+            </label>
+          </fieldset>
+          <button type="button" id="btn-pag-votar" style="width: 100%; padding: 13px; background: linear-gradient(135deg, #6d28d9, #7c3aed); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit;">Registrar voto</button>
+        </div>
+      </div>
+
+      <!-- Resultado -->
+      <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 28px 32px; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--pf-gold-dim), var(--pf-gold), var(--pf-gold-dim));"></div>
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+          <div>
+            <h3 style="font-size: 16px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Resultado parcial</h3>
+            <p style="font-size: 12px; color: var(--pf-muted);">Participação de cada opção nos votos (só inscritos ativos).</p>
+          </div>
+          <button type="button" id="btn-pag-atualizar" style="padding: 8px 16px; background: var(--pf-black); border: 1px solid var(--pf-border); color: var(--pf-muted); border-radius: 8px; font-size: 12px; cursor: pointer; font-family: inherit;">Atualizar</button>
+        </div>
+        <div id="pag-resultado" style="font-size: 13px; color: var(--pf-muted);">Carregando...</div>
+      </div>
+    </div>
+
     <div id="view-admin" style="display: none;" class="fade-in">
 
       <!-- Login -->
@@ -922,7 +1044,7 @@
     // TAB SWITCHING
     // ==========================================
     function switchTab(tab) {
-      ['registro', 'permuta', 'criancas', 'votacao', 'admin'].forEach(t => {
+      ['registro', 'permuta', 'criancas', 'votacao', 'valores', 'admin'].forEach(t => {
         const tabEl = document.getElementById('tab-' + t);
         if (tabEl) tabEl.classList.remove('active');
       });
@@ -930,6 +1052,7 @@
       document.getElementById('view-permuta').style.display = 'none';
       document.getElementById('view-criancas').style.display = 'none';
       document.getElementById('view-votacao').style.display = 'none';
+      document.getElementById('view-valores').style.display = 'none';
       document.getElementById('view-admin').style.display = 'none';
       document.getElementById('view-sucesso').style.display = 'none';
 
@@ -945,6 +1068,9 @@
         document.getElementById('view-criancas').style.display = 'block';
       } else if (tab === 'votacao') {
         document.getElementById('view-votacao').style.display = 'block';
+      } else if (tab === 'valores') {
+        document.getElementById('view-valores').style.display = 'block';
+        carregarResultadoPagamento();
       } else if (tab === 'admin') {
         document.getElementById('view-admin').style.display = 'block';
       }
@@ -1026,7 +1152,7 @@
       }
 
       // Bind tabs for strict CSP
-      ['registro', 'permuta', 'criancas', 'votacao', 'admin'].forEach(t => {
+      ['registro', 'permuta', 'criancas', 'votacao', 'valores', 'admin'].forEach(t => {
         const tabBtn = document.getElementById('tab-' + t);
         if (tabBtn) tabBtn.addEventListener('click', () => switchTab(t));
       });
@@ -1058,7 +1184,7 @@
     // IDENTIDADE LEMBRADA (nome + camiseta, só neste navegador)
     // ==========================================
     const IDENT_KEY = 'anp_identidade';
-    const IDENT_CAMPOS = [['nome', 'matricula'], ['cri-nome', 'cri-camiseta'], ['vot-nome', 'vot-camiseta']];
+    const IDENT_CAMPOS = [['nome', 'matricula'], ['cri-nome', 'cri-camiseta'], ['vot-nome', 'vot-camiseta'], [null, 'pag-camiseta']];
 
     function lerIdentidade() {
       try {
@@ -1145,6 +1271,161 @@
     });
 
     // ==========================================
+    // VALORES: parcelamento e votação da forma de pagamento
+    // ==========================================
+    // Fonte: apresentação do projeto (slides "Planos a escolher"). Cada linha: [parcelas, valor, meio, período]
+    const PLANOS_PAGAMENTO = [
+      { titulo: 'Solenidade + Baile (plano base da Opção 2)', total: 2565.35, linhas: [
+        [3, 855.12, 'Boleto', 'Out a Dez/2026'], [2, 1282.67, 'Boleto', 'Nov a Dez/2026'],
+        [6, 461.76, 'Cartão até 6x', 'Out/2026 a Mar/2027'], [5, 554.12, 'Cartão até 6x', 'Nov/2026 a Mar/2027'],
+        [8, 355.94, 'Cartão até 8x', 'Out/2026 a Mai/2027'], [7, 406.79, 'Cartão até 8x', 'Nov/2026 a Mai/2027'] ] },
+      { titulo: 'Plano Solenidade (todos os formandos)', total: 597.71, linhas: [
+        [3, 199.24, 'Boleto', 'Out a Dez/2026'], [2, 298.86, 'Boleto', 'Nov a Dez/2026'],
+        [6, 107.59, 'Cartão até 6x', 'Out/2026 a Mar/2027'], [5, 129.11, 'Cartão até 6x', 'Nov/2026 a Mar/2027'],
+        [8, 82.93, 'Cartão até 8x', 'Out/2026 a Mai/2027'], [7, 94.78, 'Cartão até 8x', 'Nov/2026 a Mai/2027'] ] },
+      { titulo: 'Ingresso extra sentado', total: 580, linhas: [
+        [3, 193.33, 'Boleto', 'Out a Dez/2026'], [2, 290.00, 'Boleto', 'Nov a Dez/2026'],
+        [6, 104.40, 'Cartão até 6x', 'Out/2026 a Mar/2027'], [5, 125.28, 'Cartão até 6x', 'Nov/2026 a Mar/2027'],
+        [8, 80.48, 'Cartão até 8x', 'Out/2026 a Mai/2027'], [7, 91.97, 'Cartão até 8x', 'Nov/2026 a Mai/2027'] ] },
+      { titulo: 'Ingresso extra circulante', total: 440, linhas: [
+        [3, 146.67, 'Boleto', 'Out a Dez/2026'], [2, 220.00, 'Boleto', 'Nov a Dez/2026'],
+        [6, 79.20, 'Cartão até 6x', 'Out/2026 a Mar/2027'], [5, 95.04, 'Cartão até 6x', 'Nov/2026 a Mar/2027'],
+        [8, 61.05, 'Cartão até 8x', 'Out/2026 a Mai/2027'], [7, 69.77, 'Cartão até 8x', 'Nov/2026 a Mai/2027'] ] }
+    ];
+
+    function brl(v) { return Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
+
+    (function montarParcelas() {
+      const box = document.getElementById('valores-parcelas');
+      if (!box) return;
+      box.innerHTML = PLANOS_PAGAMENTO.map(p => {
+        const linhas = p.linhas.map(l => {
+          const soma = l[0] * l[1];
+          return '<div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px 12px;padding:9px 0;border-top:1px solid var(--pf-border);">' +
+            '<div><strong style="color:var(--pf-text);font-size:13px;">' + l[0] + 'x de ' + brl(l[1]) + '</strong>' +
+            '<div style="font-size:11px;color:var(--pf-muted);margin-top:2px;">' + l[2] + ' · ' + l[3] + '</div></div>' +
+            '<div style="font-size:11px;color:var(--pf-muted);text-align:right;">total ' + brl(soma) + '</div></div>';
+        }).join('');
+        return '<details style="background:var(--pf-black);border:1px solid var(--pf-border);border-radius:10px;padding:12px 16px;">' +
+          '<summary style="cursor:pointer;font-size:14px;font-weight:600;color:var(--pf-text);">' + p.titulo +
+          ' <span style="color:var(--pf-gold);font-weight:700;">· ' + brl(p.total) + '</span></summary>' +
+          '<div style="margin-top:10px;">' + linhas + '</div></details>';
+      }).join('');
+    })();
+
+    let pagAluno = null; // { camiseta, nome, turma }
+
+    function pagAviso(html, tipo) {
+      const el = document.getElementById('pag-aviso');
+      const cores = {
+        erro: 'background:rgba(192,57,43,0.1);border:1px solid rgba(192,57,43,0.4);color:#d9a3a3;',
+        ok: 'background:rgba(39,174,96,0.1);border:1px solid rgba(39,174,96,0.4);color:#a3d9b1;',
+        info: 'background:rgba(201,169,78,0.08);border:1px solid rgba(201,169,78,0.25);color:var(--pf-gold);'
+      };
+      el.style.cssText = 'display:block;margin-top:16px;padding:14px 16px;border-radius:10px;font-size:13px;line-height:1.6;' + (cores[tipo] || cores.info);
+      el.innerHTML = html;
+    }
+
+    async function verificarCamisetaPagamento() {
+      const cam = document.getElementById('pag-camiseta').value.trim();
+      const form = document.getElementById('pag-voto-form');
+      form.style.display = 'none';
+      pagAluno = null;
+      if (!cam) { showToast('Informe o número da camiseta.', 'error'); return; }
+      pagAviso('Verificando...', 'info');
+      try {
+        const r = await supabaseRequest('POST', 'rpc/consultar_voto_pagamento', { p_camiseta: cam });
+        if (!r || !r.cadastrado) {
+          pagAviso('Não encontramos esta camiseta no cadastro. <strong>Você precisa se cadastrar antes de votar.</strong> ' +
+            '<br><button type="button" id="btn-pag-ir-registro" style="margin-top:10px;padding:9px 18px;background:linear-gradient(135deg,var(--pf-gold-dim),var(--pf-gold));color:var(--pf-black);border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">Ir para o Registro</button>', 'erro');
+          document.getElementById('btn-pag-ir-registro').addEventListener('click', () => switchTab('registro'));
+          return;
+        }
+        if (r.ativo === false) {
+          pagAviso('A inscrição desta camiseta está <strong>cancelada</strong>. Para votar, faça o registro novamente na aba Registro.', 'erro');
+          return;
+        }
+        const turma = r.turma ? normalizarTurma(r.turma) : '';
+        pagAluno = { camiseta: cam, nome: r.nome, turma: turma === 'N/A' ? '' : turma };
+        document.getElementById('pag-identidade').textContent = r.nome + (pagAluno.turma ? ' · Turma ' + pagAluno.turma : '');
+        document.getElementById('pag-turma-box').style.display = pagAluno.turma ? 'none' : 'block';
+        document.getElementById('pag-turma').value = '';
+        document.querySelectorAll('input[name="pag-opcao"]').forEach(i => { i.checked = (i.value === r.opcao); });
+        document.getElementById('btn-pag-votar').textContent = r.opcao ? 'Alterar meu voto' : 'Registrar voto';
+        document.getElementById('pag-aviso').style.display = 'none';
+        if (r.opcao) pagAviso('Você já votou na <strong>Opção ' + (r.opcao === 'base1' ? '1' : '2') + '</strong>. Pode alterar abaixo.', 'info');
+        form.style.display = 'block';
+      } catch (err) {
+        pagAviso(escXml(mensagemErro(err, 'Não foi possível verificar agora. Tente novamente.')), 'erro');
+      }
+    }
+
+    async function registrarVotoPagamento() {
+      if (!pagAluno) return;
+      const sel = document.querySelector('input[name="pag-opcao"]:checked');
+      if (!sel) { showToast('Escolha uma das opções para votar.', 'error'); return; }
+      const turmaEscolhida = pagAluno.turma ? '' : document.getElementById('pag-turma').value;
+      if (!pagAluno.turma && !turmaEscolhida) { showToast('Selecione a sua turma.', 'error'); return; }
+      const btn = document.getElementById('btn-pag-votar');
+      btn.disabled = true;
+      try {
+        const r = await supabaseRequest('POST', 'rpc/votar_pagamento', {
+          p_camiseta: pagAluno.camiseta, p_opcao: sel.value, p_turma: turmaEscolhida || null
+        });
+        if (!r || !r.ok) {
+          const msg = r && r.erro === 'nao_cadastrado' ? 'Camiseta não cadastrada. Faça o registro antes de votar.'
+            : r && r.erro === 'inscricao_cancelada' ? 'Inscrição cancelada. Faça o registro novamente para votar.'
+            : 'Não foi possível registrar o voto.';
+          showToast(msg, 'error');
+          return;
+        }
+        showToast('Voto registrado! Obrigado por participar.', 'success');
+        salvarIdentidade(pagAluno.nome, pagAluno.camiseta);
+        pagAviso('Voto registrado na <strong>Opção ' + (sel.value === 'base1' ? '1' : '2') + '</strong>. Você pode alterar quando quiser.', 'ok');
+        document.getElementById('pag-voto-form').style.display = 'none';
+        carregarResultadoPagamento();
+      } catch (err) {
+        showToast(mensagemErro(err, 'Erro ao registrar o voto. Tente novamente.'), 'error');
+      } finally { btn.disabled = false; }
+    }
+
+    async function carregarResultadoPagamento() {
+      const box = document.getElementById('pag-resultado');
+      if (!box) return;
+      try {
+        const r = await supabaseRequest('POST', 'rpc/resultado_votacao_pagamento', {});
+        const total = Number(r && r.total) || 0;
+        if (!total) { box.textContent = 'Ainda não há votos. Seja o primeiro a votar!'; return; }
+        const b1 = Number(r.base1) || 0, b2 = Number(r.base2) || 0;
+        const p1 = (b1 / total) * 100, p2 = (b2 / total) * 100;
+        const barra = (rotulo, n, p, cor) =>
+          '<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;font-size:13px;color:var(--pf-text);margin-bottom:6px;">' +
+          '<span>' + rotulo + '</span><span><strong>' + p.toFixed(1).replace('.', ',') + '%</strong> · ' + n + ' voto' + (n === 1 ? '' : 's') + '</span></div>' +
+          '<div style="height:10px;background:var(--pf-black);border-radius:6px;overflow:hidden;"><div style="height:100%;width:' + p.toFixed(1) + '%;background:' + cor + ';"></div></div></div>';
+        let html = barra('Opção 1 — cota única', b1, p1, '#2c5aa0') + barra('Opção 2 — custo fixo + extras', b2, p2, '#7c3aed');
+        const lider = b1 === b2 ? 'Empate' : (b1 > b2 ? 'Opção 1 na frente' : 'Opção 2 na frente');
+        html += '<p style="font-size:13px;color:var(--pf-gold);margin:4px 0 14px;"><strong>' + lider + '</strong> · ' + total + ' voto' + (total === 1 ? '' : 's') + ' no total</p>';
+        const turmas = Array.isArray(r.por_turma) ? r.por_turma : [];
+        if (turmas.length) {
+          html += '<table style="width:100%;border-collapse:collapse;font-size:12px;"><thead><tr>' +
+            '<th style="text-align:left;padding:6px;">Turma</th><th style="text-align:center;padding:6px;">Opção 1</th><th style="text-align:center;padding:6px;">Opção 2</th></tr></thead><tbody>' +
+            turmas.map(t => '<tr><td style="padding:6px;border-top:1px solid var(--pf-border);">' + escXml(t.turma) + '</td>' +
+              '<td style="padding:6px;border-top:1px solid var(--pf-border);text-align:center;">' + (Number(t.base1) || 0) + '</td>' +
+              '<td style="padding:6px;border-top:1px solid var(--pf-border);text-align:center;">' + (Number(t.base2) || 0) + '</td></tr>').join('') +
+            '</tbody></table>';
+        }
+        box.innerHTML = html;
+      } catch (err) {
+        box.textContent = 'Não foi possível carregar o resultado agora.';
+      }
+    }
+
+    document.getElementById('btn-pag-verificar').addEventListener('click', verificarCamisetaPagamento);
+    document.getElementById('btn-pag-votar').addEventListener('click', registrarVotoPagamento);
+    document.getElementById('btn-pag-atualizar').addEventListener('click', carregarResultadoPagamento);
+    document.getElementById('pag-camiseta').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); verificarCamisetaPagamento(); } });
+
+    // ==========================================
     // TURMA: padronização e seletor
     // ==========================================
     const TURMAS = 'ABCDEFGHIJKLMNOPQRS'.split(''); // turmas existentes; ajuste aqui se mudar
@@ -1162,12 +1443,12 @@
     }
 
     (function montarSeletorTurma() {
-      const sel = document.getElementById('cri-turma');
-      if (!sel) return;
-      TURMAS.forEach(t => {
-        const o = document.createElement('option');
-        o.value = t; o.textContent = 'Turma ' + t;
-        sel.appendChild(o);
+      document.querySelectorAll('select.js-turma').forEach(sel => {
+        TURMAS.forEach(t => {
+          const o = document.createElement('option');
+          o.value = t; o.textContent = 'Turma ' + t;
+          sel.appendChild(o);
+        });
       });
     })();
 
@@ -1316,6 +1597,7 @@
       e.preventDefault();
       const nome = document.getElementById('nome').value.trim();
       const matricula = document.getElementById('matricula').value.trim();
+      const turma = normalizarTurma(document.getElementById('turma').value);
       const solenidade = document.getElementById('chk-solenidade').checked;
       const baile = document.getElementById('chk-baile').checked;
       const interesseMais = document.getElementById('chk-mais-solenidade').checked;
@@ -1324,7 +1606,7 @@
       const qtdVenderSol = parseInt(document.getElementById('qtd-vender-solenidade').value) || 0;
       const telVenderSol = document.getElementById('tel-vender-solenidade') ? document.getElementById('tel-vender-solenidade').value.trim() : '';
 
-      if (!nome || !matricula) { showToast('Preencha todos os campos obrigatórios.', 'error'); return; }
+      if (!nome || !matricula || turma === 'N/A') { showToast('Preencha todos os campos obrigatórios, incluindo a turma.', 'error'); return; }
       if (!solenidade && !baile) { showToast('Selecione pelo menos um evento de interesse.', 'error'); return; }
       if (venderSol && telVenderSol !== telefoneCarregado && !telefoneValido(telVenderSol)) { showToast('Telefone inválido. Use DDD + número, ex: (61) 99999-9999.', 'error'); document.getElementById('tel-vender-solenidade').focus(); return; }
       if (baile && qtdBaile < 1) { showToast('Informe a quantidade de convites para o baile.', 'error'); document.getElementById('qtd-baile').focus(); return; }
@@ -1333,7 +1615,7 @@
       setLoading(true);
       try {
         const body = {
-          nome_completo: nome, matricula: matricula, solenidade: solenidade, baile: baile,
+          nome_completo: nome, matricula: matricula, turma: turma, ativo: true, cancelado_em: null, solenidade: solenidade, baile: baile,
           qtd_convites_baile: baile ? qtdBaile : 0, interesse_mais_solenidade: interesseMais,
           vender_solenidade: venderSol, qtd_vender_solenidade: venderSol ? qtdVenderSol : 0,
           telefone_contato: venderSol ? telVenderSol : null
@@ -1420,6 +1702,12 @@
         // Preencher formulário principal
         document.getElementById('nome').value = aluno.nome_completo || '';
         document.getElementById('matricula').value = aluno.matricula || '';
+        const turmaSel = document.getElementById('turma');
+        const turmaAluno = normalizarTurma(aluno.turma);
+        if (turmaAluno !== 'N/A' && !Array.from(turmaSel.options).some(o => o.value === turmaAluno)) {
+          const o = document.createElement('option'); o.value = turmaAluno; o.textContent = 'Turma ' + turmaAluno; turmaSel.appendChild(o);
+        }
+        turmaSel.value = turmaAluno !== 'N/A' ? turmaAluno : '';
         
         // Solenidade
         document.getElementById('chk-solenidade').checked = !!aluno.solenidade;
@@ -1446,10 +1734,39 @@
         
         resEl.innerHTML = '<div style="display:flex;align-items:center;gap:10px;color:var(--pf-success);"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" stroke="#27ae60" stroke-width="1.5" fill="none"/><polyline points="5,9 8,12 13,6" stroke="#27ae60" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span style="font-size:13px;font-weight:600;">Dados de ' + escXml(aluno.nome_completo) + ' carregados no formulário acima!</span></div><p style="font-size:12px;color:var(--pf-muted);margin-top:6px;">Altere os campos que desejar e clique em <strong>"Registrar Presença"</strong> para salvar suas atualizações.</p>';
         
+        if (aluno.ativo === false) {
+          resEl.insertAdjacentHTML('beforeend', '<p style="font-size:12px;color:#d9a3a3;margin-top:10px;">Sua inscrição está <strong>cancelada</strong>. Para voltar a ser contado(a), clique em "Registrar Presença".</p>');
+        } else {
+          const btnCancelar = document.createElement('button');
+          btnCancelar.type = 'button';
+          btnCancelar.id = 'btn-cancelar-inscricao';
+          btnCancelar.textContent = 'Cancelar minha inscrição';
+          btnCancelar.style.cssText = 'margin-top:14px;padding:9px 18px;background:transparent;border:1px solid #c0392b;color:#e74c3c;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;';
+          btnCancelar.addEventListener('click', () => cancelarInscricao(aluno.matricula, aluno.nome_completo));
+          resEl.appendChild(btnCancelar);
+        }
+
         document.getElementById('formRegistro').scrollIntoView({ behavior: 'smooth' });
         showToast('Dados carregados no formulário!', 'success');
       } catch (err) {
         resEl.innerHTML = '<p style="font-size:13px;color:#d9a3a3;">Erro ao consultar dados. Tente novamente.</p>';
+      }
+    }
+
+    // Cancela a inscrição (não apaga o registro): deixa de ser contado e some da Permuta.
+    async function cancelarInscricao(matricula, nome) {
+      const resEl = document.getElementById('consulta-resultado');
+      if (!window.confirm('Cancelar a inscrição de ' + nome + '?\n\nVocê deixa de ser contado(a) na formatura e seus ingressos saem da Permuta. Se mudar de ideia, é só se registrar de novo.')) return;
+      try {
+        const r = await supabaseRequest('PATCH', TABLE + '?matricula=eq.' + encodeURIComponent(matricula),
+          { ativo: false, cancelado_em: new Date().toISOString() });
+        if (!r || r.length === 0) { showToast('Não foi possível cancelar: registro não encontrado.', 'error'); return; }
+        showToast('Inscrição cancelada.', 'success');
+        resetForm();
+        resEl.style.display = 'block';
+        resEl.innerHTML = '<p style="font-size:13px;color:var(--pf-text);">A inscrição de <strong>' + escXml(nome) + '</strong> foi cancelada. Se mudar de ideia, preencha o formulário e clique em "Registrar Presença".</p>';
+      } catch (err) {
+        showToast(mensagemErro(err, 'Erro ao cancelar. Tente novamente.'), 'error');
       }
     }
 
@@ -1464,7 +1781,7 @@
       const listEl = document.getElementById('permuta-list');
       listEl.innerHTML = '<div style="text-align: center; padding: 40px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="display:inline-block;animation:spin 1s linear infinite;margin-bottom:12px"><circle cx="12" cy="12" r="10" stroke="#2a2a30" stroke-width="2.5" fill="none"/><path d="M12 2a10 10 0 0 1 10 10" stroke="#c9a94e" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg><p style="font-size:13px;color:#8a8a8e">Carregando...</p></div>';
       try {
-        const data = await supabaseRequest('GET', TABLE + '?vender_solenidade=eq.true&qtd_vender_solenidade=gt.0&select=nome_completo,qtd_vender_solenidade,permuta_vendido,telefone_contato,criado_em&order=permuta_vendido.asc,criado_em.desc');
+        const data = await supabaseRequest('GET', TABLE + '?ativo=eq.true&vender_solenidade=eq.true&qtd_vender_solenidade=gt.0&select=nome_completo,qtd_vender_solenidade,permuta_vendido,telefone_contato,criado_em&order=permuta_vendido.asc,criado_em.desc');
         if (!data || data.length === 0) {
           listEl.innerHTML = '<div style="text-align:center;padding:40px"><p style="font-size:14px;color:#8a8a8e;font-weight:500">Nenhum aluno disponibilizou ingressos ainda.</p><p style="font-size:12px;color:#8a8a8e;margin-top:4px;opacity:0.7">Utilize o formulário abaixo para disponibilizar seus ingressos.</p></div>';
           return;
@@ -1724,18 +2041,21 @@
         adminData = data || [];
 
         // Stats
-        const total = adminData.length;
-        const solCount = adminData.filter(a => a.solenidade).length;
-        const baileCount = adminData.filter(a => a.baile).length;
-        const vendaCount = adminData.filter(a => a.vender_solenidade).length;
-        const totalBaileConvites = adminData.reduce((s, a) => s + (a.qtd_convites_baile || 0), 0);
+        const ativos = adminData.filter(a => a.ativo !== false);
+        const cancelados = adminData.length - ativos.length;
+        const total = ativos.length;
+        const solCount = ativos.filter(a => a.solenidade).length;
+        const baileCount = ativos.filter(a => a.baile).length;
+        const vendaCount = ativos.filter(a => a.vender_solenidade).length;
+        const totalBaileConvites = ativos.reduce((s, a) => s + (a.qtd_convites_baile || 0), 0);
 
         document.getElementById('admin-stats').innerHTML =
           statCard('Total Registros', total, '#c9a94e') +
           statCard('Solenidade', solCount, '#e5c866') +
           statCard('Baile', baileCount, '#2c5aa0') +
           statCard('Conv. Baile', totalBaileConvites, '#7aabe0') +
-          statCard('Vendendo Sol.', vendaCount, '#27ae60');
+          statCard('Vendendo Sol.', vendaCount, '#27ae60') +
+          statCard('Cancelados', cancelados, '#e74c3c');
 
         if (adminData.length === 0) {
           tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:40px;color:#8a8a8e">Nenhum registro encontrado.</td></tr>';
@@ -1745,13 +2065,15 @@
         tbody.innerHTML = adminData.map((a, i) => {
           const dt = new Date(a.criado_em);
           const dateStr = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-          return '<tr>' +
+          const cancelado = a.ativo === false;
+          return '<tr' + (cancelado ? ' style="opacity:0.5"' : '') + '>' +
             '<td style="color:#8a8a8e;font-size:12px">' + (i + 1) + '</td>' +
-            '<td style="font-weight:600">' + escXml(a.nome_completo) + '</td>' +
+            '<td style="font-weight:600">' + escXml(a.nome_completo) + (cancelado ? ' <span style="font-size:10px;color:#e74c3c;font-weight:700;">(CANCELADO)</span>' : '') + '</td>' +
             '<td><code style="background:#1a1a1f;padding:2px 8px;border-radius:4px;font-size:12px;color:#c9a94e">' + escXml(a.matricula) + '</code></td>' +
             '<td>' + (a.solenidade ? '<span class="badge-sim">Sim</span>' : '<span class="badge-nao">Não</span>') + '</td>' +
             '<td>' + (a.interesse_mais_solenidade ? '<span class="badge-sim">Sim</span>' : '<span class="badge-nao">—</span>') + '</td>' +
             '<td>' + (a.baile ? '<span class="badge-sim">Sim</span>' : '<span class="badge-nao">Não</span>') + '</td>' +
+            '<td style="text-align:center;font-weight:600">' + (Number(a.qtd_convites_baile) || 0) + '</td>' +
             '<td>' + (a.vender_solenidade ? (a.permuta_vendido ? '<span style="display:inline-block;background:rgba(231,76,60,0.15);border:1px solid #c0392b;color:#e74c3c;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;">Vendido</span>' : '<span class="badge-sim">Disponível</span>') : '<span class="badge-nao">—</span>') + '</td>' +
             '<td style="text-align:center;font-weight:600;color:' + (a.qtd_vender_solenidade > 0 ? '#27ae60' : '#8a8a8e') + '">' + (Number(a.qtd_vender_solenidade) || 0) + '</td>' +
             '<td style="font-size:12px;color:#8a8a8e;white-space:nowrap">' + dateStr + '</td>' +
@@ -1929,15 +2251,16 @@
       xml += '<Column ss:Width="100"/>'; // Qtd Venda
       xml += '<Column ss:Width="140"/>'; // Contato
       xml += '<Column ss:Width="150"/>'; // Data
+      xml += '<Column ss:Width="100"/>'; // Inscrição
       xml += '\n';
 
       // Title row
-      xml += '<Row ss:Height="30"><Cell ss:MergeAcross="10" ss:StyleID="title"><Data ss:Type="String">Registro de Formatura — Academia Nacional de Polícia (APF)</Data></Cell></Row>\n';
+      xml += '<Row ss:Height="30"><Cell ss:MergeAcross="11" ss:StyleID="title"><Data ss:Type="String">Registro de Formatura — Academia Nacional de Polícia (APF)</Data></Cell></Row>\n';
       xml += '<Row ss:Height="10"><Cell><Data ss:Type="String"></Data></Cell></Row>\n';
 
       // Header row
       xml += '<Row ss:Height="28">';
-      const headers = ['#', 'Nome Completo', 'Matrícula', 'Solenidade', 'Interesse +4 (Sol.)', 'Baile', 'Qtd. Convites Baile', 'Vender Solenidade', 'Qtd. Venda Sol.', 'Contato', 'Data de Registro'];
+      const headers = ['#', 'Nome Completo', 'Matrícula', 'Solenidade', 'Interesse +4 (Sol.)', 'Baile', 'Qtd. Convites Baile', 'Vender Solenidade', 'Qtd. Venda Sol.', 'Contato', 'Data de Registro', 'Inscrição'];
       headers.forEach(h => { xml += '<Cell ss:StyleID="header"><Data ss:Type="String">' + escXml(h) + '</Data></Cell>'; });
       xml += '</Row>\n';
 
@@ -1957,6 +2280,7 @@
         xml += '<Cell ss:StyleID="cellCenter"><Data ss:Type="Number">' + a.qtd_vender_solenidade + '</Data></Cell>';
         xml += '<Cell ss:StyleID="cell"><Data ss:Type="String">' + escXml(a.telefone_contato || '—') + '</Data></Cell>';
         xml += '<Cell ss:StyleID="cell"><Data ss:Type="String">' + escXml(dateStr) + '</Data></Cell>';
+        xml += '<Cell ss:StyleID="cellCenter"><Data ss:Type="String">' + (a.ativo === false ? 'Cancelada' : 'Ativa') + '</Data></Cell>';
         xml += '</Row>\n';
       });
 
@@ -2036,9 +2360,10 @@
     // CONTAGEM REGRESSIVA
     // ==========================================
     // >>> EDITE AQUI: data/hora do evento (formato AAAA-MM-DDTHH:MM:SS-03:00, horário de Brasília)
-    const EVENTO_DATA = new Date('2026-12-18T00:00:00-03:00');
+    const EVENTO_DATA = new Date('2026-12-18T20:00:00-03:00'); // início: 18/12 às 20h
+    const EVENTO_FIM = new Date('2026-12-19T02:00:00-03:00');  // término: 19/12 às 2h da manhã
     const EVENTO_NOME = 'Formatura — APF';
-    const EVENTO_LOCAL = 'A definir'; // opcional. Ex: 'Auditório da ANP, Brasília - DF'
+    const EVENTO_LOCAL = 'ANP'; // opcional. Ex: 'Auditório da ANP, Brasília - DF'
  
     (function iniciarContagem() {
       const elTitle = document.getElementById('countdown-title');
@@ -2050,7 +2375,8 @@
       elTitle.textContent = EVENTO_NOME;
       const dataFmt = EVENTO_DATA.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
       const horaFmt = EVENTO_DATA.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-      elSub.textContent = dataFmt + ' · ' + horaFmt + (EVENTO_LOCAL ? ' · ' + EVENTO_LOCAL : '');
+      const horaFimFmt = EVENTO_FIM.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      elSub.textContent = dataFmt + ' · ' + horaFmt + ' às ' + horaFimFmt + (EVENTO_LOCAL ? ' · ' + EVENTO_LOCAL : '');
  
       const pad = n => String(n).padStart(2, '0');
       let timer;
@@ -2060,7 +2386,12 @@
         if (diff <= 0) {
           elGrid.style.display = 'none';
           elDone.style.display = 'block';
-          clearInterval(timer);
+          if (Date.now() >= EVENTO_FIM.getTime()) {
+            elDone.textContent = 'Formatura realizada! Parabéns, formandos!';
+            clearInterval(timer);
+          } else {
+            elDone.textContent = 'Chegou o grande dia! A festa está acontecendo agora!';
+          }
           return;
         }
         const s = Math.floor(diff / 1000);
