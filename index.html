@@ -752,7 +752,7 @@
       <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 32px; position: relative; overflow: hidden; margin-bottom: 20px;">
         <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--pf-gold-dim), var(--pf-gold), var(--pf-gold-dim));"></div>
         <h2 style="font-size: 18px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Valores da Formatura</h2>
-        <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 24px;">Valores conforme a apresentação do projeto. São duas formas de calcular o baile; a turma vota na que prefere.</p>
+        <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 24px;">Valores conforme a apresentação do projeto. Havia duas formas de calcular o baile. A turma votou e a Opção 2 (custo fixo + ingressos extras) venceu.</p>
 
         <div style="background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 10px; padding: 16px 18px; margin-bottom: 20px;">
           <p style="font-size: 12px; font-weight: 700; color: var(--pf-gold); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Plano Solenidade</p>
@@ -801,8 +801,15 @@
         <p style="font-size: 11px; color: var(--pf-muted); line-height: 1.6; margin-top: 14px;">As parcelas da apresentação estão calculadas sobre o plano base da Opção 2. A apresentação não traz parcelamento para a Opção 1.</p>
       </div>
 
-      <!-- Votação -->
-      <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 28px 32px; position: relative; overflow: hidden; margin-bottom: 20px;">
+      <!-- Resultado da votação -->
+      <div style="background: linear-gradient(135deg, rgba(201,169,78,0.14), rgba(201,169,78,0.04)); border: 1px solid var(--pf-gold); border-radius: 14px; padding: 22px 26px; margin-bottom: 20px;">
+        <p style="font-size: 12px; font-weight: 700; color: var(--pf-gold); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Votação encerrada</p>
+        <h3 style="font-size: 18px; font-weight: 700; color: var(--pf-text); margin-bottom: 6px;">A forma fixa de pagamento venceu</h3>
+        <p style="font-size: 13px; color: var(--pf-muted); line-height: 1.6;"><strong style="color: var(--pf-text);">Opção 2:</strong> custo fixo de R$ 1.967,64 por formando + ingressos extras (base de 500 aderidos). O resultado completo está abaixo.</p>
+      </div>
+
+      <!-- Votação (encerrada) -->
+      <div id="pag-votacao-card" hidden class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 28px 32px; position: relative; overflow: hidden; margin-bottom: 20px;">
         <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #7c3aed, #a78bfa, #7c3aed);"></div>
         <h3 style="font-size: 16px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Vote na melhor opção</h3>
         <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 18px;">Qual base seguiremos? Todos pagando igual. Um voto por formando cadastrado, e você pode mudar o seu depois.</p>
@@ -845,8 +852,8 @@
         <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--pf-gold-dim), var(--pf-gold), var(--pf-gold-dim));"></div>
         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
           <div>
-            <h3 style="font-size: 16px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Resultado parcial</h3>
-            <p style="font-size: 12px; color: var(--pf-muted);">Participação de cada opção nos votos (só inscritos ativos).</p>
+            <h3 style="font-size: 16px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Resultado final da votação</h3>
+            <p style="font-size: 12px; color: var(--pf-muted);">Participação de cada opção nos votos (só inscritos ativos). Votação encerrada.</p>
           </div>
           <button type="button" id="btn-pag-atualizar" style="padding: 8px 16px; background: var(--pf-black); border: 1px solid var(--pf-border); color: var(--pf-muted); border-radius: 8px; font-size: 12px; cursor: pointer; font-family: inherit;">Atualizar</button>
         </div>
@@ -1459,7 +1466,7 @@
           '<span>' + rotulo + '</span><span><strong>' + p.toFixed(1).replace('.', ',') + '%</strong> · ' + n + ' voto' + (n === 1 ? '' : 's') + '</span></div>' +
           '<div style="height:10px;background:var(--pf-black);border-radius:6px;overflow:hidden;"><div style="height:100%;width:' + p.toFixed(1) + '%;background:' + cor + ';"></div></div></div>';
         let html = barra('Opção 1 — cota única', b1, p1, '#2c5aa0') + barra('Opção 2 — custo fixo + extras', b2, p2, '#7c3aed');
-        const lider = b1 === b2 ? 'Empate' : (b1 > b2 ? 'Opção 1 na frente' : 'Opção 2 na frente');
+        const lider = b1 === b2 ? 'Empate' : (b1 > b2 ? 'Opção 1 venceu' : 'Opção 2 venceu');
         html += '<p style="font-size:13px;color:var(--pf-gold);margin:4px 0 14px;"><strong>' + lider + '</strong> · ' + total + ' voto' + (total === 1 ? '' : 's') + ' no total</p>';
         const turmas = Array.isArray(r.por_turma) ? r.por_turma : [];
         if (turmas.length) {
