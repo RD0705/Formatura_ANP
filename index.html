@@ -9,7 +9,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <style>
     :root {
       --pf-black: #060d18;
@@ -24,7 +23,7 @@
       --pf-muted: #8e9bb0;
       --pf-danger: #c0392b;
       --pf-success: #27ae60;
-      --pf-blue: #2c5aa0;
+      --pf-blue: var(--pf-gold-dim);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -43,14 +42,14 @@
       background:
         radial-gradient(ellipse at 20% 50%, rgba(201,169,78,0.03) 0%, transparent 50%),
         radial-gradient(ellipse at 80% 20%, rgba(201,169,78,0.02) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 100%, rgba(44,90,160,0.03) 0%, transparent 50%);
+        radial-gradient(ellipse at 50% 100%, rgba(201,169,78,0.03) 0%, transparent 50%);
       pointer-events: none;
       z-index: 0;
     }
 
     .fade-in { animation: fadeIn 0.5s ease-out; }
     .slide-down { animation: slideDown 0.4s ease-out; }
-    .scale-in { animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .scale-in { animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
 
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
@@ -279,11 +278,84 @@
     .site-footer-id { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
     .site-footer-id img { width: 30px; height: auto; opacity: 0.9; }
     .site-footer-id span { font-family: var(--font-display); font-size: 16px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--pf-cream); }
-    @media (max-width: 420px) { section #countdown-grid p { font-size: 9px; letter-spacing: 0; } }
+    @media (max-width: 420px) { section #countdown-grid p { font-size: 11px; letter-spacing: 0; } }
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  </style>
+  <style id="sistema-visual">
+    /* ===== Sistema visual: classes reutilizáveis e ajustes de acessibilidade ===== */
+    :root { --pf-line: #5a7499; --pf-gold-mid: #b09440; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+    /* profundidade com deslocamento, sem halo dourado */
+    .gold-glow, .gold-glow:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+
+    .card { background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 28px 32px; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+    .card-top { border-color: var(--pf-gold-dim); }
+    details.card { padding: 6px 24px; }
+    .resumo-card { cursor: pointer; font-weight: 600; font-size: 15px; color: var(--pf-text); min-height: 44px; display: flex; align-items: center; }
+    .hint { font-size: 13px; color: var(--pf-muted); line-height: 1.6; max-width: 68ch; }
+    .hint-small { font-size: 12px; color: var(--pf-muted); line-height: 1.6; max-width: 68ch; }
+    .txt { color: var(--pf-text); }
+    .mb-16 { margin-bottom: 16px; } .mb-20 { margin-bottom: 20px; } .mt-12 { margin-top: 12px; } .mt-16 { margin-top: 16px; }
+    .card h2 { margin-bottom: 4px; color: var(--pf-text); }
+    .card h3 { margin-bottom: 4px; color: var(--pf-text); }
+
+    .preco-destaque { background: var(--pf-black); border: 1px solid var(--pf-gold-dim); border-radius: 12px; padding: 20px 22px; margin-bottom: 26px; }
+    .preco-rotulo { font-size: 13px; color: var(--pf-muted); }
+    .preco-valor { font-family: var(--font-display); font-size: clamp(40px, 11vw, 56px); font-weight: 800; color: var(--pf-gold-bright); line-height: 1.05; margin: 2px 0 14px; font-variant-numeric: tabular-nums; }
+    .preco-linhas div { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--pf-border); font-size: 14px; }
+    .preco-linhas dt { color: var(--pf-muted); }
+    .preco-linhas dd { color: var(--pf-text); font-weight: 600; font-variant-numeric: tabular-nums; }
+    .preco-linhas-caixa { background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 10px; padding: 2px 16px; }
+    .preco-linhas-caixa div:first-child { border-top: none; }
+    .sub-titulo { margin-bottom: 10px; }
+
+    /* botões: um primário (dourado) e um secundário (contorno) */
+    .btn { min-height: 44px; padding: 10px 20px; border-radius: 10px; font-family: inherit; font-size: 14px; font-weight: 600; line-height: 1.2; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s, border-color 0.2s, transform 0.2s; }
+    .btn-primary { background: linear-gradient(135deg, var(--pf-gold-mid), var(--pf-gold)); color: var(--pf-black); border: none; font-weight: 700; }
+    .btn-primary:hover:not(:disabled) { background: linear-gradient(135deg, var(--pf-gold), var(--pf-gold-bright)); transform: translateY(-1px); }
+    .btn-secondary { background: transparent; color: var(--pf-gold); border: 1px solid var(--pf-gold-dim); }
+    .btn-secondary:hover:not(:disabled) { background: var(--pf-card-hover); border-color: var(--pf-gold); }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    #btn-submit, #btn-submit-cri, #btn-submit-vot, #btn-login { text-transform: uppercase; letter-spacing: 0.06em; }
+
+    /* campos: bordas visíveis (3:1), alvos de 44px */
+    input[type="text"]:not(:focus), input[type="tel"]:not(:focus), input[type="number"]:not(:focus), input[type="password"]:not(:focus) { border-color: var(--pf-line); }
+    input[type="text"], input[type="tel"], input[type="number"], input[type="password"] { min-height: 44px; }
+    select { min-height: 44px; border-color: var(--pf-line) !important; }
+    .checkbox-custom { border-color: var(--pf-line); }
+    [aria-invalid="true"] { border-color: #e0675b !important; }
+    .erro-campo { color: #ff9e93; font-size: 13px; font-weight: 600; margin-top: 6px; line-height: 1.4; }
+
+    /* abas */
+    .tabs { display: flex; justify-content: center; margin-bottom: 28px; }
+    .tab-btn { min-height: 44px; display: inline-flex; align-items: center; gap: 6px; }
+    .link-admin { background: none; border: none; color: var(--pf-muted); font: inherit; font-size: 12px; text-decoration: underline; cursor: pointer; min-height: 44px; padding: 0 12px; }
+    .link-admin:hover, .link-admin.active { color: var(--pf-gold); }
+    a:focus-visible, summary:focus-visible { outline: 2px solid var(--pf-gold); outline-offset: 2px; }
+
+    ::selection { background: rgba(201,169,78,0.35); color: #fff; }
+    input { caret-color: var(--pf-gold); }
+
+    @media (max-width: 640px) {
+      .tabs { justify-content: flex-start; overflow-x: auto; scrollbar-width: none; margin: 0 -20px 24px; padding: 0 20px 4px; -webkit-overflow-scrolling: touch; }
+      .tabs::-webkit-scrollbar { display: none; }
+      .tab-btn { flex: 0 0 auto; white-space: nowrap; padding: 12px 16px; }
+      .card { padding: 22px 18px; }
+      .hero-inner { padding: 20px 20px 30px; }
+      .hero-badge { width: 72px; height: auto; }
+      .hero-title { margin-top: 8px; }
+      .hero-numeral { font-size: clamp(56px, 16vw, 72px); }
+      .hero-course { font-size: 14px; letter-spacing: 0.1em; }
+      .hero-org { margin-top: 6px; font-size: 12px; }
+      .ribbon { margin-top: 16px; font-size: 15px; padding: 5px 26px 6px; }
+      main { padding-top: 22px !important; }
+      .toast { left: 16px; right: 16px; bottom: 16px; }
+    }
   </style>
 </head>
 <body>
+  <div id="aviso-sr" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
   <!-- HEADER -->
   <header class="hero">
     <div class="hero-inner">
@@ -302,10 +374,6 @@
     
 <!-- CONTAGEM REGRESSIVA -->
 <section class="gold-glow fade-in" style="max-width:720px;margin:0 auto 28px;padding:28px 20px;text-align:center;background:var(--pf-card);border:1px solid var(--pf-gold-dim);border-radius:14px;">
-
-  <p style="color:var(--pf-gold);font-size:12px;letter-spacing:2px;margin-bottom:10px;">
-    CONTAGEM REGRESSIVA
-  </p>
 
   <h2 id="countdown-title" style="font-size:20px;color:var(--pf-text);margin-bottom:8px;">
     Solenidade de Formatura — APF
@@ -344,7 +412,7 @@
   }
   #countdown-grid p {
     color:var(--pf-muted);
-    font-size:11px;
+    font-size:12px;
     margin-top:5px;
     text-transform:uppercase;
   }
@@ -352,53 +420,39 @@
 
 
     <!-- TABS -->
-    <div style="display: flex; justify-content: center; margin-bottom: 32px; flex-wrap: wrap; gap: 0;" class="fade-in">
-      <button class="tab-btn active" onclick="switchTab('registro')" id="tab-registro">Registro</button>
-      <button class="tab-btn" onclick="switchTab('permuta')" id="tab-permuta">Permuta</button>
-      <button class="tab-btn" onclick="switchTab('criancas')" id="tab-criancas" style="display: flex; align-items: center; gap: 6px;">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3.5 12c0-1.9 1.6-3.5 3.5-3.5s3.5 1.6 3.5 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none"/><circle cx="11" cy="5" r="1.5" stroke="currentColor" stroke-width="1" fill="none"/></svg>
-        Crianças
-      </button>
-      <button class="tab-btn" onclick="switchTab('votacao')" id="tab-votacao" style="display: flex; align-items: center; gap: 6px;">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm6-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM4 10V2l6-1v9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Música
-      </button>
-      <button class="tab-btn" id="tab-valores" style="display: flex; align-items: center; gap: 6px;">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.3"/><path d="M8.6 5.2C8.3 4.6 7.7 4.3 7 4.3c-.9 0-1.6.5-1.6 1.2 0 1.7 3.2.8 3.2 2.5 0 .7-.7 1.2-1.6 1.2-.8 0-1.5-.3-1.8-1M7 3.3v1M7 9.7v1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-        Valores
-      </button>
-      <button class="tab-btn" onclick="switchTab('admin')" id="tab-admin" style="display: flex; align-items: center; gap: 6px;">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1a3 3 0 1 1 0 6 3 3 0 0 1 0-6zM2 12.5c0-2.5 2.2-4 5-4s5 1.5 5 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none"/></svg>
-        Admin
-      </button>
+    <div class="tabs fade-in" role="tablist" aria-label="Seções do site" id="tablist">
+      <button class="tab-btn active" id="tab-registro" role="tab" aria-selected="true" aria-controls="view-registro" tabindex="0">Registro</button>
+      <button class="tab-btn" id="tab-permuta" role="tab" aria-selected="false" aria-controls="view-permuta" tabindex="-1">Permuta</button>
+      <button class="tab-btn" id="tab-criancas" role="tab" aria-selected="false" aria-controls="view-criancas" tabindex="-1"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3.5 12c0-1.9 1.6-3.5 3.5-3.5s3.5 1.6 3.5 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none"/><circle cx="11" cy="5" r="1.5" stroke="currentColor" stroke-width="1" fill="none"/></svg>Crianças</button>
+      <button class="tab-btn" id="tab-votacao" role="tab" aria-selected="false" aria-controls="view-votacao" tabindex="-1"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M4 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm6-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM4 10V2l6-1v9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Música</button>
+      <button class="tab-btn" id="tab-valores" role="tab" aria-selected="false" aria-controls="view-valores" tabindex="-1"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.3"/><path d="M8.6 5.2C8.3 4.6 7.7 4.3 7 4.3c-.9 0-1.6.5-1.6 1.2 0 1.7 3.2.8 3.2 2.5 0 .7-.7 1.2-1.6 1.2-.8 0-1.5-.3-1.8-1M7 3.3v1M7 9.7v1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Valores</button>
     </div>
 
     <!-- ========== TAB: REGISTRO ========== -->
-    <div id="view-registro" class="fade-in" style="max-width: 720px; margin: 0 auto;">
+    <div id="view-registro" role="tabpanel" aria-labelledby="tab-registro" class="fade-in" style="max-width: 720px; margin: 0 auto;">
       <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 36px 32px; position: relative;">
-        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--pf-gold-dim), var(--pf-gold), var(--pf-gold-dim));"></div>
 
         <h2 style="font-size: 18px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Registro de Interesse</h2>
         <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 28px;">Preencha os dados abaixo para registrar seu interesse nos eventos da formatura.</p>
 
-        <form id="formRegistro" onsubmit="handleSubmit(event)">
+        <form id="formRegistro" onsubmit="handleSubmit(event)" novalidate>
           <div style="margin-bottom: 20px;">
             <label for="nome" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
-              Nome Completo <span style="color: var(--pf-danger);">*</span>
+              Nome Completo <span style="color: #f08a7e;">*</span>
             </label>
             <input type="text" id="nome" placeholder="Ex: João Carlos da Silva" required>
           </div>
 
           <div style="margin-bottom: 20px;">
             <label for="matricula" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
-              Código de Aluno <span style="color: var(--pf-danger);">*</span>
+              Número da camiseta <span style="color: #f08a7e;">*</span>
             </label>
-            <input type="text" id="matricula" placeholder="Número da Camiseta" required>
+            <input type="text" id="matricula" placeholder="Ex: 042" required>
           </div>
 
           <div style="margin-bottom: 24px;">
             <label for="turma" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
-              Turma <span style="color: var(--pf-danger);">*</span>
+              Turma <span style="color: #f08a7e;">*</span>
             </label>
             <select id="turma" class="js-turma" style="width: 100%; padding: 11px 14px; background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 8px; color: var(--pf-text); font-size: 14px; font-family: inherit; outline: none; transition: all 0.2s; -webkit-appearance: none; appearance: none;" required>
               <option value="">Selecione</option>
@@ -454,7 +508,7 @@
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px;">
                   <div>
                     <label for="qtd-vender-solenidade" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
-                      Quantos ingressos deseja vender? (0 a 4) <span style="color: var(--pf-danger);">*</span>
+                      Quantos ingressos deseja vender? (0 a 4) <span style="color: #f08a7e;">*</span>
                     </label>
                     <input type="number" id="qtd-vender-solenidade" min="0" max="4" placeholder="0 a 4">
                   </div>
@@ -479,24 +533,22 @@
               </div>
             </div>
             <div id="field-baile" style="display: none; margin-top: 14px;">
-              <div style="background: rgba(44,90,160,0.08); border: 1px solid rgba(44,90,160,0.3); border-radius: 8px; padding: 12px 16px; margin-bottom: 14px; display: flex; align-items: center; gap: 10px;">
+              <div style="background: rgba(201,169,78,0.08); border: 1px solid rgba(201,169,78,0.3); border-radius: 8px; padding: 12px 16px; margin-bottom: 14px; display: flex; align-items: center; gap: 10px;">
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="flex-shrink: 0;">
-                  <circle cx="9" cy="9" r="8" fill="none" stroke="#2c5aa0" stroke-width="1.5"/>
-                  <path d="M9 5v4M9 11h.01" stroke="#2c5aa0" stroke-width="1.5" stroke-linecap="round"/>
+                  <circle cx="9" cy="9" r="8" fill="none" stroke="var(--pf-gold-dim)" stroke-width="1.5"/>
+                  <path d="M9 5v4M9 11h.01" stroke="var(--pf-gold-dim)" stroke-width="1.5" stroke-linecap="round"/>
                 </svg>
-                <p style="font-size: 13px; color: #7aabe0;">Aquisição de convites livre — sem limite de quantidade.</p>
+                <p style="font-size: 13px; color: var(--pf-gold);">Aquisição de convites livre — sem limite de quantidade.</p>
               </div>
               <label for="qtd-baile" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
-                Quantidade de Convites Desejados <span style="color: var(--pf-danger);">*</span>
+                Quantidade de Convites Desejados <span style="color: #f08a7e;">*</span>
               </label>
               <input type="number" id="qtd-baile" min="1" placeholder="Informe a quantidade" style="max-width: 260px;">
             </div>
           </div>
 
-          <button type="submit" id="btn-submit"
-            style="width: 100%; padding: 14px; background: linear-gradient(135deg, var(--pf-gold-dim), var(--pf-gold)); color: var(--pf-black); border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.25s; text-transform: uppercase; letter-spacing: 1px; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px;"
-            onmouseover="this.style.background='linear-gradient(135deg, var(--pf-gold), var(--pf-gold-bright))'; this.style.transform='translateY(-1px)'"
-            onmouseout="this.style.background='linear-gradient(135deg, var(--pf-gold-dim), var(--pf-gold))'; this.style.transform='translateY(0)'"
+          <button class="btn btn-primary" type="submit" id="btn-submit"
+            style="width: 100%; padding: 14px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 8px;"
           >
             <span id="btn-text">Registrar Presença</span>
             <svg id="btn-spinner" width="20" height="20" viewBox="0 0 20 20" fill="none" style="display: none;" class="spinner">
@@ -509,15 +561,14 @@
 
       <!-- Card: Consultar / Editar Registro -->
       <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 28px 32px; margin-top: 20px; position: relative; overflow: hidden;">
-        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #2c5aa0, #7aabe0, #2c5aa0);"></div>
-        <h3 style="font-size: 16px; font-weight: 700; color: #7aabe0; margin-bottom: 4px;">Consultar / Editar Registro</h3>
-        <p style="font-size: 12px; color: var(--pf-muted); margin-bottom: 20px;">Já se registrou? Digite sua matrícula para carregar e editar seus dados.</p>
+        <h3 style="font-size: 16px; font-weight: 700; color: var(--pf-gold); margin-bottom: 4px;">Consultar / Editar Registro</h3>
+        <p style="font-size: 12px; color: var(--pf-muted); margin-bottom: 20px;">Já se registrou? Digite o número da sua camiseta para carregar e editar seus dados.</p>
         <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
           <div style="flex: 1; min-width: 200px;">
-            <label for="consulta-matricula" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Código de Aluno</label>
-            <input type="text" id="consulta-matricula" placeholder="Número da Camiseta">
+            <label for="consulta-matricula" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Número da camiseta</label>
+            <input type="text" id="consulta-matricula" placeholder="Ex: 042">
           </div>
-          <button id="btn-consultar" style="padding: 11px 24px; background: linear-gradient(135deg, #1e3a5c, #2c5aa0); border: 1px solid #2c5aa0; color: #fff; border-radius: 8px; font-size: 13px; cursor: pointer; font-family: inherit; font-weight: 600; transition: all 0.2s; white-space: nowrap;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+          <button class="btn btn-secondary" id="btn-consultar" style="padding: 11px 24px; white-space: nowrap;">
             Consultar
           </button>
         </div>
@@ -529,7 +580,6 @@
     <!-- ========== VIEW: SUCESSO ========== -->
     <div id="view-sucesso" style="display: none; max-width: 720px; margin: 0 auto;">
       <div class="gold-glow scale-in" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 48px 32px; text-align: center; position: relative; overflow: hidden;">
-        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--pf-gold-dim), var(--pf-gold), var(--pf-gold-dim));"></div>
         <div style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--pf-success); display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; animation: scaleIn 0.5s ease-out 0.2s both;">
           <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
             <polyline points="12,20 18,28 28,14" stroke="#27ae60" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
@@ -561,16 +611,15 @@
     </div>
 
     <!-- ========== TAB: PERMUTA ========== -->
-    <div id="view-permuta" style="display: none; max-width: 720px; margin: 0 auto;" class="fade-in">
+    <div id="view-permuta" role="tabpanel" aria-labelledby="tab-permuta" style="display: none; max-width: 720px; margin: 0 auto;" class="fade-in">
       <!-- Disponibilizar Ingressos (no topo, para quem quer anunciar) -->
       <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 28px 32px; margin-bottom: 20px; position: relative; overflow: hidden;">
-        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--pf-gold-dim), var(--pf-gold), var(--pf-gold-dim));"></div>
         <h3 style="font-size: 16px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Disponibilizar Ingressos para Venda</h3>
-        <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 20px;">Informe sua matrícula para gerenciar a disponibilidade dos seus ingressos da solenidade.</p>
+        <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 20px;">Informe o número da sua camiseta para gerenciar a disponibilidade dos seus ingressos da solenidade.</p>
         <div style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap;">
           <div style="flex: 1; min-width: 170px;">
-            <label for="permuta-matricula" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Seu Código de Aluno</label>
-            <input type="text" id="permuta-matricula" placeholder="Número da Camiseta">
+            <label for="permuta-matricula" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Número da camiseta</label>
+            <input type="text" id="permuta-matricula" placeholder="Ex: 042">
           </div>
           <div style="min-width: 110px;">
             <label for="permuta-qtd" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Qtd. (0–4)</label>
@@ -587,12 +636,11 @@
             <label for="permuta-telefone" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Celular / WhatsApp</label>
             <input type="tel" id="permuta-telefone" placeholder="Ex: (61) 99999-9999" inputmode="tel" autocomplete="tel-national" maxlength="22">
           </div>
-          <button onclick="salvarPermuta()" style="padding: 12px 24px; background: linear-gradient(135deg, var(--pf-gold-dim), var(--pf-gold)); color: var(--pf-black); border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s; white-space: nowrap;" onmouseover="this.style.background='linear-gradient(135deg, var(--pf-gold), var(--pf-gold-bright))'" onmouseout="this.style.background='linear-gradient(135deg, var(--pf-gold-dim), var(--pf-gold))'">Salvar</button>
+          <button class="btn btn-primary" onclick="salvarPermuta()" style="padding: 12px 24px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;">Salvar</button>
         </div>
       </div>
 
       <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 32px; position: relative; overflow: hidden;">
-        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--pf-gold-dim), var(--pf-gold), var(--pf-gold-dim));"></div>
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
           <div>
             <h2 style="font-size: 18px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Permuta de Ingressos — Solenidade</h2>
@@ -619,40 +667,39 @@
 
     <!-- ========== TAB: ADMIN ========== -->
     <!-- ========== TAB: CRIANÇAS ========== -->
-    <div id="view-criancas" style="display: none; max-width: 720px; margin: 0 auto;" class="fade-in">
+    <div id="view-criancas" role="tabpanel" aria-labelledby="tab-criancas" style="display: none; max-width: 720px; margin: 0 auto;" class="fade-in">
 
       <!-- Card 1: Crianças -->
       <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 36px 32px; position: relative;">
-        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #7c3aed, #a78bfa, #7c3aed);"></div>
         <h2 style="font-size: 18px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Registro — Crianças e Espaço Kids</h2>
         <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 28px;">Informe se você pretende levar crianças ao evento de formatura.</p>
 
         <!-- Consultar / Editar registro de crianças -->
         <div style="background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 10px; padding: 16px 18px; margin-bottom: 24px;">
-          <p style="font-size: 12px; font-weight: 700; color: #a78bfa; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Já se registrou?</p>
+          <p style="font-size: 12px; font-weight: 700; color: var(--pf-gold); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Já se registrou?</p>
           <p style="font-size: 12px; color: var(--pf-muted); margin-bottom: 12px;">Digite o número da camiseta para carregar seus dados e editar.</p>
           <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 160px;">
-              <label for="cri-consulta-camiseta" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Nº da Camiseta</label>
+              <label for="cri-consulta-camiseta" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Número da camiseta</label>
               <input type="text" id="cri-consulta-camiseta" placeholder="Ex: 042">
             </div>
-            <button type="button" id="btn-cri-consultar" style="padding: 11px 24px; background: linear-gradient(135deg, #4c1d95, #7c3aed); border: 1px solid #7c3aed; color: #fff; border-radius: 8px; font-size: 13px; cursor: pointer; font-family: inherit; font-weight: 600; white-space: nowrap;">Consultar</button>
+            <button class="btn btn-secondary" type="button" id="btn-cri-consultar" style="padding: 11px 24px; white-space: nowrap;">Consultar</button>
           </div>
           <p id="cri-consulta-msg" role="status" style="display: none; font-size: 12px; margin-top: 12px;"></p>
         </div>
 
-        <form id="formCriancas">
+        <form id="formCriancas" novalidate>
           <div style="margin-bottom: 20px;">
-            <label for="cri-nome" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Nome Completo <span style="color: var(--pf-danger);">*</span></label>
+            <label for="cri-nome" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Nome Completo <span style="color: #f08a7e;">*</span></label>
             <input type="text" id="cri-nome" placeholder="Ex: João Carlos da Silva" required>
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
             <div>
-              <label for="cri-camiseta" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Nº da Camiseta <span style="color: var(--pf-danger);">*</span></label>
+              <label for="cri-camiseta" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Número da camiseta <span style="color: #f08a7e;">*</span></label>
               <input type="text" id="cri-camiseta" placeholder="Ex: 042" required>
             </div>
             <div>
-              <label for="cri-turma" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Turma <span style="color: var(--pf-danger);">*</span></label>
+              <label for="cri-turma" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Turma <span style="color: #f08a7e;">*</span></label>
               <select id="cri-turma" class="js-turma" style="width: 100%; padding: 11px 14px; background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 8px; color: var(--pf-text); font-size: 14px; font-family: inherit; outline: none; transition: all 0.2s; -webkit-appearance: none; appearance: none;" required>
                 <option value="">Selecione</option>
               </select>
@@ -672,24 +719,24 @@
             <div id="field-criancas" style="display: none; margin-top: 14px;">
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 14px;">
                 <div>
-                  <label for="cri-qtd" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Quantidade de Crianças <span style="color: var(--pf-danger);">*</span></label>
+                  <label for="cri-qtd" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Quantidade de Crianças <span style="color: #f08a7e;">*</span></label>
                   <input type="number" id="cri-qtd" min="1" placeholder="Ex: 2">
                 </div>
                 <div style="display: flex; align-items: flex-end; padding-bottom: 4px;">
                   <div id="btn-espaco-kids" style="display: flex; align-items: center; gap: 10px; cursor: pointer; -webkit-tap-highlight-color: transparent;">
                     <input type="checkbox" class="checkbox-custom" id="chk-espaco-kids" aria-labelledby="lbl-espaco-kids" style="width: 18px; height: 18px; pointer-events: none;">
-                    <span id="lbl-espaco-kids" style="font-size: 13px; color: var(--pf-text);">Interesse no <strong style="color: #a78bfa;">Espaço Kids</strong></span>
+                    <span id="lbl-espaco-kids" style="font-size: 13px; color: var(--pf-text);">Interesse no <strong style="color: var(--pf-gold);">Espaço Kids</strong></span>
                   </div>
                 </div>
               </div>
-              <div style="background: rgba(124,58,237,0.08); border: 1px solid rgba(124,58,237,0.25); border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; gap: 10px;">
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="flex-shrink: 0;"><circle cx="9" cy="9" r="8" fill="none" stroke="#a78bfa" stroke-width="1.5"/><path d="M9 5v4M9 11h.01" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <div style="background: rgba(201,169,78,0.08); border: 1px solid rgba(201,169,78,0.25); border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; gap: 10px;">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="flex-shrink: 0;"><circle cx="9" cy="9" r="8" fill="none" stroke="var(--pf-gold)" stroke-width="1.5"/><path d="M9 5v4M9 11h.01" stroke="var(--pf-gold)" stroke-width="1.5" stroke-linecap="round"/></svg>
                 <p style="font-size: 12px; color: #c4b5fd;">O Espaço Kids será um ambiente monitorado com atividades recreativas durante o evento.</p>
               </div>
             </div>
           </div>
 
-          <button type="submit" id="btn-submit-cri" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #6d28d9, #7c3aed); color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.25s; text-transform: uppercase; letter-spacing: 1px; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px;">
+          <button class="btn btn-primary" type="submit" id="btn-submit-cri" style="width: 100%; padding: 14px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 8px;">
             <span id="btn-text-cri">Registrar</span>
             <svg id="btn-spinner-cri" width="20" height="20" viewBox="0 0 20 20" fill="none" style="display: none;" class="spinner"><circle cx="10" cy="10" r="8" stroke="rgba(255,255,255,0.2)" stroke-width="2.5" fill="none"/><path d="M10 2a8 8 0 0 1 8 8" stroke="#fff" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg>
           </button>
@@ -699,26 +746,25 @@
     </div>
 
     <!-- ========== TAB: VOTAÇÃO ========== -->
-    <div id="view-votacao" style="display: none; max-width: 720px; margin: 0 auto;" class="fade-in">
+    <div id="view-votacao" role="tabpanel" aria-labelledby="tab-votacao" style="display: none; max-width: 720px; margin: 0 auto;" class="fade-in">
       <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 36px 32px; position: relative;">
-        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #2563eb, #60a5fa, #2563eb);"></div>
-        <h2 style="font-size: 18px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">🎵 Votação Musical</h2>
+        <h2 style="font-size: 18px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Votação Musical</h2>
         <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 28px;">Vote no estilo musical que mais quer ouvir no dia da formatura!</p>
 
-        <form id="formVotacao">
+        <form id="formVotacao" novalidate>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
             <div>
-              <label for="vot-nome" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Nome Completo <span style="color: var(--pf-danger);">*</span></label>
+              <label for="vot-nome" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Nome Completo <span style="color: #f08a7e;">*</span></label>
               <input type="text" id="vot-nome" placeholder="Seu nome" required>
             </div>
             <div>
-              <label for="vot-camiseta" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Nº da Camiseta <span style="color: var(--pf-danger);">*</span></label>
+              <label for="vot-camiseta" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Número da camiseta <span style="color: #f08a7e;">*</span></label>
               <input type="text" id="vot-camiseta" placeholder="Ex: 042" required>
             </div>
           </div>
 
           <div style="margin-bottom: 20px;">
-            <label for="vot-estilo" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Estilo Musical <span style="color: var(--pf-danger);">*</span></label>
+            <label for="vot-estilo" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Estilo Musical <span style="color: #f08a7e;">*</span></label>
             <select id="vot-estilo" style="width: 100%; padding: 11px 14px; background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 8px; color: var(--pf-text); font-size: 14px; font-family: inherit; outline: none; transition: all 0.2s; -webkit-appearance: none; appearance: none;" required>
               <option value="" disabled selected>Selecione um estilo</option>
               <option value="Sertanejo">Sertanejo</option>
@@ -734,11 +780,11 @@
           </div>
 
           <div id="field-outro-estilo" style="display: none; margin-bottom: 20px;">
-            <label for="vot-outro" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Qual estilo? <span style="color: var(--pf-danger);">*</span></label>
+            <label for="vot-outro" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Qual estilo? <span style="color: #f08a7e;">*</span></label>
             <input type="text" id="vot-outro" placeholder="Digite o estilo musical">
           </div>
 
-          <button type="submit" id="btn-submit-vot" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #1e40af, #2563eb); color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.25s; text-transform: uppercase; letter-spacing: 1px; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px;">
+          <button class="btn btn-primary" type="submit" id="btn-submit-vot" style="width: 100%; padding: 14px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 8px;">
             <span id="btn-text-vot">Votar</span>
             <svg id="btn-spinner-vot" width="20" height="20" viewBox="0 0 20 20" fill="none" style="display: none;" class="spinner"><circle cx="10" cy="10" r="8" stroke="rgba(255,255,255,0.2)" stroke-width="2.5" fill="none"/><path d="M10 2a8 8 0 0 1 8 8" stroke="#fff" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg>
           </button>
@@ -746,119 +792,45 @@
       </div>
     </div>
     <!-- ========== TAB: VALORES ========== -->
-    <div id="view-valores" style="display: none; max-width: 720px; margin: 0 auto;" class="fade-in">
+    <div id="view-valores" role="tabpanel" aria-labelledby="tab-valores" style="display: none; max-width: 720px; margin: 0 auto;" class="fade-in">
 
-      <!-- Valores -->
-      <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 32px; position: relative; overflow: hidden; margin-bottom: 20px;">
-        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--pf-gold-dim), var(--pf-gold), var(--pf-gold-dim));"></div>
-        <h2 style="font-size: 18px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Valores da Formatura</h2>
-        <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 24px;">Valores conforme a apresentação do projeto. Havia duas formas de calcular o baile. A turma votou e a Opção 2 (custo fixo + ingressos extras) venceu.</p>
+      <div class="card card-top">
+        <h2>Valores da Formatura</h2>
+        <p class="hint mb-20">A turma votou e a forma fixa de pagamento (Opção 2) venceu. Estes são os valores que valem para todos.</p>
 
-        <div style="background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 10px; padding: 16px 18px; margin-bottom: 20px;">
-          <p style="font-size: 12px; font-weight: 700; color: var(--pf-gold); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Plano Solenidade</p>
-          <p style="font-size: 24px; font-weight: 800; color: var(--pf-text);">R$ 597,71</p>
-          <p style="font-size: 12px; color: var(--pf-muted); margin-top: 4px;">Igual para todos os formandos, em qualquer uma das opções do baile.</p>
+        <div class="preco-destaque">
+          <p class="preco-rotulo">Você paga por formando</p>
+          <p class="preco-valor">R$ 2.565,35</p>
+          <dl class="preco-linhas">
+            <div><dt>Solenidade</dt><dd>R$ 597,71</dd></div>
+            <div><dt>Baile (custo fixo)</dt><dd>R$ 1.967,64</dd></div>
+          </dl>
         </div>
 
-        <p style="font-size: 12px; font-weight: 700; color: var(--pf-gold); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Baile — escolha da base de cálculo</p>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px;">
-
-          <div style="background: var(--pf-black); border: 1px solid #2c5aa0; border-radius: 10px; padding: 18px;">
-            <p style="font-size: 11px; font-weight: 700; color: #7aabe0; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Opção 1 · Base de Cálculo 1</p>
-            <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 10px;">Base de <strong style="color: var(--pf-text);">3.200 convidados</strong></p>
-            <p style="font-size: 12px; color: var(--pf-muted);">Cota única</p>
-            <p style="font-size: 22px; font-weight: 800; color: var(--pf-text); margin-bottom: 10px;">R$ 828,80</p>
-            <p style="font-size: 12px; color: var(--pf-muted);">Formando + 4 convidados (5 cotas)</p>
-            <p style="font-size: 18px; font-weight: 700; color: var(--pf-gold-bright); margin-bottom: 12px;">R$ 4.144,00</p>
-            <p style="font-size: 12px; color: #d9a3a3; line-height: 1.6;"><strong>Desvantagens:</strong><br>• Obrigatório chegar a 3.200 convidados<br>• Sem venda de ingressos extras, somente cotas</p>
-          </div>
-
-          <div style="background: var(--pf-black); border: 1px solid #7c3aed; border-radius: 10px; padding: 18px;">
-            <p style="font-size: 11px; font-weight: 700; color: #a78bfa; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Opção 2 · Base de Cálculo 2</p>
-            <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 10px;">Base de <strong style="color: var(--pf-text);">500 aderidos</strong></p>
-            <p style="font-size: 12px; color: var(--pf-muted);">Custo fixo por formando</p>
-            <p style="font-size: 22px; font-weight: 800; color: var(--pf-text); margin-bottom: 10px;">R$ 1.967,64</p>
-            <p style="font-size: 12px; color: var(--pf-muted);">Ingresso extra sentado · circulante</p>
-            <p style="font-size: 15px; font-weight: 700; color: var(--pf-text); margin-bottom: 8px;">R$ 580,00 · R$ 440,00</p>
-            <p style="font-size: 12px; color: var(--pf-muted);">Formando + 4 ingressos extras sentados</p>
-            <p style="font-size: 18px; font-weight: 700; color: var(--pf-gold-bright); margin-bottom: 12px;">R$ 4.287,64</p>
-            <p style="font-size: 12px; color: #a3d9b1; line-height: 1.6;"><strong>Vantagens:</strong><br>• Se passar de 500 aderidos, sobra dinheiro<br>• Também dá para escolher ingresso circulante</p>
-          </div>
-        </div>
-
-        <p style="font-size: 12px; color: var(--pf-muted); line-height: 1.6; margin-top: 14px;">
-          Diferença entre as opções (formando + 4 convidados): <strong style="color: var(--pf-text);">R$ 143,64</strong> a mais na Opção 2 com ingressos sentados.
-          Com 4 ingressos circulantes, a Opção 2 ficaria em R$ 3.727,64 (R$ 1.967,64 + 4 × R$ 440,00).
-        </p>
+        <h3 class="sub-titulo">Ingressos extras</h3>
+        <dl class="preco-linhas preco-linhas-caixa">
+          <div><dt>Sentado</dt><dd>R$ 580,00</dd></div>
+          <div><dt>Circulante</dt><dd>R$ 440,00</dd></div>
+        </dl>
+        <p class="hint mt-12">Baile para o formando + 4 convidados sentados: <strong class="txt">R$ 4.287,64</strong>. Com 4 circulantes: <strong class="txt">R$ 3.727,64</strong>. Base de 500 aderidos; se passar disso, sobra dinheiro.</p>
       </div>
 
-      <!-- Parcelamento -->
-      <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 28px 32px; position: relative; overflow: hidden; margin-bottom: 20px;">
-        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--pf-gold-dim), var(--pf-gold), var(--pf-gold-dim));"></div>
-        <h3 style="font-size: 16px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Formas de pagamento</h3>
-        <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 16px;">Boleto ou cartão, em até 8x. Toque em um item para ver as parcelas.</p>
+      <div class="card card-top">
+        <h3>Formas de pagamento</h3>
+        <p class="hint mb-16">Boleto ou cartão, em até 8x. Toque em um item para ver as parcelas.</p>
         <div id="valores-parcelas" style="display: flex; flex-direction: column; gap: 10px;"></div>
-        <p style="font-size: 11px; color: var(--pf-muted); line-height: 1.6; margin-top: 14px;">As parcelas da apresentação estão calculadas sobre o plano base da Opção 2. A apresentação não traz parcelamento para a Opção 1.</p>
+        <p class="hint-small mt-12">As parcelas são calculadas sobre o plano base da Opção 2.</p>
       </div>
 
-      <!-- Resultado da votação -->
-      <div style="background: linear-gradient(135deg, rgba(201,169,78,0.14), rgba(201,169,78,0.04)); border: 1px solid var(--pf-gold); border-radius: 14px; padding: 22px 26px; margin-bottom: 20px;">
-        <p style="font-size: 12px; font-weight: 700; color: var(--pf-gold); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Votação encerrada</p>
-        <h3 style="font-size: 18px; font-weight: 700; color: var(--pf-text); margin-bottom: 6px;">A forma fixa de pagamento venceu</h3>
-        <p style="font-size: 13px; color: var(--pf-muted); line-height: 1.6;"><strong style="color: var(--pf-text);">Opção 2:</strong> custo fixo de R$ 1.967,64 por formando + ingressos extras (base de 500 aderidos). O resultado completo está abaixo.</p>
-      </div>
-
-      <!-- Votação (encerrada) -->
-      <div id="pag-votacao-card" hidden class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 28px 32px; position: relative; overflow: hidden; margin-bottom: 20px;">
-        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #7c3aed, #a78bfa, #7c3aed);"></div>
-        <h3 style="font-size: 16px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Vote na melhor opção</h3>
-        <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 18px;">Qual base seguiremos? Todos pagando igual. Um voto por formando cadastrado, e você pode mudar o seu depois.</p>
-
-        <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
-          <div style="flex: 1; min-width: 180px;">
-            <label for="pag-camiseta" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Número da Camiseta</label>
-            <input type="text" id="pag-camiseta" placeholder="Ex: 042">
-          </div>
-          <button type="button" id="btn-pag-verificar" style="padding: 11px 24px; background: linear-gradient(135deg, #4c1d95, #7c3aed); border: 1px solid #7c3aed; color: #fff; border-radius: 8px; font-size: 13px; cursor: pointer; font-family: inherit; font-weight: 600; white-space: nowrap;">Verificar</button>
+      <details class="card" id="pag-detalhes">
+        <summary class="resumo-card">Como foi a votação</summary>
+        <div class="mt-16">
+          <div id="pag-resultado" class="hint">Carregando...</div>
+          <p class="hint-small mt-12">Participação de cada opção nos votos (só inscritos ativos). Votação encerrada.</p>
+          <p class="hint mt-12"><strong class="txt">Opção 1, não escolhida:</strong> cota única de R$ 828,80 sobre 3.200 convidados. Formando + 4 convidados: R$ 4.144,00. Exigia chegar a 3.200 convidados e não permitia venda de ingressos extras.</p>
+          <button type="button" id="btn-pag-atualizar" class="btn btn-secondary mt-12">Atualizar resultado</button>
         </div>
-
-        <div id="pag-aviso" role="status" style="display: none; margin-top: 16px; padding: 14px 16px; border-radius: 10px; font-size: 13px; line-height: 1.6;"></div>
-
-        <div id="pag-voto-form" style="display: none; margin-top: 18px;">
-          <p id="pag-identidade" style="font-size: 14px; color: var(--pf-text); margin-bottom: 12px;"></p>
-          <div id="pag-turma-box" style="display: none; margin-bottom: 14px;">
-            <label for="pag-turma" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Sua turma</label>
-            <select id="pag-turma" class="js-turma" style="width: 100%; padding: 11px 14px; background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 8px; color: var(--pf-text); font-size: 14px; font-family: inherit; outline: none; -webkit-appearance: none; appearance: none;">
-              <option value="">Selecione</option>
-            </select>
-          </div>
-          <fieldset style="border: none; padding: 0; margin: 0 0 16px;">
-            <legend style="font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Sua escolha</legend>
-            <label style="display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 10px; margin-bottom: 8px; cursor: pointer;">
-              <input type="radio" name="pag-opcao" value="base1" style="margin-top: 3px; accent-color: #c9a94e;">
-              <span style="font-size: 13px; color: var(--pf-text);"><strong>Opção 1</strong> — cota única de R$ 828,80 (base de 3.200 convidados)</span>
-            </label>
-            <label style="display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 10px; cursor: pointer;">
-              <input type="radio" name="pag-opcao" value="base2" style="margin-top: 3px; accent-color: #c9a94e;">
-              <span style="font-size: 13px; color: var(--pf-text);"><strong>Opção 2</strong> — custo fixo de R$ 1.967,64 + ingressos extras (base de 500 aderidos)</span>
-            </label>
-          </fieldset>
-          <button type="button" id="btn-pag-votar" style="width: 100%; padding: 13px; background: linear-gradient(135deg, #6d28d9, #7c3aed); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit;">Registrar voto</button>
-        </div>
-      </div>
-
-      <!-- Resultado -->
-      <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 28px 32px; position: relative; overflow: hidden;">
-        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--pf-gold-dim), var(--pf-gold), var(--pf-gold-dim));"></div>
-        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
-          <div>
-            <h3 style="font-size: 16px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Resultado final da votação</h3>
-            <p style="font-size: 12px; color: var(--pf-muted);">Participação de cada opção nos votos (só inscritos ativos). Votação encerrada.</p>
-          </div>
-          <button type="button" id="btn-pag-atualizar" style="padding: 8px 16px; background: var(--pf-black); border: 1px solid var(--pf-border); color: var(--pf-muted); border-radius: 8px; font-size: 12px; cursor: pointer; font-family: inherit;">Atualizar</button>
-        </div>
-        <div id="pag-resultado" style="font-size: 13px; color: var(--pf-muted);">Carregando...</div>
-      </div>
+      </details>
     </div>
 
     <div id="view-admin" style="display: none;" class="fade-in">
@@ -866,7 +838,6 @@
       <!-- Login -->
       <div id="admin-login" style="max-width: 420px; margin: 0 auto;">
         <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 36px 32px; position: relative; overflow: hidden;">
-          <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--pf-danger), #e74c3c, var(--pf-danger));"></div>
 
           <div style="text-align: center; margin-bottom: 24px;">
             <div style="width: 52px; height: 52px; border-radius: 50%; border: 2px solid var(--pf-gold-dim); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
@@ -889,10 +860,8 @@
               <label for="admin-pass" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Senha</label>
               <input type="password" id="admin-pass" placeholder="Informe a senha" autocomplete="off">
             </div>
-            <button type="submit" id="btn-login"
-              style="width: 100%; padding: 13px; background: linear-gradient(135deg, var(--pf-gold-dim), var(--pf-gold)); color: var(--pf-black); border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;"
-              onmouseover="this.style.background='linear-gradient(135deg, var(--pf-gold), var(--pf-gold-bright))'"
-              onmouseout="this.style.background='linear-gradient(135deg, var(--pf-gold-dim), var(--pf-gold))'"
+            <button class="btn btn-primary" type="submit" id="btn-login"
+              style="width: 100%; padding: 13px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 8px;"
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 1l5 5-5 5M15 6H5M1 1v14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
               <span id="login-text">Entrar</span>
@@ -904,7 +873,6 @@
       <!-- Painel Admin -->
       <div id="admin-panel" style="display: none;">
         <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 32px; position: relative; overflow: hidden;">
-          <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--pf-gold-dim), var(--pf-gold), var(--pf-gold-dim));"></div>
 
           <!-- Header do painel -->
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
@@ -920,7 +888,7 @@
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M13 7A6 6 0 1 1 7 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 1l3 0 0 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 Atualizar
               </button>
-              <button onclick="exportExcel()" style="padding: 9px 18px; background: linear-gradient(135deg, #1a4a2e, #27ae60); border: 1px solid #27ae60; color: #e8e6e3; border-radius: 8px; font-size: 12px; cursor: pointer; font-family: inherit; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; gap: 6px;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+              <button class="btn btn-secondary" onclick="exportExcel()" style="padding: 9px 18px; display: flex; align-items: center; gap: 6px;">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v9M3 7l4 4 4-4M2 12h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 Exportar Excel
               </button>
@@ -938,7 +906,7 @@
                 <tr>
                   <th>#</th>
                   <th>Nome Completo</th>
-                  <th>Código de Aluno</th>
+                  <th>Camiseta</th>
                   <th>Solenidade</th>
                   <th>Interesse +4</th>
                   <th>Baile</th>
@@ -960,10 +928,10 @@
           <div style="margin-top: 40px; border-top: 1px solid var(--pf-border); padding-top: 32px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
               <div>
-                <h3 style="font-size: 16px; font-weight: 700; color: #a78bfa; margin-bottom: 4px;">Registros — Crianças / Espaço Kids</h3>
+                <h3 style="font-size: 16px; font-weight: 700; color: var(--pf-gold); margin-bottom: 4px;">Registros — Crianças / Espaço Kids</h3>
                 <p style="font-size: 13px; color: var(--pf-muted);">Acompanhamento e turmas interessadas</p>
               </div>
-              <button onclick="exportExcelCriancas()" style="padding: 9px 18px; background: linear-gradient(135deg, #4c1d95, #7c3aed); border: 1px solid #7c3aed; color: #fff; border-radius: 8px; font-size: 12px; cursor: pointer; font-family: inherit; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; gap: 6px;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+              <button class="btn btn-secondary" onclick="exportExcelCriancas()" style="padding: 9px 18px; display: flex; align-items: center; gap: 6px;">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v9M3 7l4 4 4-4M2 12h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 Exportar Excel
               </button>
@@ -1005,10 +973,10 @@
           <div style="margin-top: 40px; border-top: 1px solid var(--pf-border); padding-top: 32px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
               <div>
-                <h3 style="font-size: 16px; font-weight: 700; color: #60a5fa; margin-bottom: 4px;">Ranking — Votação Musical</h3>
+                <h3 style="font-size: 16px; font-weight: 700; color: var(--pf-gold); margin-bottom: 4px;">Ranking — Votação Musical</h3>
                 <p style="font-size: 13px; color: var(--pf-muted);">Estilos mais votados para a festa</p>
               </div>
-              <button onclick="exportExcelVotacao()" style="padding: 9px 18px; background: linear-gradient(135deg, #1e3a8a, #3b82f6); border: 1px solid #3b82f6; color: #fff; border-radius: 8px; font-size: 12px; cursor: pointer; font-family: inherit; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; gap: 6px;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+              <button class="btn btn-secondary" onclick="exportExcelVotacao()" style="padding: 9px 18px; display: flex; align-items: center; gap: 6px;">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v9M3 7l4 4 4-4M2 12h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 Exportar Excel
               </button>
@@ -1060,6 +1028,7 @@
       Seu nome e camiseta estão salvos neste aparelho para preencher os formulários.
       <button type="button" onclick="esquecerIdentidade()" style="background: none; border: none; padding: 0; color: var(--pf-gold); text-decoration: underline; cursor: pointer; font: inherit;">Não sou eu / limpar</button>
     </p>
+    <p style="margin-top: 6px;"><button type="button" class="link-admin" id="tab-admin">Área da comissão</button></p>
   </footer>
 
   <script>
@@ -1119,8 +1088,12 @@
       document.getElementById('view-admin').style.display = 'none';
       document.getElementById('view-sucesso').style.display = 'none';
 
+      document.querySelectorAll('#tablist [role="tab"]').forEach(b => { b.setAttribute('aria-selected', 'false'); b.tabIndex = -1; });
       const activeTab = document.getElementById('tab-' + tab);
-      if (activeTab) activeTab.classList.add('active');
+      if (activeTab) {
+        activeTab.classList.add('active');
+        if (activeTab.getAttribute('role') === 'tab') { activeTab.setAttribute('aria-selected', 'true'); activeTab.tabIndex = 0; }
+      }
 
       if (tab === 'registro') {
         document.getElementById('view-registro').style.display = 'block';
@@ -1168,7 +1141,7 @@
       const field = document.getElementById('field-baile');
       const box = document.getElementById('box-baile');
       field.style.display = checked ? 'block' : 'none';
-      box.style.borderColor = checked ? 'rgba(44,90,160,0.5)' : 'var(--pf-border)';
+      box.style.borderColor = checked ? 'rgba(201,169,78,0.5)' : 'var(--pf-border)';
       if (!checked) document.getElementById('qtd-baile').value = '';
     }
 
@@ -1215,9 +1188,36 @@
       }
 
       // Bind tabs for strict CSP
-      ['registro', 'permuta', 'criancas', 'votacao', 'valores', 'admin'].forEach(t => {
+      const ABAS = ['registro', 'permuta', 'criancas', 'votacao', 'valores', 'admin'];
+      function irParaAba(t) {
+        switchTab(t);
+        const bar = document.getElementById('tablist');
+        const el = document.getElementById('tab-' + t);
+        if (el && el.scrollIntoView) el.scrollIntoView({ inline: 'center', block: 'nearest' });
+        const topo = bar.getBoundingClientRect().top;
+        if (topo < 0 || topo > window.innerHeight * 0.6) {
+          const reduz = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          window.scrollTo({ top: window.scrollY + topo - 12, behavior: reduz ? 'auto' : 'smooth' });
+        }
+      }
+      ABAS.forEach(t => {
         const tabBtn = document.getElementById('tab-' + t);
-        if (tabBtn) tabBtn.addEventListener('click', () => switchTab(t));
+        if (tabBtn) tabBtn.addEventListener('click', () => irParaAba(t));
+      });
+      // setas, Home e End entre as abas
+      document.getElementById('tablist').addEventListener('keydown', e => {
+        const abas = Array.from(document.querySelectorAll('#tablist [role="tab"]'));
+        const i = abas.indexOf(document.activeElement);
+        if (i < 0) return;
+        let j = null;
+        if (e.key === 'ArrowRight') j = (i + 1) % abas.length;
+        else if (e.key === 'ArrowLeft') j = (i - 1 + abas.length) % abas.length;
+        else if (e.key === 'Home') j = 0;
+        else if (e.key === 'End') j = abas.length - 1;
+        if (j === null) return;
+        e.preventDefault();
+        abas[j].focus();
+        irParaAba(abas[j].id.replace('tab-', ''));
       });
     })();
 
@@ -1229,7 +1229,7 @@
       const field = document.getElementById('field-criancas');
       const box = document.getElementById('box-criancas');
       field.style.display = checked ? 'block' : 'none';
-      box.style.borderColor = checked ? '#a78bfa' : 'var(--pf-border)';
+      box.style.borderColor = checked ? 'var(--pf-gold)' : 'var(--pf-border)';
       if (!checked) {
         document.getElementById('cri-qtd').value = '';
         document.getElementById('chk-espaco-kids').checked = false;
@@ -1247,7 +1247,7 @@
     // IDENTIDADE LEMBRADA (nome + camiseta, só neste navegador)
     // ==========================================
     const IDENT_KEY = 'anp_identidade';
-    const IDENT_CAMPOS = [['nome', 'matricula'], ['cri-nome', 'cri-camiseta'], ['vot-nome', 'vot-camiseta'], [null, 'pag-camiseta']];
+    const IDENT_CAMPOS = [['nome', 'matricula'], ['cri-nome', 'cri-camiseta'], ['vot-nome', 'vot-camiseta']];
 
     function lerIdentidade() {
       try {
@@ -1376,82 +1376,6 @@
       }).join('');
     })();
 
-    let pagAluno = null; // { camiseta, nome, turma }
-
-    function pagAviso(html, tipo) {
-      const el = document.getElementById('pag-aviso');
-      const cores = {
-        erro: 'background:rgba(192,57,43,0.1);border:1px solid rgba(192,57,43,0.4);color:#d9a3a3;',
-        ok: 'background:rgba(39,174,96,0.1);border:1px solid rgba(39,174,96,0.4);color:#a3d9b1;',
-        info: 'background:rgba(201,169,78,0.08);border:1px solid rgba(201,169,78,0.25);color:var(--pf-gold);'
-      };
-      el.style.cssText = 'display:block;margin-top:16px;padding:14px 16px;border-radius:10px;font-size:13px;line-height:1.6;' + (cores[tipo] || cores.info);
-      el.innerHTML = html;
-    }
-
-    async function verificarCamisetaPagamento() {
-      const cam = document.getElementById('pag-camiseta').value.trim();
-      const form = document.getElementById('pag-voto-form');
-      form.style.display = 'none';
-      pagAluno = null;
-      if (!cam) { showToast('Informe o número da camiseta.', 'error'); return; }
-      pagAviso('Verificando...', 'info');
-      try {
-        const r = await supabaseRequest('POST', 'rpc/consultar_voto_pagamento', { p_camiseta: cam });
-        if (!r || !r.cadastrado) {
-          pagAviso('Não encontramos esta camiseta no cadastro. <strong>Você precisa se cadastrar antes de votar.</strong> ' +
-            '<br><button type="button" id="btn-pag-ir-registro" style="margin-top:10px;padding:9px 18px;background:linear-gradient(135deg,var(--pf-gold-dim),var(--pf-gold));color:var(--pf-black);border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">Ir para o Registro</button>', 'erro');
-          document.getElementById('btn-pag-ir-registro').addEventListener('click', () => switchTab('registro'));
-          return;
-        }
-        if (r.ativo === false) {
-          pagAviso('A inscrição desta camiseta está <strong>cancelada</strong>. Para votar, faça o registro novamente na aba Registro.', 'erro');
-          return;
-        }
-        const turma = r.turma ? normalizarTurma(r.turma) : '';
-        pagAluno = { camiseta: cam, nome: r.nome, turma: turma === 'N/A' ? '' : turma };
-        document.getElementById('pag-identidade').textContent = r.nome + (pagAluno.turma ? ' · Turma ' + pagAluno.turma : '');
-        document.getElementById('pag-turma-box').style.display = pagAluno.turma ? 'none' : 'block';
-        document.getElementById('pag-turma').value = '';
-        document.querySelectorAll('input[name="pag-opcao"]').forEach(i => { i.checked = (i.value === r.opcao); });
-        document.getElementById('btn-pag-votar').textContent = r.opcao ? 'Alterar meu voto' : 'Registrar voto';
-        document.getElementById('pag-aviso').style.display = 'none';
-        if (r.opcao) pagAviso('Você já votou na <strong>Opção ' + (r.opcao === 'base1' ? '1' : '2') + '</strong>. Pode alterar abaixo.', 'info');
-        form.style.display = 'block';
-      } catch (err) {
-        pagAviso(escXml(mensagemErro(err, 'Não foi possível verificar agora. Tente novamente.')), 'erro');
-      }
-    }
-
-    async function registrarVotoPagamento() {
-      if (!pagAluno) return;
-      const sel = document.querySelector('input[name="pag-opcao"]:checked');
-      if (!sel) { showToast('Escolha uma das opções para votar.', 'error'); return; }
-      const turmaEscolhida = pagAluno.turma ? '' : document.getElementById('pag-turma').value;
-      if (!pagAluno.turma && !turmaEscolhida) { showToast('Selecione a sua turma.', 'error'); return; }
-      const btn = document.getElementById('btn-pag-votar');
-      btn.disabled = true;
-      try {
-        const r = await supabaseRequest('POST', 'rpc/votar_pagamento', {
-          p_camiseta: pagAluno.camiseta, p_opcao: sel.value, p_turma: turmaEscolhida || null
-        });
-        if (!r || !r.ok) {
-          const msg = r && r.erro === 'nao_cadastrado' ? 'Camiseta não cadastrada. Faça o registro antes de votar.'
-            : r && r.erro === 'inscricao_cancelada' ? 'Inscrição cancelada. Faça o registro novamente para votar.'
-            : 'Não foi possível registrar o voto.';
-          showToast(msg, 'error');
-          return;
-        }
-        showToast('Voto registrado! Obrigado por participar.', 'success');
-        salvarIdentidade(pagAluno.nome, pagAluno.camiseta);
-        pagAviso('Voto registrado na <strong>Opção ' + (sel.value === 'base1' ? '1' : '2') + '</strong>. Você pode alterar quando quiser.', 'ok');
-        document.getElementById('pag-voto-form').style.display = 'none';
-        carregarResultadoPagamento();
-      } catch (err) {
-        showToast(mensagemErro(err, 'Erro ao registrar o voto. Tente novamente.'), 'error');
-      } finally { btn.disabled = false; }
-    }
-
     async function carregarResultadoPagamento() {
       const box = document.getElementById('pag-resultado');
       if (!box) return;
@@ -1465,7 +1389,7 @@
           '<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;font-size:13px;color:var(--pf-text);margin-bottom:6px;">' +
           '<span>' + rotulo + '</span><span><strong>' + p.toFixed(1).replace('.', ',') + '%</strong> · ' + n + ' voto' + (n === 1 ? '' : 's') + '</span></div>' +
           '<div style="height:10px;background:var(--pf-black);border-radius:6px;overflow:hidden;"><div style="height:100%;width:' + p.toFixed(1) + '%;background:' + cor + ';"></div></div></div>';
-        let html = barra('Opção 1 — cota única', b1, p1, '#2c5aa0') + barra('Opção 2 — custo fixo + extras', b2, p2, '#7c3aed');
+        let html = barra('Opção 1 — cota única', b1, p1, '#5d6f8d') + barra('Opção 2 — custo fixo + extras', b2, p2, 'var(--pf-gold)');
         const lider = b1 === b2 ? 'Empate' : (b1 > b2 ? 'Opção 1 venceu' : 'Opção 2 venceu');
         html += '<p style="font-size:13px;color:var(--pf-gold);margin:4px 0 14px;"><strong>' + lider + '</strong> · ' + total + ' voto' + (total === 1 ? '' : 's') + ' no total</p>';
         const turmas = Array.isArray(r.por_turma) ? r.por_turma : [];
@@ -1483,10 +1407,7 @@
       }
     }
 
-    document.getElementById('btn-pag-verificar').addEventListener('click', verificarCamisetaPagamento);
-    document.getElementById('btn-pag-votar').addEventListener('click', registrarVotoPagamento);
     document.getElementById('btn-pag-atualizar').addEventListener('click', carregarResultadoPagamento);
-    document.getElementById('pag-camiseta').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); verificarCamisetaPagamento(); } });
 
     // ==========================================
     // TURMA: padronização e seletor
@@ -1522,7 +1443,7 @@
       const cam = document.getElementById('cri-consulta-camiseta').value.trim();
       const msg = document.getElementById('cri-consulta-msg');
       const mostrar = (texto, cor) => { msg.style.display = 'block'; msg.style.color = cor; msg.textContent = texto; };
-      if (!cam) { showToast('Informe o número da camiseta para consultar.', 'error'); return; }
+      if (!cam) { erroCampo('cri-consulta-camiseta', 'Informe o número da camiseta para consultar.'); return; }
       mostrar('Consultando...', 'var(--pf-muted)');
       try {
         const data = await supabaseRequest('GET', TABLE_CRIANCAS + '?numero_camiseta=eq.' + encodeURIComponent(cam) + '&select=nome_completo,numero_camiseta,turma,interesse_criancas,qtd_criancas,interesse_espaco_kids');
@@ -1573,8 +1494,10 @@
       const qtd = parseInt(document.getElementById('cri-qtd').value) || 0;
       const espacoKids = document.getElementById('chk-espaco-kids').checked;
 
-      if (!nome || !camiseta || turma === 'N/A') { showToast('Preencha os campos obrigatórios, incluindo a turma.', 'error'); return; }
-      if (interesse && qtd < 1) { showToast('Informe a quantidade de crianças.', 'error'); return; }
+      if (!nome) { erroCampo('cri-nome', 'Informe seu nome completo.'); return; }
+      if (!camiseta) { erroCampo('cri-camiseta', 'Informe o número da camiseta.'); return; }
+      if (turma === 'N/A') { erroCampo('cri-turma', 'Selecione a sua turma.'); return; }
+      if (interesse && qtd < 1) { erroCampo('cri-qtd', 'Informe a quantidade de crianças (mínimo 1).'); return; }
 
       const btn = document.getElementById('btn-submit-cri');
       const txt = document.getElementById('btn-text-cri');
@@ -1619,7 +1542,9 @@
       let estilo = document.getElementById('vot-estilo').value;
       if (estilo === 'Outro') estilo = document.getElementById('vot-outro').value.trim();
 
-      if (!nome || !camiseta || !estilo) { showToast('Preencha todos os campos.', 'error'); return; }
+      if (!nome) { erroCampo('vot-nome', 'Informe seu nome completo.'); return; }
+      if (!camiseta) { erroCampo('vot-camiseta', 'Informe o número da camiseta.'); return; }
+      if (!estilo) { erroCampo('vot-estilo', 'Escolha um estilo musical.'); return; }
 
       const btn = document.getElementById('btn-submit-vot');
       const txt = document.getElementById('btn-text-vot');
@@ -1669,11 +1594,13 @@
       const qtdVenderSol = parseInt(document.getElementById('qtd-vender-solenidade').value) || 0;
       const telVenderSol = document.getElementById('tel-vender-solenidade') ? document.getElementById('tel-vender-solenidade').value.trim() : '';
 
-      if (!nome || !matricula || turma === 'N/A') { showToast('Preencha todos os campos obrigatórios, incluindo a turma.', 'error'); return; }
-      if (!solenidade && !baile) { showToast('Selecione pelo menos um evento de interesse.', 'error'); return; }
-      if (venderSol && telVenderSol !== telefoneCarregado && !telefoneValido(telVenderSol)) { showToast('Telefone inválido. Use DDD + número, ex: (61) 99999-9999.', 'error'); document.getElementById('tel-vender-solenidade').focus(); return; }
-      if (baile && qtdBaile < 1) { showToast('Informe a quantidade de convites para o baile.', 'error'); document.getElementById('qtd-baile').focus(); return; }
-      if (venderSol && (qtdVenderSol < 1 || qtdVenderSol > 4)) { showToast('Informe quantos ingressos deseja vender (1 a 4).', 'error'); document.getElementById('qtd-vender-solenidade').focus(); return; }
+      if (!nome) { erroCampo('nome', 'Informe seu nome completo.'); return; }
+      if (!matricula) { erroCampo('matricula', 'Informe o número da camiseta.'); return; }
+      if (turma === 'N/A') { erroCampo('turma', 'Selecione a sua turma.'); return; }
+      if (!solenidade && !baile) { showToast('Selecione pelo menos um evento: solenidade ou baile.', 'error'); const bs = document.getElementById('chk-solenidade'); if (bs) bs.focus(); return; }
+      if (venderSol && telVenderSol !== telefoneCarregado && !telefoneValido(telVenderSol)) { erroCampo('tel-vender-solenidade', 'Telefone inválido. Use DDD + número, ex: (61) 99999-9999.'); return; }
+      if (baile && qtdBaile < 1) { erroCampo('qtd-baile', 'Informe a quantidade de convites (mínimo 1).'); return; }
+      if (venderSol && (qtdVenderSol < 1 || qtdVenderSol > 4)) { erroCampo('qtd-vender-solenidade', 'Informe quantos ingressos deseja vender (1 a 4).'); return; }
 
       setLoading(true);
       try {
@@ -1748,7 +1675,7 @@
       const mat = document.getElementById('consulta-matricula').value.trim();
       const resEl = document.getElementById('consulta-resultado');
       if (!mat) {
-        showToast('Informe o código de aluno para consultar.', 'error');
+        erroCampo('consulta-matricula', 'Informe o número da camiseta para consultar.');
         return;
       }
       resEl.style.display = 'block';
@@ -1757,7 +1684,7 @@
       try {
         const data = await supabaseRequest('GET', TABLE + '?matricula=eq.' + encodeURIComponent(mat) + '&select=*');
         if (!data || data.length === 0) {
-          resEl.innerHTML = '<p style="font-size:13px;color:#d9a3a3;font-weight:600;">Nenhum registro encontrado para este código de aluno.</p>';
+          resEl.innerHTML = '<p style="font-size:13px;color:#d9a3a3;font-weight:600;">Nenhum registro encontrado para esta camiseta.</p>';
           return;
         }
         const aluno = data[0];
@@ -1903,7 +1830,7 @@
         : '<div style="background:rgba(201,169,78,0.08);border:1px solid rgba(201,169,78,0.2);border-radius:8px;padding:14px;margin-bottom:18px;"><p style="font-size:14px;color:#c9a94e;font-weight:600;">' + qtd + ' ingresso' + (qtd > 1 ? 's disponíveis' : ' disponível') + ' para negociação</p></div>';
 
       const toggleActionText = vendido ? 'Reabrir como DISPONÍVEL' : 'Marcar como VENDIDO';
-      const toggleActionColor = vendido ? 'linear-gradient(135deg, #1e3a5c, #2c5aa0)' : 'linear-gradient(135deg, #78281f, #c0392b)';
+      const toggleActionColor = vendido ? 'linear-gradient(135deg, #8a7535, #c9a94e)' : 'linear-gradient(135deg, #78281f, #c0392b)';
 
       const tel = analisarTelefone(telefone);
       const telTexto = telefoneParaExibir(telefone);
@@ -1950,9 +1877,9 @@
             <!-- Área de gestão do vendedor -->
             <div style="background:#060d18;border:1px solid var(--pf-border);border-radius:10px;padding:16px;text-align:left;margin-bottom:20px;">
               <p style="font-size:12px;font-weight:700;color:var(--pf-gold);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;">É você o anunciante?</p>
-              <p style="font-size:11px;color:#8e9bb0;margin-bottom:12px;">Para alterar a situação (Vendido / Disponível), digite seu Código de Aluno para confirmar:</p>
+              <p style="font-size:11px;color:#8e9bb0;margin-bottom:12px;">Para alterar a situação (Vendido / Disponível), digite o número da sua camiseta para confirmar:</p>
               <div style="display:flex;gap:8px;flex-direction:column;">
-                <input type="text" id="modal-confirma-matricula" placeholder="Número da Camiseta" style="font-size:12px;padding:8px 12px;">
+                <input type="text" id="modal-confirma-matricula" placeholder="Ex: 042" style="font-size:12px;padding:8px 12px;">
                 <button id="btn-modal-alterar-status" style="padding:10px;background:${toggleActionColor};color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;text-transform:uppercase;">
                   ${toggleActionText}
                 </button>
@@ -1973,7 +1900,7 @@
         btnAlterar.onclick = async () => {
           const digitado = modal.querySelector('#modal-confirma-matricula').value.trim();
           if (!digitado) {
-            showToast('Informe seu Código de Aluno para confirmar.', 'error');
+            showToast('Informe o número da sua camiseta para confirmar.', 'error');
             return;
           }
           btnAlterar.disabled = true;
@@ -1987,7 +1914,7 @@
               '&vender_solenidade=eq.true',
               { permuta_vendido: !vendido });
             if (!r || r.length === 0) {
-              showToast('Código de Aluno incorreto. Apenas o anunciante pode alterar.', 'error');
+              showToast('Número da camiseta incorreto. Apenas o anunciante pode alterar.', 'error');
               btnAlterar.disabled = false;
               btnAlterar.textContent = toggleActionText;
               return;
@@ -2010,9 +1937,9 @@
       const status = document.getElementById('permuta-status') ? document.getElementById('permuta-status').value : 'disponivel';
       const telefone = document.getElementById('permuta-telefone') ? document.getElementById('permuta-telefone').value.trim() : '';
       
-      if (!matricula) { showToast('Informe seu código de aluno.', 'error'); return; }
-      if (isNaN(qtd) || qtd < 0 || qtd > 4) { showToast('A quantidade deve ser entre 0 e 4.', 'error'); return; }
-      if (!telefoneValido(telefone)) { showToast('Telefone inválido. Use DDD + número, ex: (61) 99999-9999.', 'error'); document.getElementById('permuta-telefone').focus(); return; }
+      if (!matricula) { erroCampo('permuta-matricula', 'Informe o número da camiseta.'); return; }
+      if (isNaN(qtd) || qtd < 0 || qtd > 4) { erroCampo('permuta-qtd', 'A quantidade deve ser entre 0 e 4.'); return; }
+      if (!telefoneValido(telefone)) { erroCampo('permuta-telefone', 'Telefone inválido. Use DDD + número, ex: (61) 99999-9999.'); return; }
       
       try {
         const ehVendido = (status === 'vendido');
@@ -2025,7 +1952,7 @@
 
         const alterados = await supabaseRequest('PATCH', TABLE + '?matricula=eq.' + encodeURIComponent(matricula), patchData);
         if (!alterados || alterados.length === 0) {
-          showToast('Código de aluno não encontrado. Faça primeiro o registro de presença.', 'error');
+          showToast('Camiseta não encontrada. Faça primeiro o registro de presença.', 'error');
           return;
         }
         
@@ -2043,7 +1970,7 @@
         document.getElementById('permuta-qtd').value = '';
         if (document.getElementById('permuta-telefone')) document.getElementById('permuta-telefone').value = '';
         loadPermuta();
-      } catch (err) { showToast('Erro ao salvar. Verifique se seu código de aluno já está cadastrado.', 'error'); }
+      } catch (err) { showToast('Erro ao salvar. Verifique se o número da sua camiseta já está cadastrado.', 'error'); }
     }
 
     // ==========================================
@@ -2054,7 +1981,8 @@
       const user = document.getElementById('admin-user').value.trim();
       const pass = document.getElementById('admin-pass').value;
 
-      if (!user || !pass) { showToast('Preencha usuário e senha.', 'error'); return; }
+      if (!user) { erroCampo('admin-user', 'Informe o usuário.'); return; }
+      if (!pass) { erroCampo('admin-pass', 'Informe a senha.'); return; }
 
       const loginBtn = document.getElementById('btn-login');
       const loginText = document.getElementById('login-text');
@@ -2115,8 +2043,8 @@
         document.getElementById('admin-stats').innerHTML =
           statCard('Total Registros', total, '#c9a94e') +
           statCard('Solenidade', solCount, '#e5c866') +
-          statCard('Baile', baileCount, '#2c5aa0') +
-          statCard('Conv. Baile', totalBaileConvites, '#7aabe0') +
+          statCard('Baile', baileCount, 'var(--pf-gold-dim)') +
+          statCard('Conv. Baile', totalBaileConvites, 'var(--pf-gold)') +
           statCard('Vendendo Sol.', vendaCount, '#27ae60') +
           statCard('Cancelados', cancelados, '#e74c3c');
 
@@ -2203,9 +2131,9 @@
         
         document.getElementById('admin-stats-cri').innerHTML =
           statCard('Registros Totais', totalRegistros, '#c4b5fd') +
-          statCard('Levam Crianças', comCriancas, '#a78bfa') +
-          statCard('Total de Crianças', totalCriancas, '#8b5cf6') +
-          statCard('Interesse Espaço Kids', espacoKids, '#7c3aed');
+          statCard('Levam Crianças', comCriancas, 'var(--pf-gold)') +
+          statCard('Total de Crianças', totalCriancas, 'var(--pf-gold)') +
+          statCard('Interesse Espaço Kids', espacoKids, 'var(--pf-gold-dim)');
 
         // Turma Chart (count total kids by turma)
         const turmas = {};
@@ -2215,7 +2143,7 @@
             turmas[t] = (turmas[t] || 0) + (d.qtd_criancas || 0);
           }
         });
-        renderBarChart('admin-chart-turmas', turmas, '#8b5cf6', totalCriancas);
+        renderBarChart('admin-chart-turmas', turmas, 'var(--pf-gold)', totalCriancas);
 
         // Table
         if (adminCriancasData.length === 0) {
@@ -2227,11 +2155,11 @@
             return '<tr>' +
               '<td style="color:#8e9bb0;font-size:12px">' + (i + 1) + '</td>' +
               '<td style="font-weight:600">' + escXml(a.nome_completo) + '</td>' +
-              '<td><code style="background:#0f1e33;padding:2px 8px;border-radius:4px;font-size:12px;color:#a78bfa">' + escXml(a.numero_camiseta) + '</code></td>' +
+              '<td><code style="background:#0f1e33;padding:2px 8px;border-radius:4px;font-size:12px;color:var(--pf-gold)">' + escXml(a.numero_camiseta) + '</code></td>' +
               '<td><strong>' + escXml(normalizarTurma(a.turma)) + '</strong></td>' +
-              '<td>' + (a.interesse_criancas ? '<span class="badge-sim" style="background:rgba(139,92,246,0.15);color:#a78bfa">Sim</span>' : '<span class="badge-nao">Não</span>') + '</td>' +
+              '<td>' + (a.interesse_criancas ? '<span class="badge-sim" style="background:rgba(139,92,246,0.15);color:var(--pf-gold)">Sim</span>' : '<span class="badge-nao">Não</span>') + '</td>' +
               '<td style="text-align:center;font-weight:600;color:' + (a.qtd_criancas > 0 ? '#c4b5fd' : '#8e9bb0') + '">' + (Number(a.qtd_criancas) || 0) + '</td>' +
-              '<td>' + (a.interesse_espaco_kids ? '<span class="badge-sim" style="background:rgba(139,92,246,0.15);color:#a78bfa">Sim</span>' : '<span class="badge-nao">Não</span>') + '</td>' +
+              '<td>' + (a.interesse_espaco_kids ? '<span class="badge-sim" style="background:rgba(139,92,246,0.15);color:var(--pf-gold)">Sim</span>' : '<span class="badge-nao">Não</span>') + '</td>' +
               '<td style="font-size:12px;color:#8e9bb0;white-space:nowrap">' + dateStr + '</td>' +
               '</tr>';
           }).join('');
@@ -2253,7 +2181,7 @@
           const e = d.estilo_musical;
           estilos[e] = (estilos[e] || 0) + 1;
         });
-        renderBarChart('admin-chart-votacao', estilos, '#3b82f6', adminVotacaoData.length);
+        renderBarChart('admin-chart-votacao', estilos, 'var(--pf-gold)', adminVotacaoData.length);
 
         // Table
         if (adminVotacaoData.length === 0) {
@@ -2265,7 +2193,7 @@
             return '<tr>' +
               '<td style="color:#8e9bb0;font-size:12px">' + (i + 1) + '</td>' +
               '<td style="font-weight:600">' + escXml(a.nome_completo) + '</td>' +
-              '<td><code style="background:#0f1e33;padding:2px 8px;border-radius:4px;font-size:12px;color:#60a5fa">' + escXml(a.numero_camiseta) + '</code></td>' +
+              '<td><code style="background:#0f1e33;padding:2px 8px;border-radius:4px;font-size:12px;color:var(--pf-gold)">' + escXml(a.numero_camiseta) + '</code></td>' +
               '<td style="font-weight:600;color:#93c5fd">' + escXml(a.estilo_musical) + '</td>' +
               '<td style="font-size:12px;color:#8e9bb0;white-space:nowrap">' + dateStr + '</td>' +
               '</tr>';
@@ -2404,13 +2332,42 @@
     // ==========================================
     // TOAST
     // ==========================================
+    // ==========================================
+    // ERROS NO PRÓPRIO CAMPO
+    // ==========================================
+    function limparErroCampo(el) {
+      if (!el) return;
+      const e = document.getElementById('erro-' + el.id);
+      if (e) e.remove();
+      el.removeAttribute('aria-invalid');
+      el.removeAttribute('aria-describedby');
+    }
+    function erroCampo(id, msg) {
+      const el = document.getElementById(id);
+      if (!el) { showToast(msg, 'error'); return; }
+      limparErroCampo(el);
+      const p = document.createElement('p');
+      p.className = 'erro-campo';
+      p.id = 'erro-' + id;
+      p.setAttribute('role', 'alert');
+      p.textContent = msg;
+      el.setAttribute('aria-invalid', 'true');
+      el.setAttribute('aria-describedby', p.id);
+      el.insertAdjacentElement('afterend', p);
+      el.focus();
+      if (el.scrollIntoView) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+    document.addEventListener('input', e => { if (e.target && e.target.getAttribute && e.target.getAttribute('aria-invalid')) limparErroCampo(e.target); });
+    document.addEventListener('change', e => { if (e.target && e.target.getAttribute && e.target.getAttribute('aria-invalid')) limparErroCampo(e.target); });
+
     function showToast(msg, type) {
       const existing = document.querySelector('.toast');
       if (existing) existing.remove();
       const toast = document.createElement('div');
       toast.className = 'toast toast-' + type;
-      toast.setAttribute('role', type === 'error' ? 'alert' : 'status');
-      toast.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
+      toast.setAttribute('aria-hidden', 'true');
+      const regiao = document.getElementById('aviso-sr');
+      if (regiao) { regiao.textContent = ''; setTimeout(() => { regiao.textContent = (type === 'error' ? 'Erro: ' : '') + msg; }, 60); }
       toast.innerHTML = '<div style="display:flex;align-items:center;gap:10px">' +
         (type === 'success'
           ? '<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" stroke="#27ae60" stroke-width="1.5" fill="none"/><polyline points="5,9 8,12 13,6" stroke="#27ae60" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'
@@ -2475,21 +2432,6 @@
     // ==========================================
     // TOAST
     // ==========================================
-    function showToast(msg, type) {
-      const existing = document.querySelector('.toast');
-      if (existing) existing.remove();
-      const toast = document.createElement('div');
-      toast.className = 'toast toast-' + type;
-      toast.setAttribute('role', type === 'error' ? 'alert' : 'status');
-      toast.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
-      toast.innerHTML = '<div style="display:flex;align-items:center;gap:10px">' +
-        (type === 'success'
-          ? '<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" stroke="#27ae60" stroke-width="1.5" fill="none"/><polyline points="5,9 8,12 13,6" stroke="#27ae60" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-          : '<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" stroke="#c0392b" stroke-width="1.5" fill="none"/><path d="M9 5v4M9 11h.01" stroke="#c0392b" stroke-width="1.5" stroke-linecap="round"/></svg>'
-        ) + '<span>' + msg + '</span></div>';
-      document.body.appendChild(toast);
-      setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 4000);
-    }
   </script>
 </body>
 </html>
