@@ -278,7 +278,7 @@
     .site-footer-id { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
     .site-footer-id img { width: 30px; height: auto; opacity: 0.9; }
     .site-footer-id span { font-family: var(--font-display); font-size: 16px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--pf-cream); }
-    @media (max-width: 420px) { section #countdown-grid p { font-size: 11px; letter-spacing: 0; } }
+    @media (max-width: 420px) { section #countdown-grid { gap: 7px !important; } section #countdown-grid > div { padding-left: 2px; padding-right: 2px; } section #countdown-grid p { font-size: 11px; letter-spacing: 0; } }
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
   </style>
   <style id="sistema-visual">
@@ -337,6 +337,19 @@
     ::selection { background: rgba(201,169,78,0.35); color: #fff; }
     input { caret-color: var(--pf-gold); }
 
+    .req { color: #f08a7e; }
+    .rotulo { display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .rotulo-p { font-size: 12px; margin-bottom: 6px; }
+    .campo-select { width: 100%; padding: 11px 14px; background: var(--pf-black); border: 1px solid var(--pf-line); border-radius: 8px; color: var(--pf-text); font-size: 14px; font-family: inherit; outline: none; -webkit-appearance: none; appearance: none; }
+    .painel { display: none; max-width: 720px; margin: 0 auto; }
+    .painel-aberto { display: block; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; align-items: end; }
+    .form-grid-total { grid-column: 1 / -1; }
+    .pular { position: absolute; left: 12px; top: -60px; z-index: 2000; background: var(--pf-gold); color: var(--pf-black); padding: 10px 16px; border-radius: 8px; font-weight: 700; text-decoration: none; }
+    .pular:focus { top: 12px; }
+    #conteudo:focus { outline: none; }
+    @media (max-width: 520px) { .grid-2 { grid-template-columns: 1fr; } }
     @media (max-width: 640px) {
       .tabs { justify-content: flex-start; overflow-x: auto; scrollbar-width: none; margin: 0 -20px 24px; padding: 0 20px 4px; -webkit-overflow-scrolling: touch; }
       .tabs::-webkit-scrollbar { display: none; }
@@ -355,6 +368,7 @@
   </style>
 </head>
 <body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
   <div id="aviso-sr" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
   <!-- HEADER -->
   <header class="hero">
@@ -370,7 +384,7 @@
   </header>
 
   <!-- MAIN -->
-  <main style="max-width: 1100px; margin: 0 auto; padding: 32px 20px 60px; position: relative; z-index: 10;">
+  <main id="conteudo" tabindex="-1" style="max-width: 1100px; margin: 0 auto; padding: 32px 20px 60px; position: relative; z-index: 10;">
     
 <!-- CONTAGEM REGRESSIVA -->
 <section class="gold-glow fade-in" style="max-width:720px;margin:0 auto 28px;padding:28px 20px;text-align:center;background:var(--pf-card);border:1px solid var(--pf-gold-dim);border-radius:14px;">
@@ -429,32 +443,32 @@
     </div>
 
     <!-- ========== TAB: REGISTRO ========== -->
-    <div id="view-registro" role="tabpanel" aria-labelledby="tab-registro" class="fade-in" style="max-width: 720px; margin: 0 auto;">
+    <div id="view-registro" role="tabpanel" aria-labelledby="tab-registro" class="painel painel-aberto fade-in">
       <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 36px 32px; position: relative;">
 
-        <h2 style="font-size: 18px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Registro de Interesse</h2>
+        <h2>Registro de Interesse</h2>
         <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 28px;">Preencha os dados abaixo para registrar seu interesse nos eventos da formatura.</p>
 
         <form id="formRegistro" onsubmit="handleSubmit(event)" novalidate>
           <div style="margin-bottom: 20px;">
-            <label for="nome" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
-              Nome Completo <span style="color: #f08a7e;">*</span>
+            <label for="nome" class="rotulo">
+              Nome Completo <span class="req" aria-hidden="true">*</span>
             </label>
             <input type="text" id="nome" placeholder="Ex: João Carlos da Silva" required>
           </div>
 
           <div style="margin-bottom: 20px;">
-            <label for="matricula" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
-              Número da camiseta <span style="color: #f08a7e;">*</span>
+            <label for="matricula" class="rotulo">
+              Número da camiseta <span class="req" aria-hidden="true">*</span>
             </label>
             <input type="text" id="matricula" placeholder="Ex: 042" required>
           </div>
 
           <div style="margin-bottom: 24px;">
-            <label for="turma" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
-              Turma <span style="color: #f08a7e;">*</span>
+            <label for="turma" class="rotulo">
+              Turma <span class="req" aria-hidden="true">*</span>
             </label>
-            <select id="turma" class="js-turma" style="width: 100%; padding: 11px 14px; background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 8px; color: var(--pf-text); font-size: 14px; font-family: inherit; outline: none; transition: all 0.2s; -webkit-appearance: none; appearance: none;" required>
+            <select id="turma" class="js-turma campo-select" required>
               <option value="">Selecione</option>
             </select>
           </div>
@@ -507,13 +521,13 @@
                 </div>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px;">
                   <div>
-                    <label for="qtd-vender-solenidade" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
-                      Quantos ingressos deseja vender? (0 a 4) <span style="color: #f08a7e;">*</span>
+                    <label for="qtd-vender-solenidade" class="rotulo rotulo-p">
+                      Quantos ingressos deseja vender? (0 a 4) <span class="req" aria-hidden="true">*</span>
                     </label>
                     <input type="number" id="qtd-vender-solenidade" min="0" max="4" placeholder="0 a 4">
                   </div>
                   <div>
-                    <label for="tel-vender-solenidade" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    <label for="tel-vender-solenidade" class="rotulo rotulo-p">
                       Celular / WhatsApp (opcional)
                     </label>
                     <input type="tel" id="tel-vender-solenidade" placeholder="Ex: (61) 99999-9999" inputmode="tel" autocomplete="tel-national" maxlength="22">
@@ -540,8 +554,8 @@
                 </svg>
                 <p style="font-size: 13px; color: var(--pf-gold);">Aquisição de convites livre — sem limite de quantidade.</p>
               </div>
-              <label for="qtd-baile" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
-                Quantidade de Convites Desejados <span style="color: #f08a7e;">*</span>
+              <label for="qtd-baile" class="rotulo">
+                Quantidade de Convites Desejados <span class="req" aria-hidden="true">*</span>
               </label>
               <input type="number" id="qtd-baile" min="1" placeholder="Informe a quantidade" style="max-width: 260px;">
             </div>
@@ -565,7 +579,7 @@
         <p style="font-size: 12px; color: var(--pf-muted); margin-bottom: 20px;">Já se registrou? Digite o número da sua camiseta para carregar e editar seus dados.</p>
         <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
           <div style="flex: 1; min-width: 200px;">
-            <label for="consulta-matricula" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Número da camiseta</label>
+            <label for="consulta-matricula" class="rotulo rotulo-p">Número da camiseta</label>
             <input type="text" id="consulta-matricula" placeholder="Ex: 042">
           </div>
           <button class="btn btn-secondary" id="btn-consultar" style="padding: 11px 24px; white-space: nowrap;">
@@ -578,7 +592,7 @@
     </div>
 
     <!-- ========== VIEW: SUCESSO ========== -->
-    <div id="view-sucesso" style="display: none; max-width: 720px; margin: 0 auto;">
+    <div id="view-sucesso" class="painel">
       <div class="gold-glow scale-in" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 48px 32px; text-align: center; position: relative; overflow: hidden;">
         <div style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--pf-success); display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; animation: scaleIn 0.5s ease-out 0.2s both;">
           <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
@@ -611,39 +625,39 @@
     </div>
 
     <!-- ========== TAB: PERMUTA ========== -->
-    <div id="view-permuta" role="tabpanel" aria-labelledby="tab-permuta" style="display: none; max-width: 720px; margin: 0 auto;" class="fade-in">
+    <div id="view-permuta" role="tabpanel" aria-labelledby="tab-permuta" class="painel fade-in">
       <!-- Disponibilizar Ingressos (no topo, para quem quer anunciar) -->
       <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 28px 32px; margin-bottom: 20px; position: relative; overflow: hidden;">
         <h3 style="font-size: 16px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Disponibilizar Ingressos para Venda</h3>
         <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 20px;">Informe o número da sua camiseta para gerenciar a disponibilidade dos seus ingressos da solenidade.</p>
-        <div style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap;">
-          <div style="flex: 1; min-width: 170px;">
-            <label for="permuta-matricula" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Número da camiseta</label>
+        <div class="form-grid">
+          <div>
+            <label for="permuta-matricula" class="rotulo rotulo-p">Número da camiseta</label>
             <input type="text" id="permuta-matricula" placeholder="Ex: 042">
           </div>
-          <div style="min-width: 110px;">
-            <label for="permuta-qtd" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Qtd. (0–4)</label>
+          <div>
+            <label for="permuta-qtd" class="rotulo rotulo-p">Qtd. (0–4)</label>
             <input type="number" id="permuta-qtd" min="0" max="4" placeholder="0 a 4">
           </div>
-          <div style="min-width: 130px;">
-            <label for="permuta-status" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Situação</label>
-            <select id="permuta-status" style="width: 100%; padding: 11px 14px; background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 8px; color: var(--pf-text); font-size: 14px; font-family: inherit; outline: none;">
+          <div>
+            <label for="permuta-status" class="rotulo rotulo-p">Situação</label>
+            <select id="permuta-status" class="campo-select">
               <option value="disponivel">Disponível</option>
               <option value="vendido">Vendido</option>
             </select>
           </div>
-          <div style="flex: 1; min-width: 170px;">
-            <label for="permuta-telefone" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Celular / WhatsApp</label>
+          <div>
+            <label for="permuta-telefone" class="rotulo rotulo-p">Celular / WhatsApp</label>
             <input type="tel" id="permuta-telefone" placeholder="Ex: (61) 99999-9999" inputmode="tel" autocomplete="tel-national" maxlength="22">
           </div>
-          <button class="btn btn-primary" onclick="salvarPermuta()" style="padding: 12px 24px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;">Salvar</button>
+          <button class="btn btn-primary form-grid-total" onclick="salvarPermuta()">Salvar</button>
         </div>
       </div>
 
       <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 32px; position: relative; overflow: hidden;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
           <div>
-            <h2 style="font-size: 18px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Permuta de Ingressos — Solenidade</h2>
+            <h2>Permuta de Ingressos — Solenidade</h2>
             <p style="font-size: 13px; color: var(--pf-muted);">Alunos com interesse em vender ingressos excedentes</p>
           </div>
           <button onclick="loadPermuta()" style="padding: 8px 16px; background: var(--pf-black); border: 1px solid var(--pf-border); color: var(--pf-muted); border-radius: 8px; font-size: 12px; cursor: pointer; font-family: inherit; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 6px;" onmouseover="this.style.borderColor='var(--pf-gold-dim)'; this.style.color='var(--pf-text)'" onmouseout="this.style.borderColor='var(--pf-border)'; this.style.color='var(--pf-muted)'">
@@ -667,11 +681,11 @@
 
     <!-- ========== TAB: ADMIN ========== -->
     <!-- ========== TAB: CRIANÇAS ========== -->
-    <div id="view-criancas" role="tabpanel" aria-labelledby="tab-criancas" style="display: none; max-width: 720px; margin: 0 auto;" class="fade-in">
+    <div id="view-criancas" role="tabpanel" aria-labelledby="tab-criancas" class="painel fade-in">
 
       <!-- Card 1: Crianças -->
       <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 36px 32px; position: relative;">
-        <h2 style="font-size: 18px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Registro — Crianças e Espaço Kids</h2>
+        <h2>Registro — Crianças e Espaço Kids</h2>
         <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 28px;">Informe se você pretende levar crianças ao evento de formatura.</p>
 
         <!-- Consultar / Editar registro de crianças -->
@@ -680,7 +694,7 @@
           <p style="font-size: 12px; color: var(--pf-muted); margin-bottom: 12px;">Digite o número da camiseta para carregar seus dados e editar.</p>
           <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 160px;">
-              <label for="cri-consulta-camiseta" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Número da camiseta</label>
+              <label for="cri-consulta-camiseta" class="rotulo rotulo-p">Número da camiseta</label>
               <input type="text" id="cri-consulta-camiseta" placeholder="Ex: 042">
             </div>
             <button class="btn btn-secondary" type="button" id="btn-cri-consultar" style="padding: 11px 24px; white-space: nowrap;">Consultar</button>
@@ -690,17 +704,17 @@
 
         <form id="formCriancas" novalidate>
           <div style="margin-bottom: 20px;">
-            <label for="cri-nome" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Nome Completo <span style="color: #f08a7e;">*</span></label>
+            <label for="cri-nome" class="rotulo">Nome Completo <span class="req" aria-hidden="true">*</span></label>
             <input type="text" id="cri-nome" placeholder="Ex: João Carlos da Silva" required>
           </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+          <div class="grid-2" style="margin-bottom: 20px;">
             <div>
-              <label for="cri-camiseta" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Número da camiseta <span style="color: #f08a7e;">*</span></label>
+              <label for="cri-camiseta" class="rotulo">Número da camiseta <span class="req" aria-hidden="true">*</span></label>
               <input type="text" id="cri-camiseta" placeholder="Ex: 042" required>
             </div>
             <div>
-              <label for="cri-turma" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Turma <span style="color: #f08a7e;">*</span></label>
-              <select id="cri-turma" class="js-turma" style="width: 100%; padding: 11px 14px; background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 8px; color: var(--pf-text); font-size: 14px; font-family: inherit; outline: none; transition: all 0.2s; -webkit-appearance: none; appearance: none;" required>
+              <label for="cri-turma" class="rotulo">Turma <span class="req" aria-hidden="true">*</span></label>
+              <select id="cri-turma" class="js-turma campo-select" required>
                 <option value="">Selecione</option>
               </select>
             </div>
@@ -717,9 +731,9 @@
               </div>
             </div>
             <div id="field-criancas" style="display: none; margin-top: 14px;">
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 14px;">
+              <div class="grid-2" style="margin-bottom: 14px;">
                 <div>
-                  <label for="cri-qtd" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Quantidade de Crianças <span style="color: #f08a7e;">*</span></label>
+                  <label for="cri-qtd" class="rotulo rotulo-p">Quantidade de Crianças <span class="req" aria-hidden="true">*</span></label>
                   <input type="number" id="cri-qtd" min="1" placeholder="Ex: 2">
                 </div>
                 <div style="display: flex; align-items: flex-end; padding-bottom: 4px;">
@@ -746,26 +760,26 @@
     </div>
 
     <!-- ========== TAB: VOTAÇÃO ========== -->
-    <div id="view-votacao" role="tabpanel" aria-labelledby="tab-votacao" style="display: none; max-width: 720px; margin: 0 auto;" class="fade-in">
+    <div id="view-votacao" role="tabpanel" aria-labelledby="tab-votacao" class="painel fade-in">
       <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 36px 32px; position: relative;">
-        <h2 style="font-size: 18px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Votação Musical</h2>
+        <h2>Votação Musical</h2>
         <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 28px;">Vote no estilo musical que mais quer ouvir no dia da formatura!</p>
 
         <form id="formVotacao" novalidate>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+          <div class="grid-2" style="margin-bottom: 20px;">
             <div>
-              <label for="vot-nome" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Nome Completo <span style="color: #f08a7e;">*</span></label>
+              <label for="vot-nome" class="rotulo">Nome Completo <span class="req" aria-hidden="true">*</span></label>
               <input type="text" id="vot-nome" placeholder="Seu nome" required>
             </div>
             <div>
-              <label for="vot-camiseta" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Número da camiseta <span style="color: #f08a7e;">*</span></label>
+              <label for="vot-camiseta" class="rotulo">Número da camiseta <span class="req" aria-hidden="true">*</span></label>
               <input type="text" id="vot-camiseta" placeholder="Ex: 042" required>
             </div>
           </div>
 
           <div style="margin-bottom: 20px;">
-            <label for="vot-estilo" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Estilo Musical <span style="color: #f08a7e;">*</span></label>
-            <select id="vot-estilo" style="width: 100%; padding: 11px 14px; background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 8px; color: var(--pf-text); font-size: 14px; font-family: inherit; outline: none; transition: all 0.2s; -webkit-appearance: none; appearance: none;" required>
+            <label for="vot-estilo" class="rotulo">Estilo Musical <span class="req" aria-hidden="true">*</span></label>
+            <select id="vot-estilo" class="campo-select" required>
               <option value="" disabled selected>Selecione um estilo</option>
               <option value="Sertanejo">Sertanejo</option>
               <option value="Pagode">Pagode</option>
@@ -780,7 +794,7 @@
           </div>
 
           <div id="field-outro-estilo" style="display: none; margin-bottom: 20px;">
-            <label for="vot-outro" style="display: block; font-size: 13px; font-weight: 600; color: var(--pf-gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Qual estilo? <span style="color: #f08a7e;">*</span></label>
+            <label for="vot-outro" class="rotulo">Qual estilo? <span class="req" aria-hidden="true">*</span></label>
             <input type="text" id="vot-outro" placeholder="Digite o estilo musical">
           </div>
 
@@ -792,7 +806,7 @@
       </div>
     </div>
     <!-- ========== TAB: VALORES ========== -->
-    <div id="view-valores" role="tabpanel" aria-labelledby="tab-valores" style="display: none; max-width: 720px; margin: 0 auto;" class="fade-in">
+    <div id="view-valores" role="tabpanel" aria-labelledby="tab-valores" class="painel fade-in">
 
       <div class="card card-top">
         <h2>Valores da Formatura</h2>
@@ -847,17 +861,17 @@
                 <circle cx="12" cy="16" r="1.5" fill="#c9a94e"/>
               </svg>
             </div>
-            <h2 style="font-size: 18px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px;">Acesso Restrito</h2>
+            <h2>Acesso Restrito</h2>
             <p style="font-size: 13px; color: var(--pf-muted);">Área exclusiva para administradores do sistema</p>
           </div>
 
           <form onsubmit="handleLogin(event)">
             <div style="margin-bottom: 16px;">
-              <label for="admin-user" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Usuário</label>
+              <label for="admin-user" class="rotulo rotulo-p">Usuário</label>
               <input type="text" id="admin-user" placeholder="Informe o usuário" autocomplete="off">
             </div>
             <div style="margin-bottom: 24px;">
-              <label for="admin-pass" style="display: block; font-size: 12px; font-weight: 600; color: var(--pf-gold); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Senha</label>
+              <label for="admin-pass" class="rotulo rotulo-p">Senha</label>
               <input type="password" id="admin-pass" placeholder="Informe a senha" autocomplete="off">
             </div>
             <button class="btn btn-primary" type="submit" id="btn-login"
@@ -1016,7 +1030,7 @@
   <footer style="text-align: center; padding: 20px; border-top: 1px solid var(--pf-border); position: relative; z-index: 10;">
     <div class="site-footer-id">
       <img src="brasao-pf.png" alt="" width="30" height="38">
-      <span>LXIII Curso de Formação de Agente de Polícia Federal · Formatura 2026</span>
+      <span>LXIII CFP · Formatura 2026</span>
     </div>
     <p style="font-size: 11px; color: var(--pf-muted); letter-spacing: 0.3px;">
       Site da turma, mantido pela comissão de formatura. Não é um canal oficial da Polícia Federal.
@@ -1089,6 +1103,8 @@
       document.getElementById('view-sucesso').style.display = 'none';
 
       document.querySelectorAll('#tablist [role="tab"]').forEach(b => { b.setAttribute('aria-selected', 'false'); b.tabIndex = -1; });
+      const TITULOS = { registro: 'Registro', permuta: 'Permuta de ingressos', criancas: 'Crianças', votacao: 'Música', valores: 'Valores', admin: 'Área da comissão' };
+      document.title = (TITULOS[tab] ? TITULOS[tab] + ' · ' : '') + 'Formatura LXIII CFP';
       const activeTab = document.getElementById('tab-' + tab);
       if (activeTab) {
         activeTab.classList.add('active');
@@ -1773,7 +1789,7 @@
       try {
         const data = await supabaseRequest('GET', TABLE + '?ativo=eq.true&vender_solenidade=eq.true&qtd_vender_solenidade=gt.0&select=nome_completo,qtd_vender_solenidade,permuta_vendido,telefone_contato,criado_em&order=permuta_vendido.asc,criado_em.desc');
         if (!data || data.length === 0) {
-          listEl.innerHTML = '<div style="text-align:center;padding:40px"><p style="font-size:14px;color:#8e9bb0;font-weight:500">Nenhum aluno disponibilizou ingressos ainda.</p><p style="font-size:12px;color:#8e9bb0;margin-top:4px;opacity:0.7">Utilize o formulário abaixo para disponibilizar seus ingressos.</p></div>';
+          listEl.innerHTML = '<div style="text-align:center;padding:40px"><p style="font-size:14px;color:#8e9bb0;font-weight:500">Nenhum aluno disponibilizou ingressos ainda.</p><p style="font-size:12px;color:#8e9bb0;margin-top:4px;opacity:0.7">Utilize o formulário acima para disponibilizar seus ingressos.</p></div>';
           return;
         }
         permutaCache = data;
