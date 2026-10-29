@@ -350,6 +350,32 @@
     .pular:focus { top: 12px; }
     #conteudo:focus { outline: none; }
     @media (max-width: 520px) { .grid-2 { grid-template-columns: 1fr; } }
+    .cer-fase { font-size: 14px; font-weight: 600; color: var(--pf-gold); background: rgba(201,169,78,0.08); border: 1px solid var(--pf-gold-dim); border-radius: 10px; padding: 12px 14px; }
+    .cer-linha { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+    .cer-nome-eleitor { font-size: 15px; font-weight: 600; color: var(--pf-text); margin-bottom: 12px; }
+    .aviso-caixa { margin-top: 14px; padding: 12px 14px; border-radius: 10px; font-size: 13px; line-height: 1.6; background: rgba(201,169,78,0.08); border: 1px solid var(--pf-gold-dim); color: var(--pf-text); }
+    .aviso-caixa.erro { background: rgba(192,57,43,0.1); border-color: rgba(224,103,91,0.6); color: #ffb4ab; }
+    .aviso-caixa.ok { background: rgba(39,174,96,0.1); border-color: rgba(39,174,96,0.5); color: #a3d9b1; }
+    .cer-turma { padding: 12px 0; border-top: 1px solid var(--pf-border); }
+    .cer-turma:first-child { border-top: none; }
+    .cer-turma h4 { font-family: var(--font-display); font-size: 18px; letter-spacing: 0.04em; color: var(--pf-gold); margin-bottom: 6px; }
+    .cer-turma dl { display: grid; grid-template-columns: 110px 1fr; gap: 4px 12px; font-size: 14px; }
+    .cer-turma dt { color: var(--pf-muted); }
+    .cer-turma dd { color: var(--pf-text); }
+    .cer-cargo { margin-bottom: 18px; }
+    .cer-cargo legend, .cer-cargo h4 { font-size: 13px; font-weight: 700; color: var(--pf-gold); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .cer-opcao { display: flex; gap: 10px; align-items: center; padding: 10px 14px; min-height: 44px; background: var(--pf-black); border: 1px solid var(--pf-line); border-radius: 10px; margin-bottom: 8px; cursor: pointer; font-size: 14px; color: var(--pf-text); }
+    .cer-opcao input { accent-color: #c9a94e; width: 18px; height: 18px; flex-shrink: 0; }
+    .cer-opcao small { color: var(--pf-muted); font-size: 12px; }
+    .cer-item { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 6px 0 6px 14px; min-height: 44px; background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 10px; margin-bottom: 8px; font-size: 14px; }
+    .cer-item .btn { min-height: 36px; padding: 4px 14px; font-size: 13px; margin-right: 6px; }
+    .cer-add { display: flex; gap: 8px; margin-top: 6px; }
+    .cer-add input { flex: 1; }
+    .tabela-res { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 14px; }
+    .tabela-res th { text-align: left; color: var(--pf-gold); padding: 6px; font-weight: 700; }
+    .tabela-res td { padding: 7px 6px; border-top: 1px solid var(--pf-border); }
+    .tabela-res td:last-child, .tabela-res th:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+    @media (max-width: 520px) { .cer-turma dl { grid-template-columns: 1fr; gap: 0; } .cer-turma dt { margin-top: 6px; } }
     @media (max-width: 640px) {
       .tabs { justify-content: flex-start; overflow-x: auto; scrollbar-width: none; margin: 0 -20px 24px; padding: 0 20px 4px; -webkit-overflow-scrolling: touch; }
       .tabs::-webkit-scrollbar { display: none; }
@@ -439,6 +465,7 @@
       <button class="tab-btn" id="tab-permuta" role="tab" aria-selected="false" aria-controls="view-permuta" tabindex="-1">Permuta</button>
       <button class="tab-btn" id="tab-criancas" role="tab" aria-selected="false" aria-controls="view-criancas" tabindex="-1"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3.5 12c0-1.9 1.6-3.5 3.5-3.5s3.5 1.6 3.5 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none"/><circle cx="11" cy="5" r="1.5" stroke="currentColor" stroke-width="1" fill="none"/></svg>Crianças</button>
       <button class="tab-btn" id="tab-votacao" role="tab" aria-selected="false" aria-controls="view-votacao" tabindex="-1"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M4 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm6-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM4 10V2l6-1v9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Música</button>
+      <button class="tab-btn" id="tab-cerimonia" role="tab" aria-selected="false" aria-controls="view-cerimonia" tabindex="-1"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1.2l1.7 3.5 3.8.5-2.8 2.6.7 3.8L7 9.8 3.6 11.6l.7-3.8L1.5 5.2l3.8-.5L7 1.2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>Cerimônia</button>
       <button class="tab-btn" id="tab-valores" role="tab" aria-selected="false" aria-controls="view-valores" tabindex="-1"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.3"/><path d="M8.6 5.2C8.3 4.6 7.7 4.3 7 4.3c-.9 0-1.6.5-1.6 1.2 0 1.7 3.2.8 3.2 2.5 0 .7-.7 1.2-1.6 1.2-.8 0-1.5-.3-1.8-1M7 3.3v1M7 9.7v1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Valores</button>
     </div>
 
@@ -805,6 +832,83 @@
         </form>
       </div>
     </div>
+    <!-- ========== TAB: CERIMÔNIA ========== -->
+    <div id="view-cerimonia" role="tabpanel" aria-labelledby="tab-cerimonia" class="painel fade-in">
+
+      <div class="card card-top">
+        <h2>Orador, juramentista e bradista</h2>
+        <p class="hint mb-16">Cada turma indica seus candidatos para os três cargos da cerimônia. Depois, a academia escolhe um nome por cargo.</p>
+        <p id="cer-fase" class="cer-fase" role="status">Carregando...</p>
+      </div>
+
+      <div class="card" id="cer-card-votar" hidden>
+        <h3>Vote nos candidatos</h3>
+        <p class="hint mb-16">Um voto por cargo. Você pode mudar o seu voto enquanto a votação estiver aberta.</p>
+        <div class="cer-linha">
+          <div style="flex: 1; min-width: 180px;">
+            <label for="cer-camiseta" class="rotulo rotulo-p">Número da camiseta</label>
+            <input type="text" id="cer-camiseta" placeholder="Ex: 042" inputmode="numeric" autocomplete="off">
+          </div>
+          <button type="button" id="btn-cer-verificar" class="btn btn-secondary">Verificar</button>
+        </div>
+        <div id="cer-voto-aviso" class="aviso-caixa" role="status" hidden></div>
+        <div id="cer-voto-form" hidden>
+          <p id="cer-voto-nome" class="cer-nome-eleitor"></p>
+          <div id="cer-voto-campos"></div>
+          <button type="button" id="btn-cer-votar" class="btn btn-primary" style="width: 100%;">Registrar votos</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Candidatos por turma</h3>
+        <div id="cer-lista" class="mt-12"></div>
+      </div>
+
+      <details class="card" id="cer-rep">
+        <summary class="resumo-card">Sou representante da turma</summary>
+        <div class="mt-12">
+          <p class="hint mb-16">Use o PIN de 6 dígitos que a comissão entregou ao representante da sua turma. Cada turma pode indicar até 4 candidatos por cargo.</p>
+          <div id="cer-rep-login">
+            <div class="form-grid">
+              <div>
+                <label for="cer-turma" class="rotulo rotulo-p">Turma</label>
+                <select id="cer-turma" class="js-turma campo-select"><option value="">Selecione</option></select>
+              </div>
+              <div>
+                <label for="cer-pin" class="rotulo rotulo-p">PIN da turma</label>
+                <input type="password" id="cer-pin" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="6 dígitos">
+              </div>
+              <button type="button" id="btn-cer-entrar" class="btn btn-primary form-grid-total">Entrar como representante</button>
+            </div>
+          </div>
+          <div id="cer-rep-editor" hidden>
+            <div class="cer-linha" style="justify-content: space-between; margin-bottom: 14px;">
+              <p id="cer-rep-titulo" class="cer-nome-eleitor"></p>
+              <button type="button" id="btn-cer-sair" class="btn btn-secondary">Sair</button>
+            </div>
+            <div id="cer-rep-cargos"></div>
+          </div>
+        </div>
+      </details>
+
+      <details class="card" id="cer-comissao">
+        <summary class="resumo-card">Área da comissão</summary>
+        <div class="mt-12">
+          <p class="hint mb-16">Com o PIN da comissão você abre ou encerra a votação e vê o resultado. Depois de aberta, a lista de candidatos não pode mais ser alterada.</p>
+          <label for="cer-master" class="rotulo rotulo-p">PIN da comissão</label>
+          <input type="password" id="cer-master" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="6 dígitos" style="max-width: 260px;">
+          <div class="cer-linha mt-12">
+            <button type="button" class="btn btn-primary" data-cer-acao="abrir">Abrir votação</button>
+            <button type="button" class="btn btn-secondary" data-cer-acao="encerrar">Encerrar votação</button>
+            <button type="button" class="btn btn-secondary" data-cer-acao="reabrir_indicacoes">Voltar às indicações</button>
+            <button type="button" class="btn btn-secondary" id="btn-cer-resultado">Ver resultado</button>
+          </div>
+          <div id="cer-master-aviso" class="aviso-caixa" role="status" hidden></div>
+          <div id="cer-resultado" class="mt-16"></div>
+        </div>
+      </details>
+    </div>
+
     <!-- ========== TAB: VALORES ========== -->
     <div id="view-valores" role="tabpanel" aria-labelledby="tab-valores" class="painel fade-in">
 
@@ -1090,7 +1194,7 @@
     // TAB SWITCHING
     // ==========================================
     function switchTab(tab) {
-      ['registro', 'permuta', 'criancas', 'votacao', 'valores', 'admin'].forEach(t => {
+      ['registro', 'permuta', 'criancas', 'votacao', 'cerimonia', 'valores', 'admin'].forEach(t => {
         const tabEl = document.getElementById('tab-' + t);
         if (tabEl) tabEl.classList.remove('active');
       });
@@ -1099,11 +1203,12 @@
       document.getElementById('view-criancas').style.display = 'none';
       document.getElementById('view-votacao').style.display = 'none';
       document.getElementById('view-valores').style.display = 'none';
+      document.getElementById('view-cerimonia').style.display = 'none';
       document.getElementById('view-admin').style.display = 'none';
       document.getElementById('view-sucesso').style.display = 'none';
 
       document.querySelectorAll('#tablist [role="tab"]').forEach(b => { b.setAttribute('aria-selected', 'false'); b.tabIndex = -1; });
-      const TITULOS = { registro: 'Registro', permuta: 'Permuta de ingressos', criancas: 'Crianças', votacao: 'Música', valores: 'Valores', admin: 'Área da comissão' };
+      const TITULOS = { registro: 'Registro', permuta: 'Permuta de ingressos', criancas: 'Crianças', votacao: 'Música', cerimonia: 'Orador e juramentista', valores: 'Valores', admin: 'Área da comissão' };
       document.title = (TITULOS[tab] ? TITULOS[tab] + ' · ' : '') + 'Formatura LXIII CFP';
       const activeTab = document.getElementById('tab-' + tab);
       if (activeTab) {
@@ -1120,6 +1225,9 @@
         document.getElementById('view-criancas').style.display = 'block';
       } else if (tab === 'votacao') {
         document.getElementById('view-votacao').style.display = 'block';
+      } else if (tab === 'cerimonia') {
+        document.getElementById('view-cerimonia').style.display = 'block';
+        carregarCerimonia();
       } else if (tab === 'valores') {
         document.getElementById('view-valores').style.display = 'block';
         carregarResultadoPagamento();
@@ -1204,7 +1312,7 @@
       }
 
       // Bind tabs for strict CSP
-      const ABAS = ['registro', 'permuta', 'criancas', 'votacao', 'valores', 'admin'];
+      const ABAS = ['registro', 'permuta', 'criancas', 'votacao', 'cerimonia', 'valores', 'admin'];
       function irParaAba(t) {
         switchTab(t);
         const bar = document.getElementById('tablist');
@@ -1238,6 +1346,235 @@
     })();
 
     // ==========================================
+    // CERIMÔNIA: orador, juramentista e bradista
+    // ==========================================
+    const CARGOS_CER = [['orador', 'Orador'], ['juramentista', 'Juramentista'], ['bradista', 'Bradista']];
+    const ERROS_CER = {
+      pin_invalido: 'PIN incorreto. Confira com a comissão.',
+      bloqueado: 'Muitas tentativas erradas. Aguarde 15 minutos e tente de novo.',
+      votacao_iniciada: 'A votação já começou, então a lista de candidatos não pode mais ser alterada.',
+      duplicado: 'Este nome já está na lista deste cargo.',
+      limite: 'Cada turma pode ter no máximo 4 candidatos por cargo.',
+      nome_invalido: 'Informe um nome com pelo menos 2 letras.',
+      votacao_fechada: 'A votação ainda não foi aberta.',
+      votacao_encerrada: 'A votação já foi encerrada.',
+      nao_cadastrado: 'Camiseta não cadastrada. Faça o registro antes de votar.',
+      inscricao_cancelada: 'A inscrição desta camiseta está cancelada. Faça o registro de novo para votar.',
+      candidato_invalido: 'Candidato inválido. Atualize a página e tente de novo.',
+      nenhum_voto: 'Escolha pelo menos um candidato.',
+      nao_encontrado: 'Candidato não encontrado. Atualize a lista.'
+    };
+    let cerDados = { aberta: false, encerrada: false, candidatos: [] };
+    let cerRep = null; // { turma, pin } só na memória desta página
+
+    function cerAviso(id, texto, tipo) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.className = 'aviso-caixa' + (tipo ? ' ' + tipo : '');
+      el.textContent = texto;
+      el.hidden = !texto;
+    }
+    function cerErro(r, padrao) { return ERROS_CER[r && r.erro] || padrao; }
+    function cerCandidatos(cargo, turma) {
+      return cerDados.candidatos.filter(c => c.cargo === cargo && (!turma || c.turma === turma));
+    }
+
+    async function carregarCerimonia() {
+      try {
+        const r = await supabaseRequest('POST', 'rpc/listar_candidatos_cerimonia', {});
+        cerDados = { aberta: !!r.aberta, encerrada: !!r.encerrada, candidatos: Array.isArray(r.candidatos) ? r.candidatos : [] };
+      } catch (err) {
+        document.getElementById('cer-fase').textContent = 'Não foi possível carregar agora. Tente novamente em instantes.';
+        return;
+      }
+      desenharCerimonia();
+    }
+
+    function desenharCerimonia() {
+      const fase = document.getElementById('cer-fase');
+      fase.textContent = cerDados.encerrada ? 'Votação encerrada. Obrigado a todos que participaram.'
+        : cerDados.aberta ? 'Votação aberta. Escolha um candidato por cargo.'
+        : 'Indicações abertas. Os representantes das turmas estão cadastrando os candidatos.';
+      document.getElementById('cer-card-votar').hidden = !cerDados.aberta;
+
+      const box = document.getElementById('cer-lista');
+      const comCand = TURMAS.filter(t => cerDados.candidatos.some(c => c.turma === t));
+      let html = comCand.map(t => {
+        const linhas = CARGOS_CER.map(([k, rot]) => {
+          const nomes = cerCandidatos(k, t).map(c => escXml(c.nome)).join(', ');
+          return '<dt>' + rot + '</dt><dd>' + (nomes || '<span class="hint-small">sem candidato</span>') + '</dd>';
+        }).join('');
+        return '<div class="cer-turma"><h4>Turma ' + t + '</h4><dl>' + linhas + '</dl></div>';
+      }).join('');
+      const sem = TURMAS.filter(t => !comCand.includes(t));
+      if (!comCand.length) html = '<p class="hint">Nenhuma turma indicou candidatos ainda.</p>';
+      if (sem.length && comCand.length) html += '<p class="hint-small mt-12">Ainda sem indicação: ' + sem.join(', ') + '.</p>';
+      box.innerHTML = html;
+      if (cerRep) desenharEditorRep();
+      if (cerDados.aberta && document.getElementById('cer-voto-form') && !document.getElementById('cer-voto-form').hidden) desenharCamposVoto(cerVotoAtual);
+    }
+
+    // ----- representante da turma -----
+    function desenharEditorRep() {
+      document.getElementById('cer-rep-login').hidden = true;
+      document.getElementById('cer-rep-editor').hidden = false;
+      document.getElementById('cer-rep-titulo').textContent = 'Turma ' + cerRep.turma;
+      const travado = cerDados.aberta || cerDados.encerrada;
+      document.getElementById('cer-rep-cargos').innerHTML = (travado ? '<p class="aviso-caixa">A votação já começou: a lista não pode mais ser alterada.</p>' : '') +
+        CARGOS_CER.map(([k, rot]) => {
+          const itens = cerCandidatos(k, cerRep.turma).map(c =>
+            '<div class="cer-item"><span>' + escXml(c.nome) + '</span>' +
+            (travado ? '' : '<button type="button" class="btn btn-secondary" data-cer-remover="' + escXml(c.id) + '" aria-label="Remover ' + escXml(c.nome) + ' de ' + rot + '">Remover</button>') + '</div>').join('');
+          const cheio = cerCandidatos(k, cerRep.turma).length >= 4;
+          return '<div class="cer-cargo"><h4>' + rot + '</h4>' + (itens || '<p class="hint-small" style="margin-bottom:8px;">Nenhum candidato ainda.</p>') +
+            (travado || cheio ? (cheio && !travado ? '<p class="hint-small">Limite de 4 candidatos atingido.</p>' : '') :
+              '<div class="cer-add"><input type="text" id="cer-novo-' + k + '" maxlength="80" placeholder="Nome do candidato" aria-label="Nome do candidato a ' + rot + '">' +
+              '<button type="button" class="btn btn-primary" data-cer-adicionar="' + k + '">Adicionar</button></div>') + '</div>';
+        }).join('') + '<div id="cer-rep-aviso" class="aviso-caixa" role="status" hidden></div>';
+    }
+
+    async function entrarRepresentante() {
+      const turma = document.getElementById('cer-turma').value;
+      const pin = document.getElementById('cer-pin').value.trim();
+      if (!turma) { erroCampo('cer-turma', 'Selecione a sua turma.'); return; }
+      if (!/^\d{6}$/.test(pin)) { erroCampo('cer-pin', 'O PIN tem 6 dígitos.'); return; }
+      try {
+        const r = await supabaseRequest('POST', 'rpc/acessar_turma_cerimonia', { p_turma: turma, p_pin: pin });
+        if (!r || !r.ok) { erroCampo('cer-pin', cerErro(r, 'Não foi possível entrar.')); return; }
+        cerRep = { turma: turma, pin: pin };
+        document.getElementById('cer-pin').value = '';
+        desenharEditorRep();
+      } catch (err) { showToast(mensagemErro(err, 'Não foi possível entrar. Tente novamente.'), 'error'); }
+    }
+
+    async function adicionarCandidato(cargo) {
+      const inp = document.getElementById('cer-novo-' + cargo);
+      const nome = inp ? inp.value.trim() : '';
+      if (nome.length < 2) { erroCampo('cer-novo-' + cargo, 'Informe o nome do candidato.'); return; }
+      try {
+        const r = await supabaseRequest('POST', 'rpc/salvar_candidato_cerimonia', { p_turma: cerRep.turma, p_pin: cerRep.pin, p_cargo: cargo, p_nome: nome });
+        if (!r || !r.ok) { showToast(cerErro(r, 'Não foi possível salvar.'), 'error'); if (r && (r.erro === 'pin_invalido' || r.erro === 'bloqueado')) sairRepresentante(); return; }
+        showToast('Candidato adicionado.', 'success');
+        await carregarCerimonia();
+      } catch (err) { showToast(mensagemErro(err, 'Não foi possível salvar. Tente novamente.'), 'error'); }
+    }
+
+    async function removerCandidato(id) {
+      if (!confirm('Remover este candidato da lista?')) return;
+      try {
+        const r = await supabaseRequest('POST', 'rpc/remover_candidato_cerimonia', { p_turma: cerRep.turma, p_pin: cerRep.pin, p_id: id });
+        if (!r || !r.ok) { showToast(cerErro(r, 'Não foi possível remover.'), 'error'); return; }
+        showToast('Candidato removido.', 'success');
+        await carregarCerimonia();
+      } catch (err) { showToast(mensagemErro(err, 'Não foi possível remover. Tente novamente.'), 'error'); }
+    }
+
+    function sairRepresentante() {
+      cerRep = null;
+      document.getElementById('cer-rep-login').hidden = false;
+      document.getElementById('cer-rep-editor').hidden = true;
+    }
+
+    // ----- votação -----
+    let cerVotoAtual = {}; // cargo -> id escolhido
+    let cerEleitor = null;
+
+    function desenharCamposVoto(marcados) {
+      cerVotoAtual = Object.assign({}, marcados || {});
+      document.getElementById('cer-voto-campos').innerHTML = CARGOS_CER.map(([k, rot]) => {
+        const cands = cerCandidatos(k);
+        const ops = cands.map(c =>
+          '<label class="cer-opcao"><input type="radio" name="cer-voto-' + k + '" value="' + escXml(c.id) + '"' + (cerVotoAtual[k] === c.id ? ' checked' : '') + '><span>' + escXml(c.nome) + ' <small>Turma ' + escXml(c.turma) + '</small></span></label>').join('');
+        return '<fieldset class="cer-cargo" style="border:none;"><legend>' + rot + '</legend>' + (ops || '<p class="hint-small">Nenhum candidato indicado para este cargo.</p>') + '</fieldset>';
+      }).join('');
+    }
+
+    async function verificarEleitor() {
+      const cam = document.getElementById('cer-camiseta').value.trim();
+      const form = document.getElementById('cer-voto-form');
+      form.hidden = true; cerEleitor = null;
+      if (!cam) { erroCampo('cer-camiseta', 'Informe o número da camiseta.'); return; }
+      cerAviso('cer-voto-aviso', 'Verificando...', '');
+      try {
+        const r = await supabaseRequest('POST', 'rpc/consultar_voto_cerimonia', { p_camiseta: cam });
+        if (!r || !r.cadastrado) { cerAviso('cer-voto-aviso', 'Não encontramos esta camiseta no cadastro. Faça o registro na aba Registro antes de votar.', 'erro'); return; }
+        if (r.ativo === false) { cerAviso('cer-voto-aviso', 'A inscrição desta camiseta está cancelada. Faça o registro de novo para votar.', 'erro'); return; }
+        cerEleitor = { camiseta: cam, nome: r.nome };
+        document.getElementById('cer-voto-nome').textContent = r.nome;
+        desenharCamposVoto(r.votos || {});
+        cerAviso('cer-voto-aviso', r.votos && Object.keys(r.votos).length ? 'Você já votou. Pode alterar abaixo.' : '', '');
+        form.hidden = false;
+      } catch (err) { cerAviso('cer-voto-aviso', mensagemErro(err, 'Não foi possível verificar agora. Tente novamente.'), 'erro'); }
+    }
+
+    async function registrarVotosCer() {
+      if (!cerEleitor) return;
+      const votos = {};
+      CARGOS_CER.forEach(([k]) => { const sel = document.querySelector('input[name="cer-voto-' + k + '"]:checked'); if (sel) votos[k] = sel.value; });
+      if (!Object.keys(votos).length) { showToast('Escolha pelo menos um candidato.', 'error'); return; }
+      const btn = document.getElementById('btn-cer-votar'); btn.disabled = true;
+      try {
+        const r = await supabaseRequest('POST', 'rpc/votar_cerimonia', { p_camiseta: cerEleitor.camiseta, p_votos: votos });
+        if (!r || !r.ok) { showToast(cerErro(r, 'Não foi possível registrar o voto.'), 'error'); await carregarCerimonia(); return; }
+        salvarIdentidade(cerEleitor.nome, cerEleitor.camiseta);
+        cerVotoAtual = votos;
+        showToast('Votos registrados. Você pode alterar enquanto a votação estiver aberta.', 'success');
+        cerAviso('cer-voto-aviso', 'Votos registrados. Você pode alterar enquanto a votação estiver aberta.', 'ok');
+      } catch (err) { showToast(mensagemErro(err, 'Não foi possível registrar o voto. Tente novamente.'), 'error'); }
+      finally { btn.disabled = false; }
+    }
+
+    // ----- comissão -----
+    function pinComissao() {
+      const v = document.getElementById('cer-master').value.trim();
+      if (!/^\d{6}$/.test(v)) { erroCampo('cer-master', 'O PIN da comissão tem 6 dígitos.'); return null; }
+      return v;
+    }
+    async function acaoComissao(acao) {
+      const pin = pinComissao(); if (!pin) return;
+      const textos = { abrir: 'Abrir a votação? A lista de candidatos ficará travada.', encerrar: 'Encerrar a votação? Ninguém poderá mais votar.', reabrir_indicacoes: 'Voltar às indicações? A votação sai do ar e a lista volta a poder ser editada (os votos já dados são mantidos).' };
+      if (!confirm(textos[acao])) return;
+      try {
+        const r = await supabaseRequest('POST', 'rpc/controle_cerimonia', { p_master: pin, p_acao: acao });
+        if (!r || !r.ok) { cerAviso('cer-master-aviso', cerErro(r, 'Não foi possível concluir.'), 'erro'); return; }
+        cerAviso('cer-master-aviso', r.encerrada ? 'Votação encerrada.' : r.aberta ? 'Votação aberta.' : 'Indicações abertas.', 'ok');
+        await carregarCerimonia();
+      } catch (err) { cerAviso('cer-master-aviso', mensagemErro(err, 'Não foi possível concluir. Tente novamente.'), 'erro'); }
+    }
+    async function verResultadoCer() {
+      const pin = pinComissao(); if (!pin) return;
+      try {
+        const r = await supabaseRequest('POST', 'rpc/resultado_cerimonia', { p_master: pin });
+        if (!r || !r.ok) { cerAviso('cer-master-aviso', cerErro(r, 'Não foi possível carregar o resultado.'), 'erro'); return; }
+        cerAviso('cer-master-aviso', '', '');
+        const linhas = r.resultado || [];
+        document.getElementById('cer-resultado').innerHTML = CARGOS_CER.map(([k, rot]) => {
+          const l = linhas.filter(x => x.cargo === k);
+          const total = l.reduce((a, x) => a + Number(x.votos || 0), 0);
+          return '<table class="tabela-res"><caption class="sr-only">' + rot + '</caption><thead><tr><th>' + rot + '</th><th>Turma</th><th>Votos</th></tr></thead><tbody>' +
+            (l.map(x => '<tr><td>' + escXml(x.nome) + '</td><td>' + escXml(x.turma) + '</td><td>' + Number(x.votos) + '</td></tr>').join('') || '<tr><td colspan="3">Sem candidatos.</td></tr>') +
+            '</tbody></table><p class="hint-small" style="margin:-8px 0 14px;">' + total + ' voto' + (total === 1 ? '' : 's') + ' em ' + rot.toLowerCase() + '.</p>';
+        }).join('');
+      } catch (err) { cerAviso('cer-master-aviso', mensagemErro(err, 'Não foi possível carregar o resultado.'), 'erro'); }
+    }
+
+    document.getElementById('btn-cer-entrar').addEventListener('click', entrarRepresentante);
+    document.getElementById('btn-cer-sair').addEventListener('click', sairRepresentante);
+    document.getElementById('btn-cer-verificar').addEventListener('click', verificarEleitor);
+    document.getElementById('btn-cer-votar').addEventListener('click', registrarVotosCer);
+    document.getElementById('btn-cer-resultado').addEventListener('click', verResultadoCer);
+    document.getElementById('cer-camiseta').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); verificarEleitor(); } });
+    document.getElementById('cer-pin').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); entrarRepresentante(); } });
+    document.querySelectorAll('[data-cer-acao]').forEach(b => b.addEventListener('click', () => acaoComissao(b.getAttribute('data-cer-acao'))));
+    document.getElementById('cer-rep-cargos').addEventListener('click', e => {
+      const add = e.target.closest('[data-cer-adicionar]'); if (add) { adicionarCandidato(add.getAttribute('data-cer-adicionar')); return; }
+      const rem = e.target.closest('[data-cer-remover]'); if (rem) removerCandidato(rem.getAttribute('data-cer-remover'));
+    });
+    document.getElementById('cer-rep-cargos').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && e.target.id && e.target.id.indexOf('cer-novo-') === 0) { e.preventDefault(); adicionarCandidato(e.target.id.replace('cer-novo-', '')); }
+    });
+
+    // ==========================================
     // CRIANÇAS E VOTAÇÃO LOGIC
     // ==========================================
     function toggleCriancas() {
@@ -1263,7 +1600,7 @@
     // IDENTIDADE LEMBRADA (nome + camiseta, só neste navegador)
     // ==========================================
     const IDENT_KEY = 'anp_identidade';
-    const IDENT_CAMPOS = [['nome', 'matricula'], ['cri-nome', 'cri-camiseta'], ['vot-nome', 'vot-camiseta']];
+    const IDENT_CAMPOS = [['nome', 'matricula'], ['cri-nome', 'cri-camiseta'], ['vot-nome', 'vot-camiseta'], [null, 'cer-camiseta']];
 
     function lerIdentidade() {
       try {
