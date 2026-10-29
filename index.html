@@ -362,6 +362,8 @@
     .cer-turma dl { display: grid; grid-template-columns: 110px 1fr; gap: 4px 12px; font-size: 14px; }
     .cer-turma dt { color: var(--pf-muted); }
     .cer-turma dd { color: var(--pf-text); }
+    .cer-vencedor { font-family: var(--font-display); font-size: 24px; font-weight: 700; color: var(--pf-gold-bright); line-height: 1.2; margin-bottom: 8px; }
+    .cer-vencedor small { font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; color: var(--pf-muted); }
     .cer-cargo { margin-bottom: 18px; }
     .cer-cargo legend, .cer-cargo h4 { font-size: 13px; font-weight: 700; color: var(--pf-gold); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
     .cer-opcao { display: flex; gap: 10px; align-items: center; padding: 10px 14px; min-height: 44px; background: var(--pf-black); border: 1px solid var(--pf-line); border-radius: 10px; margin-bottom: 8px; cursor: pointer; font-size: 14px; color: var(--pf-text); }
@@ -837,8 +839,14 @@
 
       <div class="card card-top">
         <h2>Orador, juramentista e bradista</h2>
-        <p class="hint mb-16">Cada turma indica seus candidatos para os três cargos da cerimônia. Depois, a academia escolhe um nome por cargo.</p>
+        <p class="hint mb-16">Cada turma indica 1 candidato para cada cargo da cerimônia. Depois, a academia vota entre os indicados.</p>
         <p id="cer-fase" class="cer-fase" role="status">Carregando...</p>
+      </div>
+
+      <div class="card card-top" id="cer-card-resultado" hidden>
+        <h3>Resultado final</h3>
+        <p class="hint mb-16">Quem ganhou em cada cargo, com os votos de todos os candidatos indicados pelas turmas.</p>
+        <div id="cer-resultado-publico"></div>
       </div>
 
       <div class="card" id="cer-card-votar" hidden>
@@ -867,7 +875,7 @@
       <details class="card" id="cer-rep">
         <summary class="resumo-card">Sou representante da turma</summary>
         <div class="mt-12">
-          <p class="hint mb-16">Use o PIN de 6 dígitos que a comissão entregou ao representante da sua turma. Cada turma pode indicar até 4 candidatos por cargo.</p>
+          <p class="hint mb-16">Use o PIN de 6 dígitos que a comissão entregou ao representante da sua turma. Cada turma indica 1 candidato por cargo: para trocar, remova o atual e adicione o novo.</p>
           <div id="cer-rep-login">
             <div class="form-grid">
               <div>
@@ -1354,7 +1362,9 @@
       bloqueado: 'Muitas tentativas erradas. Aguarde 15 minutos e tente de novo.',
       votacao_iniciada: 'A votação já começou, então a lista de candidatos não pode mais ser alterada.',
       duplicado: 'Este nome já está na lista deste cargo.',
-      limite: 'Cada turma pode ter no máximo 4 candidatos por cargo.',
+      limite: 'Cada turma indica 1 candidato por cargo. Remova o atual para trocar.',
+      sem_candidatos: 'Ainda não há candidatos cadastrados.',
+      nao_encerrada: 'O resultado só aparece depois que a votação for encerrada.',
       nome_invalido: 'Informe um nome com pelo menos 2 letras.',
       votacao_fechada: 'A votação ainda não foi aberta.',
       votacao_encerrada: 'A votação já foi encerrada.',
@@ -1374,7 +1384,10 @@
       el.textContent = texto;
       el.hidden = !texto;
     }
-    function cerErro(r, padrao) { return ERROS_CER[r && r.erro] || padrao; }
+    function cerErro(r, padrao) {
+      if (r && r.erro === 'excesso_candidatos') return 'Não dá para abrir: há turma com mais de um candidato no mesmo cargo (' + (r.detalhe || '') + '). Cada turma deve ficar com 1 por cargo.';
+      return ERROS_CER[r && r.erro] || padrao;
+    }
     function cerCandidatos(cargo, turma) {
       return cerDados.candidatos.filter(c => c.cargo === cargo && (!turma || c.turma === turma));
     }
@@ -1388,13 +1401,38 @@
         return;
       }
       desenharCerimonia();
+      await carregarResultadoPublicoCer();
+    }
+
+    async function carregarResultadoPublicoCer() {
+      const box = document.getElementById('cer-card-resultado');
+      if (!cerDados.encerrada) { box.hidden = true; return; }
+      try {
+        const r = await supabaseRequest('POST', 'rpc/resultado_publico_cerimonia', {});
+        if (!r || !r.ok) { box.hidden = true; return; }
+        const linhas = r.resultado || [];
+        document.getElementById('cer-resultado-publico').innerHTML = CARGOS_CER.map(([k, rot]) => {
+          const l = linhas.filter(x => x.cargo === k).sort((a, b) => Number(b.votos) - Number(a.votos));
+          if (!l.length) return '<div class="cer-cargo"><h4>' + rot + '</h4><p class="hint-small">Sem candidatos.</p></div>';
+          const topo = Number(l[0].votos);
+          const empatados = l.filter(x => Number(x.votos) === topo);
+          let destaque;
+          if (topo === 0) destaque = '<p class="cer-vencedor">Sem votos neste cargo.</p>';
+          else if (empatados.length > 1) destaque = '<p class="cer-vencedor">Empate: ' + empatados.map(x => escXml(x.nome) + ' (turma ' + escXml(x.turma) + ')').join(' e ') + ', com ' + topo + ' voto' + (topo === 1 ? '' : 's') + ' cada.</p>';
+          else destaque = '<p class="cer-vencedor">' + escXml(l[0].nome) + ' <small>turma ' + escXml(l[0].turma) + ' · ' + topo + ' voto' + (topo === 1 ? '' : 's') + '</small></p>';
+          return '<div class="cer-cargo"><h4>' + rot + '</h4>' + destaque +
+            '<table class="tabela-res"><caption class="sr-only">Votos em ' + rot + '</caption><thead><tr><th>Candidato</th><th>Turma</th><th>Votos</th></tr></thead><tbody>' +
+            l.map(x => '<tr><td>' + escXml(x.nome) + '</td><td>' + escXml(x.turma) + '</td><td>' + Number(x.votos) + '</td></tr>').join('') + '</tbody></table></div>';
+        }).join('');
+        box.hidden = false;
+      } catch (err) { box.hidden = true; }
     }
 
     function desenharCerimonia() {
       const fase = document.getElementById('cer-fase');
       fase.textContent = cerDados.encerrada ? 'Votação encerrada. Obrigado a todos que participaram.'
         : cerDados.aberta ? 'Votação aberta. Escolha um candidato por cargo.'
-        : 'Indicações abertas. Os representantes das turmas estão cadastrando os candidatos.';
+        : 'Indicações abertas. Cada turma indica 1 candidato por cargo; a votação abre depois.';
       document.getElementById('cer-card-votar').hidden = !cerDados.aberta;
 
       const box = document.getElementById('cer-lista');
@@ -1422,14 +1460,15 @@
       const travado = cerDados.aberta || cerDados.encerrada;
       document.getElementById('cer-rep-cargos').innerHTML = (travado ? '<p class="aviso-caixa">A votação já começou: a lista não pode mais ser alterada.</p>' : '') +
         CARGOS_CER.map(([k, rot]) => {
-          const itens = cerCandidatos(k, cerRep.turma).map(c =>
+          const lista = cerCandidatos(k, cerRep.turma);
+          const itens = lista.map(c =>
             '<div class="cer-item"><span>' + escXml(c.nome) + '</span>' +
             (travado ? '' : '<button type="button" class="btn btn-secondary" data-cer-remover="' + escXml(c.id) + '" aria-label="Remover ' + escXml(c.nome) + ' de ' + rot + '">Remover</button>') + '</div>').join('');
-          const cheio = cerCandidatos(k, cerRep.turma).length >= 4;
-          return '<div class="cer-cargo"><h4>' + rot + '</h4>' + (itens || '<p class="hint-small" style="margin-bottom:8px;">Nenhum candidato ainda.</p>') +
-            (travado || cheio ? (cheio && !travado ? '<p class="hint-small">Limite de 4 candidatos atingido.</p>' : '') :
-              '<div class="cer-add"><input type="text" id="cer-novo-' + k + '" maxlength="80" placeholder="Nome do candidato" aria-label="Nome do candidato a ' + rot + '">' +
-              '<button type="button" class="btn btn-primary" data-cer-adicionar="' + k + '">Adicionar</button></div>') + '</div>';
+          const aviso = !travado && lista.length > 1 ? '<p class="aviso-caixa erro" style="margin:0 0 8px;">A turma deve ter só 1 candidato neste cargo. Remova os outros antes de abrir a votação.</p>' : '';
+          const formAdd = (travado || lista.length >= 1) ? '' :
+            '<div class="cer-add"><input type="text" id="cer-novo-' + k + '" maxlength="80" placeholder="Nome do candidato" aria-label="Nome do candidato a ' + rot + '">' +
+            '<button type="button" class="btn btn-primary" data-cer-adicionar="' + k + '">Adicionar</button></div>';
+          return '<div class="cer-cargo"><h4>' + rot + '</h4>' + aviso + (itens || '<p class="hint-small" style="margin-bottom:8px;">Nenhum candidato indicado ainda.</p>') + formAdd + '</div>';
         }).join('') + '<div id="cer-rep-aviso" class="aviso-caixa" role="status" hidden></div>';
     }
 
