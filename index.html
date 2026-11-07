@@ -353,6 +353,16 @@
     .cer-fase { font-size: 14px; font-weight: 600; color: var(--pf-gold); background: rgba(201,169,78,0.08); border: 1px solid var(--pf-gold-dim); border-radius: 10px; padding: 12px 14px; }
     .cer-linha { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
     .cer-nome-eleitor { font-size: 15px; font-weight: 600; color: var(--pf-text); margin-bottom: 12px; }
+    #view-convidados [hidden] { display: none !important; }
+    .cv-linha { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; padding: 12px 0; border-top: 1px solid var(--pf-border); }
+    .cv-linha:first-child { border-top: 0; padding-top: 0; }
+    .cv-c-nome { flex: 2 1 220px; } .cv-c-cpf { flex: 1 1 160px; } .cv-c-idade { flex: 0 1 90px; }
+    .cv-rm { min-height: 44px; }
+    .cv-check { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.5; cursor: pointer; }
+    .cv-check input { width: 20px; height: 20px; margin-top: 2px; flex: none; }
+    #conv-detalhe { width: 100%; font: inherit; font-size: 15px; background: var(--pf-black); color: var(--pf-text); border: 1px solid var(--pf-line); border-radius: 8px; padding: 12px 16px; outline: none; resize: vertical; }
+    #conv-detalhe:focus { border-color: var(--pf-gold); box-shadow: 0 0 0 3px rgba(201,169,78,0.1); }
+    #conv-detalhe::placeholder { color: var(--pf-muted); }
     .aviso-caixa { margin-top: 14px; padding: 12px 14px; border-radius: 10px; font-size: 13px; line-height: 1.6; background: rgba(201,169,78,0.08); border: 1px solid var(--pf-gold-dim); color: var(--pf-text); }
     .aviso-caixa.erro { background: rgba(192,57,43,0.1); border-color: rgba(224,103,91,0.6); color: #ffb4ab; }
     .aviso-caixa.ok { background: rgba(39,174,96,0.1); border-color: rgba(39,174,96,0.5); color: #a3d9b1; }
@@ -468,6 +478,7 @@
       <button class="tab-btn" id="tab-criancas" role="tab" aria-selected="false" aria-controls="view-criancas" tabindex="-1"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3.5 12c0-1.9 1.6-3.5 3.5-3.5s3.5 1.6 3.5 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none"/><circle cx="11" cy="5" r="1.5" stroke="currentColor" stroke-width="1" fill="none"/></svg>Crianças</button>
       <button class="tab-btn" id="tab-votacao" role="tab" aria-selected="false" aria-controls="view-votacao" tabindex="-1"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M4 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm6-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM4 10V2l6-1v9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Música</button>
       <button class="tab-btn" id="tab-cerimonia" role="tab" aria-selected="false" aria-controls="view-cerimonia" tabindex="-1"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1.2l1.7 3.5 3.8.5-2.8 2.6.7 3.8L7 9.8 3.6 11.6l.7-3.8L1.5 5.2l3.8-.5L7 1.2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>Cerimônia</button>
+      <button class="tab-btn" id="tab-convidados" role="tab" aria-selected="false" aria-controls="view-convidados" tabindex="-1"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="5" cy="4.5" r="2.2" stroke="currentColor" stroke-width="1.2"/><path d="M1.2 12c0-2.2 1.7-3.8 3.8-3.8s3.8 1.6 3.8 3.8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M9.5 2.6a2.2 2.2 0 010 3.8M11 8.4c1 .5 1.8 1.6 1.8 3.6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Convidados</button>
       <button class="tab-btn" id="tab-valores" role="tab" aria-selected="false" aria-controls="view-valores" tabindex="-1"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.3"/><path d="M8.6 5.2C8.3 4.6 7.7 4.3 7 4.3c-.9 0-1.6.5-1.6 1.2 0 1.7 3.2.8 3.2 2.5 0 .7-.7 1.2-1.6 1.2-.8 0-1.5-.3-1.8-1M7 3.3v1M7 9.7v1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Valores</button>
     </div>
 
@@ -917,6 +928,91 @@
       </details>
     </div>
 
+    <!-- ========== TAB: CONVIDADOS ========== -->
+    <div id="view-convidados" role="tabpanel" aria-labelledby="tab-convidados" class="painel fade-in">
+
+      <div class="card card-top">
+        <h2>Convidados</h2>
+        <p class="hint mb-16">Informe quem vai com você à solenidade e ao baile. Para cada convidado adulto pedimos nome e CPF. <strong>Crianças até 12 anos não pagam</strong>, mas também precisam ser cadastradas.</p>
+        <div class="form-grid">
+          <div>
+            <label for="conv-nome" class="rotulo rotulo-p">Seu nome completo</label>
+            <input type="text" id="conv-nome" autocomplete="name" placeholder="Como no seu cadastro">
+          </div>
+          <div>
+            <label for="conv-camiseta" class="rotulo rotulo-p">Número da camiseta</label>
+            <input type="text" id="conv-camiseta" inputmode="numeric" autocomplete="off" placeholder="Ex: 042">
+          </div>
+          <button type="button" id="btn-conv-buscar" class="btn btn-primary form-grid-total">Buscar meu cadastro</button>
+        </div>
+        <div id="conv-aviso" class="aviso-caixa" role="status" hidden></div>
+      </div>
+
+      <div id="conv-editor" hidden>
+        <div class="card">
+          <h3 id="conv-aluno-nome"></h3>
+          <p class="hint" id="conv-aluno-info"></p>
+          <div id="conv-turma-box" class="cer-linha mt-12" hidden>
+            <div style="flex: 1; min-width: 160px;">
+              <label for="conv-turma" class="rotulo rotulo-p">Sua turma</label>
+              <select id="conv-turma" class="js-turma campo-select"><option value="">Selecione</option></select>
+            </div>
+            <button type="button" id="btn-conv-turma" class="btn btn-secondary">Salvar turma</button>
+          </div>
+        </div>
+
+        <div class="card" id="conv-card-sol">
+          <h3>Convidados da solenidade</h3>
+          <p class="hint mb-16" id="conv-sol-hint">Até 4 convidados por formando.</p>
+          <div id="conv-lista-sol"></div>
+          <button type="button" id="btn-conv-add-sol" class="btn btn-secondary mt-12">Adicionar convidado</button>
+        </div>
+
+        <div class="card" id="conv-card-bai">
+          <h3>Convidados do baile</h3>
+          <p class="hint mb-16" id="conv-bai-hint"></p>
+          <div id="conv-lista-bai"></div>
+          <div class="cer-linha mt-12">
+            <button type="button" id="btn-conv-add-bai" class="btn btn-secondary">Adicionar convidado</button>
+            <button type="button" id="btn-conv-copiar" class="btn btn-secondary">Copiar lista da solenidade</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Crianças</h3>
+          <p class="hint mb-16"><strong>Crianças até 12 anos não pagam.</strong> Informe nome, idade e CPF de cada uma. A partir de 13 anos, cadastre como convidado comum.</p>
+          <div id="conv-lista-cri"></div>
+          <button type="button" id="btn-conv-add-cri" class="btn btn-secondary mt-12">Adicionar criança</button>
+        </div>
+
+        <div class="card">
+          <h3>Atendimento especial</h3>
+          <label class="cv-check"><input type="checkbox" id="conv-especial"> <span>Eu ou algum convidado precisa de atendimento especial</span></label>
+          <div id="conv-especial-box" hidden class="mt-12">
+            <label for="conv-detalhe" class="rotulo rotulo-p">Quem precisa e de que tipo de atendimento</label>
+            <textarea id="conv-detalhe" rows="3" maxlength="500" placeholder="Ex: Minha mãe é cadeirante e precisa de acesso sem escadas"></textarea>
+          </div>
+        </div>
+
+        <div class="card">
+          <label class="cv-check"><input type="checkbox" id="conv-aceite"> <span>Os convidados autorizaram o uso do nome e do CPF pela comissão, apenas para controle de acesso e organização da solenidade e do baile.</span></label>
+          <button type="button" id="btn-conv-salvar" class="btn btn-primary mt-16" style="width: 100%;">Salvar convidados</button>
+          <p class="hint-small mt-12">Por segurança, o CPF salvo aparece parcialmente oculto. Para corrigir um CPF, remova o convidado e cadastre de novo.</p>
+        </div>
+      </div>
+
+      <details class="card" id="conv-comissao">
+        <summary class="resumo-card">Área da comissão</summary>
+        <div class="mt-12">
+          <p class="hint mb-16">Com o PIN da comissão você baixa a lista completa de convidados em planilha (CSV).</p>
+          <label for="conv-master" class="rotulo rotulo-p">PIN da comissão</label>
+          <input type="password" id="conv-master" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="6 dígitos" style="max-width: 260px;">
+          <div class="mt-12"><button type="button" id="btn-conv-export" class="btn btn-secondary">Baixar lista de convidados</button></div>
+          <div id="conv-master-aviso" class="aviso-caixa" role="status" hidden></div>
+        </div>
+      </details>
+    </div>
+
     <!-- ========== TAB: VALORES ========== -->
     <div id="view-valores" role="tabpanel" aria-labelledby="tab-valores" class="painel fade-in">
 
@@ -1202,7 +1298,7 @@
     // TAB SWITCHING
     // ==========================================
     function switchTab(tab) {
-      ['registro', 'permuta', 'criancas', 'votacao', 'cerimonia', 'valores', 'admin'].forEach(t => {
+      ['registro', 'permuta', 'criancas', 'votacao', 'cerimonia', 'convidados', 'valores', 'admin'].forEach(t => {
         const tabEl = document.getElementById('tab-' + t);
         if (tabEl) tabEl.classList.remove('active');
       });
@@ -1212,11 +1308,12 @@
       document.getElementById('view-votacao').style.display = 'none';
       document.getElementById('view-valores').style.display = 'none';
       document.getElementById('view-cerimonia').style.display = 'none';
+      document.getElementById('view-convidados').style.display = 'none';
       document.getElementById('view-admin').style.display = 'none';
       document.getElementById('view-sucesso').style.display = 'none';
 
       document.querySelectorAll('#tablist [role="tab"]').forEach(b => { b.setAttribute('aria-selected', 'false'); b.tabIndex = -1; });
-      const TITULOS = { registro: 'Registro', permuta: 'Permuta de ingressos', criancas: 'Crianças', votacao: 'Música', cerimonia: 'Orador e juramentista', valores: 'Valores', admin: 'Área da comissão' };
+      const TITULOS = { registro: 'Registro', permuta: 'Permuta de ingressos', criancas: 'Crianças', votacao: 'Música', cerimonia: 'Orador e juramentista', convidados: 'Convidados', valores: 'Valores', admin: 'Área da comissão' };
       document.title = (TITULOS[tab] ? TITULOS[tab] + ' · ' : '') + 'Formatura LXIII CFP';
       const activeTab = document.getElementById('tab-' + tab);
       if (activeTab) {
@@ -1236,6 +1333,8 @@
       } else if (tab === 'cerimonia') {
         document.getElementById('view-cerimonia').style.display = 'block';
         carregarCerimonia();
+      } else if (tab === 'convidados') {
+        document.getElementById('view-convidados').style.display = 'block';
       } else if (tab === 'valores') {
         document.getElementById('view-valores').style.display = 'block';
         carregarResultadoPagamento();
@@ -1320,7 +1419,7 @@
       }
 
       // Bind tabs for strict CSP
-      const ABAS = ['registro', 'permuta', 'criancas', 'votacao', 'cerimonia', 'valores', 'admin'];
+      const ABAS = ['registro', 'permuta', 'criancas', 'votacao', 'cerimonia', 'convidados', 'valores', 'admin'];
       function irParaAba(t) {
         switchTab(t);
         const bar = document.getElementById('tablist');
@@ -1614,6 +1713,285 @@
     });
 
     // ==========================================
+    // CONVIDADOS
+    // ==========================================
+    const ERROS_CV = {
+      nao_confere: 'Camiseta e nome não conferem com o cadastro. Use o nome completo como no Registro.',
+      bloqueado: 'Muitas tentativas. Aguarde 15 minutos e tente de novo.',
+      inscricao_cancelada: 'Sua inscrição está cancelada. Fale com a comissão.',
+      sem_aceite: 'Confirme a autorização dos convidados para salvar.',
+      lista_invalida: 'A lista de convidados é inválida. Recarregue a página e tente de novo.',
+      detalhe_obrigatorio: 'Descreva o atendimento especial necessário.',
+      item_invalido: 'Um dos convidados é inválido. Busque seu cadastro de novo e refaça a lista.',
+      nome_invalido: 'Informe o nome do convidado (2 a 80 letras).',
+      cpf_invalido: 'CPF inválido. Confira os números.',
+      cpf_repetido: 'O mesmo CPF aparece mais de uma vez.',
+      idade_invalida: 'Informe a idade da criança.',
+      crianca_maior: 'Crianças só até 12 anos. Cadastre como convidado comum.',
+      sem_evento: 'Marque solenidade ou baile para o convidado.',
+      limite_solenidade: 'A solenidade permite no máximo 4 convidados por formando.',
+      sem_solenidade: 'Você não está inscrito na solenidade. Atualize o Registro primeiro.',
+      sem_baile: 'Você não está inscrito no baile. Atualize o Registro primeiro.',
+      limite_baile: 'Quantidade de convidados do baile acima do permitido.',
+      limite_criancas: 'Limite de 6 crianças por formando.',
+      pin_invalido: 'PIN da comissão incorreto.'
+    };
+    const CV = { aluno: null, nome: '', cam: '', sol: [], bai: [], cri: [], seq: 0 };
+
+    function cvAviso(id, msg, tipo) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (!msg) { el.hidden = true; el.textContent = ''; return; }
+      el.hidden = false;
+      el.className = 'aviso-caixa' + (tipo ? ' ' + tipo : '');
+      el.textContent = msg;
+    }
+    function cpfMascara(v) {
+      const d = String(v || '').replace(/\D/g, '').slice(0, 11);
+      return d.replace(/^(\d{3})(\d)/, '$1.$2').replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d)/, '.$1-$2');
+    }
+    function cpfValido(v) {
+      const d = String(v || '').replace(/\D/g, '');
+      if (d.length !== 11 || /^(\d)\1{10}$/.test(d)) return false;
+      for (let t = 9; t <= 10; t++) {
+        let s = 0;
+        for (let i = 0; i < t; i++) s += parseInt(d[i], 10) * (t + 1 - i);
+        let dv = (s * 10) % 11; if (dv === 10) dv = 0;
+        if (dv !== parseInt(d[t], 10)) return false;
+      }
+      return true;
+    }
+    function cvLimite(lista) {
+      if (!CV.aluno) return 0;
+      if (lista === 'sol') return CV.aluno.solenidade ? 4 : 0;
+      if (lista === 'bai') return CV.aluno.baile ? Math.max(CV.aluno.qtd_baile || 0, 0) : 0;
+      return 6;
+    }
+
+    function cvLinha(lista, item) {
+      const i = CV[lista].indexOf(item);
+      const pref = 'cv-' + lista + '-' + item.k;
+      const row = document.createElement('div');
+      row.className = 'cv-linha';
+      const mk = (cls, id, label, el) => {
+        const w = document.createElement('div'); w.className = cls;
+        const l = document.createElement('label'); l.htmlFor = id; l.className = 'rotulo rotulo-p'; l.textContent = label;
+        w.appendChild(l); w.appendChild(el); return w;
+      };
+      const nome = document.createElement('input');
+      nome.type = 'text'; nome.id = pref + '-nome'; nome.maxLength = 80; nome.value = item.nome || ''; nome.autocomplete = 'off';
+      nome.addEventListener('input', () => { item.nome = nome.value; });
+      row.appendChild(mk('cv-c-nome', nome.id, lista === 'cri' ? 'Nome da criança' : 'Nome completo', nome));
+      if (lista === 'cri') {
+        const idade = document.createElement('input');
+        idade.type = 'number'; idade.id = pref + '-idade'; idade.min = 0; idade.max = 12; idade.inputMode = 'numeric';
+        idade.value = item.idade === null || item.idade === undefined ? '' : item.idade;
+        idade.addEventListener('input', () => { item.idade = idade.value; });
+        row.appendChild(mk('cv-c-idade', idade.id, 'Idade', idade));
+      }
+      const cpf = document.createElement('input');
+      cpf.type = 'text'; cpf.id = pref + '-cpf'; cpf.inputMode = 'numeric'; cpf.autocomplete = 'off'; cpf.placeholder = '000.000.000-00';
+      if (item.id) { cpf.value = item.masc; cpf.readOnly = true; cpf.setAttribute('aria-readonly', 'true'); }
+      else {
+        cpf.value = cpfMascara(item.cpf);
+        cpf.addEventListener('input', () => { cpf.value = cpfMascara(cpf.value); item.cpf = cpf.value; });
+      }
+      row.appendChild(mk('cv-c-cpf', cpf.id, 'CPF', cpf));
+      const rm = document.createElement('button');
+      rm.type = 'button'; rm.className = 'btn btn-secondary cv-rm'; rm.textContent = 'Remover';
+      rm.setAttribute('aria-label', 'Remover ' + (item.nome || 'convidado ' + (i + 1)));
+      rm.addEventListener('click', () => { CV[lista].splice(CV[lista].indexOf(item), 1); cvDesenhar(); });
+      row.appendChild(rm);
+      return row;
+    }
+
+    function cvDesenhar() {
+      if (!CV.aluno) return;
+      ['sol', 'bai', 'cri'].forEach(l => {
+        const box = document.getElementById('conv-lista-' + l);
+        box.textContent = '';
+        CV[l].forEach(it => box.appendChild(cvLinha(l, it)));
+        if (!CV[l].length) {
+          const p = document.createElement('p'); p.className = 'hint-small';
+          p.textContent = l === 'cri' ? 'Nenhuma criança cadastrada.' : 'Nenhum convidado cadastrado.';
+          box.appendChild(p);
+        }
+        const add = document.getElementById('btn-conv-add-' + l);
+        const lim = cvLimite(l);
+        add.disabled = CV[l].length >= lim;
+        add.textContent = CV[l].length >= lim && l !== 'cri' ? 'Limite atingido' : (l === 'cri' ? 'Adicionar criança' : 'Adicionar convidado');
+      });
+      const a = CV.aluno;
+      document.getElementById('conv-sol-hint').textContent = a.solenidade
+        ? 'Até 4 convidados por formando (' + CV.sol.length + ' de 4).'
+        : 'Você não está inscrito na solenidade. Atualize o Registro para cadastrar convidados.';
+      document.getElementById('conv-bai-hint').textContent = a.baile
+        ? 'Até ' + a.qtd_baile + ' convite(s), conforme o seu Registro (' + CV.bai.length + ' de ' + a.qtd_baile + ').'
+        : 'Você não está inscrito no baile. Atualize o Registro para cadastrar convidados.';
+      document.getElementById('btn-conv-copiar').disabled = !a.baile || !CV.sol.length || CV.bai.length >= cvLimite('bai');
+    }
+
+    function cvNovo(lista, dados) {
+      CV.seq += 1;
+      const it = Object.assign({ k: CV.seq, id: null, nome: '', cpf: '', masc: '', idade: '' }, dados || {});
+      CV[lista].push(it);
+      return it;
+    }
+
+    async function cvBuscar() {
+      const nome = document.getElementById('conv-nome').value.trim();
+      const cam = document.getElementById('conv-camiseta').value.trim();
+      cvAviso('conv-aviso', '');
+      if (nome.length < 3) { erroCampo('conv-nome', 'Informe seu nome completo.'); return; }
+      if (!cam) { erroCampo('conv-camiseta', 'Informe o número da camiseta.'); return; }
+      const btn = document.getElementById('btn-conv-buscar');
+      btn.disabled = true; btn.textContent = 'Buscando...';
+      try {
+        const r = await supabaseRequest('POST', 'rpc/consultar_convidados', { p_matricula: cam, p_nome: nome });
+        if (r.erro) { document.getElementById('conv-editor').hidden = true; cvAviso('conv-aviso', ERROS_CV[r.erro] || 'Não foi possível buscar.', 'erro'); return; }
+        CV.aluno = r.aluno; CV.nome = nome; CV.cam = cam; CV.sol = []; CV.bai = []; CV.cri = [];
+        const mapa = {};
+        (r.convidados || []).forEach(c => {
+          if (c.tipo === 'crianca') { cvNovo('cri', { id: c.id, nome: c.nome, masc: c.cpf_mascarado, idade: c.idade }); return; }
+          const base = { id: c.id, nome: c.nome, masc: c.cpf_mascarado };
+          if (c.solenidade) cvNovo('sol', base);
+          if (c.baile) cvNovo('bai', base);
+        });
+        document.getElementById('conv-especial').checked = !!(r.grupo && r.grupo.especial);
+        document.getElementById('conv-detalhe').value = (r.grupo && r.grupo.detalhe) || '';
+        document.getElementById('conv-especial-box').hidden = !document.getElementById('conv-especial').checked;
+        document.getElementById('conv-aceite').checked = false;
+        const a = r.aluno;
+        document.getElementById('conv-aluno-nome').textContent = a.nome;
+        const eventos = [a.solenidade ? 'solenidade' : null, a.baile ? 'baile' : null].filter(Boolean).join(' e ') || 'nenhum evento';
+        document.getElementById('conv-aluno-info').textContent = 'Camiseta ' + a.matricula + ' · Turma ' + (a.turma ? normalizarTurma(a.turma) : 'não informada') + ' · Inscrito em: ' + eventos;
+        document.getElementById('conv-turma-box').hidden = !!a.turma;
+        document.getElementById('conv-editor').hidden = false;
+        salvarIdentidade(nome, cam);
+        cvDesenhar();
+      } catch (e) {
+        cvAviso('conv-aviso', 'Não foi possível buscar agora. Verifique a conexão e tente de novo.', 'erro');
+      } finally { btn.disabled = false; btn.textContent = 'Buscar meu cadastro'; }
+    }
+
+    async function cvSalvarTurma() {
+      const t = normalizarTurma(document.getElementById('conv-turma').value);
+      if (!t) { erroCampo('conv-turma', 'Selecione a turma.'); return; }
+      try {
+        await supabaseRequest('PATCH', 'alunos_formatura?matricula=eq.' + encodeURIComponent(CV.cam), { turma: t });
+        CV.aluno.turma = t;
+        document.getElementById('conv-turma-box').hidden = true;
+        document.getElementById('conv-aluno-info').textContent = document.getElementById('conv-aluno-info').textContent.replace('não informada', t);
+        showToast('Turma salva.', 'success');
+      } catch (e) { showToast('Não foi possível salvar a turma.', 'error'); }
+    }
+
+    async function cvSalvar() {
+      if (!CV.aluno) return;
+      const porChave = {};
+      const ordem = [];
+      let erro = null;
+      const coletar = (lista, flag) => {
+        CV[lista].forEach(it => {
+          if (erro) return;
+          const pref = 'cv-' + lista + '-' + it.k;
+          const digitos = String(it.cpf || '').replace(/\D/g, '');
+          if (!it.id && !it.nome.trim() && !digitos) return;
+          if (it.nome.trim().length < 2) { erro = [pref + '-nome', 'Informe o nome do convidado.']; return; }
+          if (!it.id && !cpfValido(digitos)) { erro = [pref + '-cpf', 'CPF inválido. Confira os números.']; return; }
+          const chave = it.id || digitos;
+          if (!porChave[chave]) {
+            porChave[chave] = { id: it.id || undefined, tipo: 'adulto', nome: it.nome.trim(), cpf: it.id ? undefined : digitos, solenidade: false, baile: false };
+            ordem.push(chave);
+          } else if (porChave[chave][flag]) { erro = [pref + '-cpf', 'Este convidado já está nesta lista.']; return; }
+          porChave[chave][flag] = true;
+        });
+      };
+      coletar('sol', 'solenidade');
+      coletar('bai', 'baile');
+      if (erro) { erroCampo(erro[0], erro[1]); return; }
+      const lista = ordem.map(k => porChave[k]);
+      const cpfsCri = {};
+      CV.cri.forEach(it => {
+        if (erro) return;
+        const pref = 'cv-cri-' + it.k;
+        const digitos = String(it.cpf || '').replace(/\D/g, '');
+        if (!it.id && !it.nome.trim() && !digitos && it.idade === '') return;
+        if (it.nome.trim().length < 2) { erro = [pref + '-nome', 'Informe o nome da criança.']; return; }
+        const idade = parseInt(it.idade, 10);
+        if (isNaN(idade) || idade < 0) { erro = [pref + '-idade', 'Informe a idade da criança.']; return; }
+        if (idade > 12) { erro = [pref + '-idade', 'Crianças só até 12 anos. Cadastre como convidado comum.']; return; }
+        if (!it.id && !cpfValido(digitos)) { erro = [pref + '-cpf', 'CPF inválido. Confira os números.']; return; }
+        const chave = it.id || digitos;
+        if (cpfsCri[chave] || porChave[chave]) { erro = [pref + '-cpf', 'O mesmo CPF aparece mais de uma vez.']; return; }
+        cpfsCri[chave] = true;
+        lista.push({ id: it.id || undefined, tipo: 'crianca', nome: it.nome.trim(), cpf: it.id ? undefined : digitos, idade: idade });
+      });
+      if (erro) { erroCampo(erro[0], erro[1]); return; }
+      if (lista.filter(x => x.solenidade).length > 4) { showToast(ERROS_CV.limite_solenidade, 'error'); return; }
+      const especial = document.getElementById('conv-especial').checked;
+      const detalhe = document.getElementById('conv-detalhe').value.trim();
+      if (especial && detalhe.length < 3) { erroCampo('conv-detalhe', 'Descreva o atendimento especial necessário.'); return; }
+      if (!document.getElementById('conv-aceite').checked) { erroCampo('conv-aceite', 'Confirme a autorização dos convidados para salvar.'); return; }
+      const btn = document.getElementById('btn-conv-salvar');
+      btn.disabled = true; btn.textContent = 'Salvando...';
+      try {
+        const r = await supabaseRequest('POST', 'rpc/salvar_convidados', { p_matricula: CV.cam, p_nome: CV.nome, p_lista: lista, p_especial: especial, p_detalhe: especial ? detalhe : '', p_aceite: true });
+        if (r.erro) { showToast(ERROS_CV[r.erro] || 'Não foi possível salvar.', 'error'); return; }
+        showToast('Convidados salvos.', 'success');
+        await cvBuscar();
+        cvAviso('conv-aviso', 'Convidados salvos (' + r.total + '). Você pode voltar aqui e alterar quando precisar.', 'ok');
+      } catch (e) {
+        showToast('Não foi possível salvar agora. Tente de novo.', 'error');
+      } finally { btn.disabled = false; btn.textContent = 'Salvar convidados'; }
+    }
+
+    function cvCsvCelula(v) {
+      let s = v === null || v === undefined ? '' : String(v);
+      if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+      return '"' + s.replace(/"/g, '""') + '"';
+    }
+    async function cvExportar() {
+      const pin = document.getElementById('conv-master').value.trim();
+      if (!/^\d{6}$/.test(pin)) { erroCampo('conv-master', 'Informe o PIN de 6 dígitos.'); return; }
+      cvAviso('conv-master-aviso', '');
+      try {
+        const r = await supabaseRequest('POST', 'rpc/exportar_convidados', { p_master: pin });
+        if (r.erro) { cvAviso('conv-master-aviso', r.erro === 'bloqueado' ? ERROS_CV.bloqueado : ERROS_CV.pin_invalido, 'erro'); return; }
+        const cab = ['Turma', 'Formando', 'Camiseta', 'Tipo', 'Convidado', 'CPF', 'Idade', 'Solenidade', 'Baile', 'Atendimento especial', 'Detalhe'];
+        const linhas = (r.linhas || []).map(l => [l.turma ? normalizarTurma(l.turma) : '', l.aluno, l.camiseta, l.tipo === 'crianca' ? 'Criança' : 'Adulto', l.nome, cpfMascara(l.cpf), l.idade, l.solenidade ? 'Sim' : '', l.baile ? 'Sim' : '', l.atendimento_especial ? 'Sim' : '', l.detalhe]);
+        const csv = '﻿' + [cab].concat(linhas).map(r2 => r2.map(cvCsvCelula).join(';')).join('\r\n');
+        const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+        const a = document.createElement('a'); a.href = url; a.download = 'convidados-formatura.csv';
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+        const n = (r.atendimentos || []).length;
+        cvAviso('conv-master-aviso', 'Lista baixada: ' + linhas.length + ' convidado(s). Formandos com atendimento especial: ' + n + '.', 'ok');
+      } catch (e) { cvAviso('conv-master-aviso', 'Não foi possível baixar agora. Tente de novo.', 'erro'); }
+    }
+
+    (function bindConvidados() {
+      const on = (id, ev, fn) => { const el = document.getElementById(id); if (el) el.addEventListener(ev, fn); };
+      on('btn-conv-buscar', 'click', cvBuscar);
+      on('btn-conv-turma', 'click', cvSalvarTurma);
+      on('btn-conv-salvar', 'click', cvSalvar);
+      on('btn-conv-export', 'click', cvExportar);
+      on('btn-conv-add-sol', 'click', () => { if (CV.sol.length < cvLimite('sol')) { const it = cvNovo('sol'); cvDesenhar(); const el = document.getElementById('cv-sol-' + it.k + '-nome'); if (el) el.focus(); } });
+      on('btn-conv-add-bai', 'click', () => { if (CV.bai.length < cvLimite('bai')) { const it = cvNovo('bai'); cvDesenhar(); const el = document.getElementById('cv-bai-' + it.k + '-nome'); if (el) el.focus(); } });
+      on('btn-conv-add-cri', 'click', () => { if (CV.cri.length < cvLimite('cri')) { const it = cvNovo('cri'); cvDesenhar(); const el = document.getElementById('cv-cri-' + it.k + '-nome'); if (el) el.focus(); } });
+      on('btn-conv-copiar', 'click', () => {
+        const lim = cvLimite('bai');
+        CV.sol.forEach(s => {
+          if (CV.bai.length >= lim) return;
+          const ja = CV.bai.some(b => (s.id && b.id === s.id) || (!s.id && s.cpf && b.cpf === s.cpf));
+          if (!ja) cvNovo('bai', { id: s.id, nome: s.nome, cpf: s.cpf, masc: s.masc });
+        });
+        cvDesenhar();
+      });
+      on('conv-especial', 'change', e => { document.getElementById('conv-especial-box').hidden = !e.target.checked; });
+    })();
+
+    // ==========================================
     // CRIANÇAS E VOTAÇÃO LOGIC
     // ==========================================
     function toggleCriancas() {
@@ -1639,7 +2017,7 @@
     // IDENTIDADE LEMBRADA (nome + camiseta, só neste navegador)
     // ==========================================
     const IDENT_KEY = 'anp_identidade';
-    const IDENT_CAMPOS = [['nome', 'matricula'], ['cri-nome', 'cri-camiseta'], ['vot-nome', 'vot-camiseta'], [null, 'cer-camiseta']];
+    const IDENT_CAMPOS = [['nome', 'matricula'], ['cri-nome', 'cri-camiseta'], ['vot-nome', 'vot-camiseta'], [null, 'cer-camiseta'], ['conv-nome', 'conv-camiseta']];
 
     function lerIdentidade() {
       try {
