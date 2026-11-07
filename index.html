@@ -501,6 +501,60 @@
       .tabs .tab-btn { font-size: 11.5px; letter-spacing: 0; padding: 8px 1px; flex: none; }
     }
     @media (max-width: 360px) { .tabs .tab-btn { font-size: 10px; } }
+
+    /* ==========================================================
+       MOVIMENTO — um só vocabulário: ease-out forte, 160–320 ms,
+       apenas transform e opacity, respeita prefers-reduced-motion
+       ========================================================== */
+    :root { --ease-out: cubic-bezier(0.23, 1, 0.32, 1); }
+    @keyframes subir { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+    @keyframes painelEntra { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    @keyframes giroSeg { from { opacity: 0.2; transform: translateY(-5px); } to { opacity: 1; transform: none; } }
+    @keyframes marcar { to { stroke-dashoffset: 0; } }
+
+    /* entrada da página: brasão, numeral, curso, organização e faixa, em sequência */
+    .hero-inner > * { animation: subir 0.7s var(--ease-out) both; }
+    .hero-inner > :nth-child(1) { animation-delay: 0.05s; }
+    .hero-inner > :nth-child(2) { animation-delay: 0.16s; }
+    .hero-inner > :nth-child(3) { animation-delay: 0.28s; }
+    .hero-inner > :nth-child(4) { animation-delay: 0.38s; }
+    #countdown-grid > div { animation: subir 0.6s var(--ease-out) both; }
+    #countdown-grid > div:nth-child(1) { animation-delay: 0.35s; }
+    #countdown-grid > div:nth-child(2) { animation-delay: 0.42s; }
+    #countdown-grid > div:nth-child(3) { animation-delay: 0.49s; }
+    #countdown-grid > div:nth-child(4) { animation-delay: 0.56s; }
+    #cd-seg.tick { animation: giroSeg 0.28s var(--ease-out); }
+
+    /* troca de aba: o painel sobe e os cartões entram em cascata curta */
+    .painel.fade-in { animation: painelEntra 0.3s var(--ease-out); }
+    .painel > .card, .painel > details { animation: subir 0.42s var(--ease-out) both; }
+    .painel > :nth-child(1) { animation-delay: 0s; }
+    .painel > :nth-child(2) { animation-delay: 0.05s; }
+    .painel > :nth-child(3) { animation-delay: 0.1s; }
+    .painel > :nth-child(4) { animation-delay: 0.15s; }
+    .painel > :nth-child(n+5) { animation-delay: 0.2s; }
+
+    /* indicador dourado que desliza entre as abas */
+    .tabs { position: relative; }
+    .tab-ind { position: absolute; left: 0; top: 0; border-radius: 10px; background: linear-gradient(135deg, var(--pf-gold), var(--pf-gold-bright)); pointer-events: none; z-index: 0; opacity: 0; transition: transform 0.38s var(--ease-out), width 0.38s var(--ease-out), height 0.38s var(--ease-out), opacity 0.2s; will-change: transform; }
+    .tabs.com-ind .tab-ind { opacity: 1; }
+    .tabs.com-ind .tab-btn.active { background: transparent; }
+    .tabs .tab-btn { position: relative; z-index: 1; transition: color 0.25s var(--ease-out), background-color 0.2s, border-color 0.2s, transform 0.14s var(--ease-out); }
+
+    /* resposta ao toque e ao mouse */
+    .btn, .tab-btn { transition-property: background-color, border-color, color, transform, box-shadow, opacity; transition-duration: 0.18s; transition-timing-function: var(--ease-out); }
+    .btn:active, .tab-btn:active { transform: scale(0.97); }
+    @media (hover: hover) {
+      .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(201,169,78,0.22); }
+      .btn-primary:active { transform: scale(0.97); }
+      .card { transition: border-color 0.25s var(--ease-out); }
+      .card:hover { border-color: var(--pf-gold-dim); }
+    }
+    input, select, textarea { transition: border-color 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out), background-color 0.2s; }
+    .erro-campo { animation: painelEntra 0.22s var(--ease-out); }
+    .toast { animation-timing-function: var(--ease-out); }
+    .stat-num { font-variant-numeric: tabular-nums; }
+    @media (prefers-reduced-motion: reduce) { .tab-ind { transition: none; } .hero-inner > *, #countdown-grid > div, .painel > .card, .painel > details { animation: none !important; opacity: 1 !important; } }
 </style>
 
 
@@ -2908,7 +2962,7 @@
 
     function statCard(label, value, color) {
       return '<div style="background:#060d18;border:1px solid #1f3250;border-radius:10px;padding:16px 18px;text-align:center">' +
-        '<p style="font-size:24px;font-weight:800;color:' + color + ';margin-bottom:4px">' + value + '</p>' +
+        '<p class="stat-num" data-alvo="' + value + '" style="font-size:24px;font-weight:800;color:' + color + ';margin-bottom:4px">' + value + '</p>' +
         '<p style="font-size:11px;color:#8e9bb0;text-transform:uppercase;letter-spacing:0.5px;font-weight:600">' + label + '</p></div>';
     }
 
@@ -3259,6 +3313,58 @@
     // ==========================================
     // TOAST
     // ==========================================
+
+    // ==========================================
+    // MOVIMENTO (indicador de abas, segundos, contagem de números)
+    // ==========================================
+    (function movimento() {
+      const reduz = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const bar = document.getElementById('tablist');
+      if (bar) {
+        const ind = document.createElement('div');
+        ind.className = 'tab-ind'; ind.setAttribute('aria-hidden', 'true');
+        bar.insertBefore(ind, bar.firstChild);
+        let primeira = true;
+        function posicionar() {
+          const ativa = bar.querySelector('.tab-btn.active');
+          if (!ativa || !ativa.offsetWidth) { if (bar.classList.contains('com-ind')) bar.classList.remove('com-ind'); return; }
+          if (primeira) ind.style.transition = 'none';
+          ind.style.width = ativa.offsetWidth + 'px';
+          ind.style.height = ativa.offsetHeight + 'px';
+          ind.style.transform = 'translate(' + ativa.offsetLeft + 'px,' + ativa.offsetTop + 'px)';
+          if (!bar.classList.contains('com-ind')) bar.classList.add('com-ind');
+          if (primeira) { void ind.offsetWidth; ind.style.transition = ''; primeira = false; }
+        }
+        new MutationObserver(ms => { if (ms.some(m => m.target !== bar)) posicionar(); }).observe(bar, { attributes: true, subtree: true, attributeFilter: ['class'] });
+        window.addEventListener('resize', () => { primeira = true; posicionar(); });
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { primeira = true; posicionar(); });
+        posicionar();
+      }
+      // segundos da contagem: pequeno giro a cada mudança
+      const seg = document.getElementById('cd-seg');
+      if (seg && !reduz) {
+        new MutationObserver(() => { seg.classList.remove('tick'); void seg.offsetWidth; seg.classList.add('tick'); }).observe(seg, { childList: true, characterData: true, subtree: true });
+      }
+      // números dos indicadores sobem até o valor
+      function contar(raiz) {
+        if (reduz) return;
+        raiz.querySelectorAll('.stat-num[data-alvo]').forEach(el => {
+          const alvo = Number(el.getAttribute('data-alvo'));
+          if (!isFinite(alvo) || alvo < 2 || el.dataset.contado) return;
+          el.dataset.contado = '1';
+          const ini = performance.now(), dur = 700;
+          (function passo(t) {
+            const k = Math.min((t - ini) / dur, 1), e = 1 - Math.pow(1 - k, 4);
+            el.textContent = Math.round(alvo * e);
+            if (k < 1) requestAnimationFrame(passo); else el.textContent = alvo;
+          })(ini);
+        });
+      }
+      ['admin-stats', 'admin-stats-cri'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) new MutationObserver(() => contar(el)).observe(el, { childList: true });
+      });
+    })();
   </script>
 </body>
 </html>
