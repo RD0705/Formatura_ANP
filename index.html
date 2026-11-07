@@ -555,6 +555,17 @@
     .toast { animation-timing-function: var(--ease-out); }
     .stat-num { font-variant-numeric: tabular-nums; }
     @media (prefers-reduced-motion: reduce) { .tab-ind { transition: none; } .hero-inner > *, #countdown-grid > div, .painel > .card, .painel > details { animation: none !important; opacity: 1 !important; } }
+
+    .permuta-resumo { font-size: 13px; color: var(--pf-gold); font-weight: 600; margin-bottom: 12px; }
+    .permuta-filtros { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+    .permuta-busca { flex: 1 1 200px; max-width: 280px; }
+    .permuta-busca input { min-height: 40px; padding: 8px 12px; font-size: 14px; }
+    .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip { min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--pf-line); background: transparent; color: var(--pf-muted); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; transition: background-color 0.18s var(--ease-out), color 0.18s, border-color 0.18s, transform 0.14s var(--ease-out); }
+    .chip:active { transform: scale(0.96); }
+    .chip.ativo { background: var(--pf-gold); color: var(--pf-black); border-color: var(--pf-gold); }
+    .permuta-card { animation: subir 0.4s var(--ease-out) both; }
+    #permuta-resumo[hidden], #permuta-filtros[hidden] { display: none; }
 </style>
 
 
@@ -796,6 +807,15 @@
           <p style="font-size: 12px; color: var(--pf-gold); line-height: 1.6;">
             <strong>Como funciona:</strong> Alunos que possuem ingressos excedentes da solenidade podem marcá-los como disponíveis para venda. Clique no cartão de um colega para ver os detalhes.
           </p>
+        </div>
+        <div id="permuta-resumo" class="permuta-resumo" hidden></div>
+        <div class="permuta-filtros" id="permuta-filtros" hidden>
+          <div class="chips" role="group" aria-label="Filtrar por situação">
+            <button type="button" class="chip ativo" data-filtro="todos" aria-pressed="true">Todos</button>
+            <button type="button" class="chip" data-filtro="disponivel" aria-pressed="false">Disponíveis</button>
+            <button type="button" class="chip" data-filtro="vendido" aria-pressed="false">Vendidos</button>
+          </div>
+          <div class="permuta-busca"><label for="permuta-busca" class="sr-only">Buscar formando</label><input type="text" id="permuta-busca" placeholder="Buscar formando" autocomplete="off"></div>
         </div>
         <div id="permuta-list" style="display: flex; flex-direction: column; gap: 10px;">
           <div style="text-align: center; padding: 40px 20px;">
@@ -2099,6 +2119,12 @@
         cvDesenhar();
       });
       on('conv-comprou', 'change', cvDesenhar);
+      on('permuta-busca', 'input', () => { if (permutaCache.length) desenharPermuta(); });
+      document.querySelectorAll('#permuta-filtros .chip').forEach(c => c.addEventListener('click', () => {
+        permutaFiltro = c.dataset.filtro;
+        document.querySelectorAll('#permuta-filtros .chip').forEach(o => { const on2 = o === c; o.classList.toggle('ativo', on2); o.setAttribute('aria-pressed', on2 ? 'true' : 'false'); });
+        if (permutaCache.length) desenharPermuta();
+      }));
       on('conv-especial', 'change', e => { document.getElementById('conv-especial-box').hidden = !e.target.checked; });
     })();
 
@@ -2648,17 +2674,27 @@
     // nome/telefone/código de aluno dentro de atributos onclick.
     let permutaCache = [];
 
-    async function loadPermuta() {
+    let permutaFiltro = 'todos';
+    function permutaPassa(a) {
+      const vendido = !!a.permuta_vendido;
+      if (permutaFiltro === 'disponivel' && vendido) return false;
+      if (permutaFiltro === 'vendido' && !vendido) return false;
+      const q = (document.getElementById('permuta-busca') || { value: '' }).value.trim().toLowerCase();
+      if (q && String(a.nome_completo || '').toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    }
+    function desenharPermuta() {
       const listEl = document.getElementById('permuta-list');
-      listEl.innerHTML = '<div style="text-align: center; padding: 40px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="display:inline-block;animation:spin 1s linear infinite;margin-bottom:12px"><circle cx="12" cy="12" r="10" stroke="#1f3250" stroke-width="2.5" fill="none"/><path d="M12 2a10 10 0 0 1 10 10" stroke="#c9a94e" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg><p style="font-size:13px;color:#8e9bb0">Carregando...</p></div>';
-      try {
-        const data = await supabaseRequest('GET', TABLE + '?ativo=eq.true&vender_solenidade=eq.true&qtd_vender_solenidade=gt.0&select=nome_completo,qtd_vender_solenidade,permuta_vendido,telefone_contato,criado_em&order=permuta_vendido.asc,criado_em.desc');
-        if (!data || data.length === 0) {
-          listEl.innerHTML = '<div style="text-align:center;padding:40px"><p style="font-size:14px;color:#8e9bb0;font-weight:500">Nenhum aluno disponibilizou ingressos ainda.</p><p style="font-size:12px;color:#8e9bb0;margin-top:4px;opacity:0.7">Utilize o formulário acima para disponibilizar seus ingressos.</p></div>';
-          return;
-        }
-        permutaCache = data;
-        listEl.innerHTML = data.map((a, idx) => {
+      const disp = permutaCache.filter(a => !a.permuta_vendido);
+      const totalDisp = disp.reduce((t, a) => t + (Number(a.qtd_vender_solenidade) || 0), 0);
+      const resumo = document.getElementById('permuta-resumo');
+      resumo.hidden = false;
+      resumo.textContent = totalDisp + (totalDisp === 1 ? ' ingresso disponível' : ' ingressos disponíveis') + ' com ' + disp.length + (disp.length === 1 ? ' formando' : ' formandos') + '. ' + (permutaCache.length - disp.length) + ' já vendido(s).';
+      {
+        const mostrar = permutaCache.map((a, idx) => ({ a: a, idx: idx })).filter(x => permutaPassa(x.a));
+        if (!mostrar.length) { listEl.innerHTML = '<div style="text-align:center;padding:36px 12px"><p style="font-size:14px;color:#8e9bb0;font-weight:500">Nenhum resultado para este filtro.</p></div>'; return; }
+        listEl.innerHTML = mostrar.map((x, pos) => {
+          const a = x.a, idx = x.idx;
           const vendido = !!a.permuta_vendido;
           const qtd = Number(a.qtd_vender_solenidade) || 0;
           const cardStyle = vendido
@@ -2668,7 +2704,7 @@
             ? '<span style="display:inline-block;background:rgba(231,76,60,0.15);border:1px solid #c0392b;color:#e74c3c;font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px;">VENDIDO (' + qtd + ')</span>'
             : '<span style="display:inline-block;background:rgba(201,169,78,0.12);border:1px solid #8a7535;color:#c9a94e;font-size:13px;font-weight:700;padding:6px 14px;border-radius:20px;">' + qtd + ' ingresso' + (qtd > 1 ? 's' : '') + ' · DISPONÍVEL</span>';
 
-          return '<div class="permuta-card" data-idx="' + idx + '" style="' + cardStyle + '">' +
+          return '<div class="permuta-card" data-idx="' + idx + '" style="' + cardStyle + 'animation-delay:' + Math.min(pos, 8) * 40 + 'ms">' +
             '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">' +
               '<div style="display:flex;align-items:center;gap:12px">' +
                 '<div style="width:40px;height:40px;border-radius:50%;background:' + (vendido ? '#333' : 'linear-gradient(135deg,#8a7535,#c9a94e)') + ';display:flex;align-items:center;justify-content:center;font-weight:800;color:' + (vendido ? '#888' : '#060d18') + ';font-size:16px;flex-shrink:0">' +
@@ -2696,6 +2732,21 @@
             );
           });
         });
+      }
+    }
+
+    async function loadPermuta() {
+      const listEl = document.getElementById('permuta-list');
+      listEl.innerHTML = '<div style="text-align: center; padding: 40px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="display:inline-block;animation:spin 1s linear infinite;margin-bottom:12px"><circle cx="12" cy="12" r="10" stroke="#1f3250" stroke-width="2.5" fill="none"/><path d="M12 2a10 10 0 0 1 10 10" stroke="#c9a94e" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg><p style="font-size:13px;color:#8e9bb0">Carregando...</p></div>';
+      try {
+        const data = await supabaseRequest('GET', TABLE + '?ativo=eq.true&vender_solenidade=eq.true&qtd_vender_solenidade=gt.0&select=nome_completo,qtd_vender_solenidade,permuta_vendido,telefone_contato,criado_em&order=permuta_vendido.asc,criado_em.desc');
+        if (!data || data.length === 0) {
+          listEl.innerHTML = '<div style="text-align:center;padding:40px"><p style="font-size:14px;color:#8e9bb0;font-weight:500">Nenhum aluno disponibilizou ingressos ainda.</p><p style="font-size:12px;color:#8e9bb0;margin-top:4px;opacity:0.7">Utilize o formulário acima para disponibilizar seus ingressos.</p></div>';
+          return;
+        }
+        permutaCache = data;
+        document.getElementById('permuta-filtros').hidden = false;
+        desenharPermuta();
       } catch (err) {
         listEl.innerHTML = '<div style="text-align:center;padding:30px"><p style="font-size:14px;color:#d9a3a3">Erro ao carregar. Tente novamente.</p></div>';
       }
