@@ -937,12 +937,13 @@
         <div class="form-grid">
           <div>
             <label for="conv-nome" class="rotulo rotulo-p">Seu nome completo</label>
-            <input type="text" id="conv-nome" autocomplete="name" placeholder="Como no seu cadastro">
+            <input type="text" id="conv-nome" autocomplete="name" placeholder="Nome e sobrenome completos">
           </div>
           <div>
             <label for="conv-camiseta" class="rotulo rotulo-p">Número da camiseta</label>
             <input type="text" id="conv-camiseta" inputmode="numeric" autocomplete="off" placeholder="Ex: 042">
           </div>
+          <p class="hint-small form-grid-total">O cadastro é encontrado pelo número da camiseta. Ao salvar, seu nome completo é atualizado no cadastro.</p>
           <button type="button" id="btn-conv-buscar" class="btn btn-primary form-grid-total">Buscar meu cadastro</button>
         </div>
         <div id="conv-aviso" class="aviso-caixa" role="status" hidden></div>
@@ -959,6 +960,11 @@
             </div>
             <button type="button" id="btn-conv-turma" class="btn btn-secondary">Salvar turma</button>
           </div>
+        </div>
+
+        <div class="card">
+          <label class="cv-check"><input type="checkbox" id="conv-comprou"> <span>Comprei convite de outro aluno</span></label>
+          <p class="hint-small mt-12">Marque se você ficou com convites de colegas. Assim você pode cadastrar mais convidados, com nome completo e CPF, na solenidade e no baile.</p>
         </div>
 
         <div class="card" id="conv-card-sol">
@@ -1734,6 +1740,7 @@
       sem_baile: 'Você não está inscrito no baile. Atualize o Registro primeiro.',
       limite_baile: 'Quantidade de convidados do baile acima do permitido.',
       limite_criancas: 'Limite de 6 crianças por formando.',
+      nome_aluno_invalido: 'Informe seu nome completo, com sobrenome.',
       pin_invalido: 'PIN da comissão incorreto.'
     };
     const CV = { aluno: null, nome: '', cam: '', sol: [], bai: [], cri: [], seq: 0 };
@@ -1763,8 +1770,9 @@
     }
     function cvLimite(lista) {
       if (!CV.aluno) return 0;
-      if (lista === 'sol') return CV.aluno.solenidade ? 4 : 0;
-      if (lista === 'bai') return CV.aluno.baile ? Math.max(CV.aluno.qtd_baile || 0, 0) : 0;
+      const comprou = document.getElementById('conv-comprou').checked;
+      if (lista === 'sol') return comprou ? 20 : (CV.aluno.solenidade ? 4 : 0);
+      if (lista === 'bai') return comprou ? 40 : (CV.aluno.baile ? Math.max(CV.aluno.qtd_baile || 0, 0) : 0);
       return 6;
     }
 
@@ -1822,13 +1830,19 @@
         add.textContent = CV[l].length >= lim && l !== 'cri' ? 'Limite atingido' : (l === 'cri' ? 'Adicionar criança' : 'Adicionar convidado');
       });
       const a = CV.aluno;
+      const comp = document.getElementById('conv-comprou').checked;
+      if (comp) {
+        document.getElementById('conv-sol-hint').textContent = 'Inclua também os convidados dos convites que você comprou de outros alunos (' + CV.sol.length + ' cadastrados).';
+        document.getElementById('conv-bai-hint').textContent = 'Inclua também os convidados dos convites que você comprou de outros alunos (' + CV.bai.length + ' cadastrados).';
+      } else {
       document.getElementById('conv-sol-hint').textContent = a.solenidade
         ? 'Até 4 convidados por formando (' + CV.sol.length + ' de 4).'
         : 'Você não está inscrito na solenidade. Atualize o Registro para cadastrar convidados.';
       document.getElementById('conv-bai-hint').textContent = a.baile
         ? 'Até ' + a.qtd_baile + ' convite(s), conforme o seu Registro (' + CV.bai.length + ' de ' + a.qtd_baile + ').'
         : 'Você não está inscrito no baile. Atualize o Registro para cadastrar convidados.';
-      document.getElementById('btn-conv-copiar').disabled = !a.baile || !CV.sol.length || CV.bai.length >= cvLimite('bai');
+      }
+      document.getElementById('btn-conv-copiar').disabled = (!a.baile && !comp) || !CV.sol.length || CV.bai.length >= cvLimite('bai');
     }
 
     function cvNovo(lista, dados) {
@@ -1842,14 +1856,14 @@
       const nome = document.getElementById('conv-nome').value.trim();
       const cam = document.getElementById('conv-camiseta').value.trim();
       cvAviso('conv-aviso', '');
-      if (nome.length < 3) { erroCampo('conv-nome', 'Informe seu nome completo.'); return; }
       if (!cam) { erroCampo('conv-camiseta', 'Informe o número da camiseta.'); return; }
       const btn = document.getElementById('btn-conv-buscar');
       btn.disabled = true; btn.textContent = 'Buscando...';
       try {
-        const r = await supabaseRequest('POST', 'rpc/consultar_convidados', { p_matricula: cam, p_nome: nome });
+        const r = await supabaseRequest('POST', 'rpc/consultar_convidados', { p_matricula: cam, p_nome: nome || '-' });
         if (r.erro) { document.getElementById('conv-editor').hidden = true; cvAviso('conv-aviso', ERROS_CV[r.erro] || 'Não foi possível buscar.', 'erro'); return; }
-        CV.aluno = r.aluno; CV.nome = nome; CV.cam = cam; CV.sol = []; CV.bai = []; CV.cri = [];
+        CV.aluno = r.aluno; CV.cam = cam;
+        if (!nome) document.getElementById('conv-nome').value = r.aluno.nome; CV.sol = []; CV.bai = []; CV.cri = [];
         const mapa = {};
         (r.convidados || []).forEach(c => {
           if (c.tipo === 'crianca') { cvNovo('cri', { id: c.id, nome: c.nome, masc: c.cpf_mascarado, idade: c.idade }); return; }
@@ -1860,6 +1874,7 @@
         document.getElementById('conv-especial').checked = !!(r.grupo && r.grupo.especial);
         document.getElementById('conv-detalhe').value = (r.grupo && r.grupo.detalhe) || '';
         document.getElementById('conv-especial-box').hidden = !document.getElementById('conv-especial').checked;
+        document.getElementById('conv-comprou').checked = !!(r.grupo && r.grupo.comprou);
         document.getElementById('conv-aceite').checked = false;
         const a = r.aluno;
         document.getElementById('conv-aluno-nome').textContent = a.nome;
@@ -1867,7 +1882,7 @@
         document.getElementById('conv-aluno-info').textContent = 'Camiseta ' + a.matricula + ' · Turma ' + (a.turma ? normalizarTurma(a.turma) : 'não informada') + ' · Inscrito em: ' + eventos;
         document.getElementById('conv-turma-box').hidden = !!a.turma;
         document.getElementById('conv-editor').hidden = false;
-        salvarIdentidade(nome, cam);
+        salvarIdentidade(nome || r.aluno.nome, cam);
         cvDesenhar();
       } catch (e) {
         cvAviso('conv-aviso', 'Não foi possível buscar agora. Verifique a conexão e tente de novo.', 'erro');
@@ -1888,6 +1903,9 @@
 
     async function cvSalvar() {
       if (!CV.aluno) return;
+      const nomeAluno = document.getElementById('conv-nome').value.trim().replace(/\s+/g, ' ');
+      if (nomeAluno.length < 5 || nomeAluno.indexOf(' ') < 0) { erroCampo('conv-nome', 'Informe seu nome completo, com sobrenome.'); return; }
+      CV.nome = nomeAluno;
       const porChave = {};
       const ordem = [];
       let erro = null;
@@ -1928,7 +1946,7 @@
         lista.push({ id: it.id || undefined, tipo: 'crianca', nome: it.nome.trim(), cpf: it.id ? undefined : digitos, idade: idade });
       });
       if (erro) { erroCampo(erro[0], erro[1]); return; }
-      if (lista.filter(x => x.solenidade).length > 4) { showToast(ERROS_CV.limite_solenidade, 'error'); return; }
+      if (!document.getElementById('conv-comprou').checked && lista.filter(x => x.solenidade).length > 4) { showToast(ERROS_CV.limite_solenidade, 'error'); return; }
       const especial = document.getElementById('conv-especial').checked;
       const detalhe = document.getElementById('conv-detalhe').value.trim();
       if (especial && detalhe.length < 3) { erroCampo('conv-detalhe', 'Descreva o atendimento especial necessário.'); return; }
@@ -1936,7 +1954,7 @@
       const btn = document.getElementById('btn-conv-salvar');
       btn.disabled = true; btn.textContent = 'Salvando...';
       try {
-        const r = await supabaseRequest('POST', 'rpc/salvar_convidados', { p_matricula: CV.cam, p_nome: CV.nome, p_lista: lista, p_especial: especial, p_detalhe: especial ? detalhe : '', p_aceite: true });
+        const r = await supabaseRequest('POST', 'rpc/salvar_convidados', { p_matricula: CV.cam, p_nome: CV.nome, p_lista: lista, p_especial: especial, p_detalhe: especial ? detalhe : '', p_aceite: true, p_comprou: document.getElementById('conv-comprou').checked });
         if (r.erro) { showToast(ERROS_CV[r.erro] || 'Não foi possível salvar.', 'error'); return; }
         showToast('Convidados salvos.', 'success');
         await cvBuscar();
@@ -1958,8 +1976,8 @@
       try {
         const r = await supabaseRequest('POST', 'rpc/exportar_convidados', { p_master: pin });
         if (r.erro) { cvAviso('conv-master-aviso', r.erro === 'bloqueado' ? ERROS_CV.bloqueado : ERROS_CV.pin_invalido, 'erro'); return; }
-        const cab = ['Turma', 'Formando', 'Camiseta', 'Tipo', 'Convidado', 'CPF', 'Idade', 'Solenidade', 'Baile', 'Atendimento especial', 'Detalhe'];
-        const linhas = (r.linhas || []).map(l => [l.turma ? normalizarTurma(l.turma) : '', l.aluno, l.camiseta, l.tipo === 'crianca' ? 'Criança' : 'Adulto', l.nome, cpfMascara(l.cpf), l.idade, l.solenidade ? 'Sim' : '', l.baile ? 'Sim' : '', l.atendimento_especial ? 'Sim' : '', l.detalhe]);
+        const cab = ['Turma', 'Formando', 'Camiseta', 'Tipo', 'Convidado', 'CPF', 'Idade', 'Solenidade', 'Baile', 'Comprou convite de outro aluno', 'Atendimento especial', 'Detalhe'];
+        const linhas = (r.linhas || []).map(l => [l.turma ? normalizarTurma(l.turma) : '', l.aluno, l.camiseta, l.tipo === 'crianca' ? 'Criança' : 'Adulto', l.nome, cpfMascara(l.cpf), l.idade, l.solenidade ? 'Sim' : '', l.baile ? 'Sim' : '', l.comprou_convite ? 'Sim' : '', l.atendimento_especial ? 'Sim' : '', l.detalhe]);
         const csv = '﻿' + [cab].concat(linhas).map(r2 => r2.map(cvCsvCelula).join(';')).join('\r\n');
         const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
         const a = document.createElement('a'); a.href = url; a.download = 'convidados-formatura.csv';
@@ -1988,6 +2006,7 @@
         });
         cvDesenhar();
       });
+      on('conv-comprou', 'change', cvDesenhar);
       on('conv-especial', 'change', e => { document.getElementById('conv-especial-box').hidden = !e.target.checked; });
     })();
 
