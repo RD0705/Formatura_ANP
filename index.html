@@ -353,6 +353,7 @@
     .cer-fase { font-size: 14px; font-weight: 600; color: var(--pf-gold); background: rgba(201,169,78,0.08); border: 1px solid var(--pf-gold-dim); border-radius: 10px; padding: 12px 14px; }
     .cer-linha { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
     .cer-nome-eleitor { font-size: 15px; font-weight: 600; color: var(--pf-text); margin-bottom: 12px; }
+    .tab-btn.active:focus-visible { outline-color: var(--pf-black); outline-offset: -5px; }
     #view-convidados [hidden] { display: none !important; }
     .cv-linha { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; padding: 12px 0; border-top: 1px solid var(--pf-border); }
     .cv-linha:first-child { border-top: 0; padding-top: 0; }
@@ -934,17 +935,12 @@
       <div class="card card-top">
         <h2>Convidados</h2>
         <p class="hint mb-16">Informe quem vai com você à solenidade e ao baile. Para cada convidado adulto pedimos nome e CPF. <strong>Crianças até 12 anos não pagam</strong>, mas também precisam ser cadastradas.</p>
-        <div class="form-grid">
-          <div>
-            <label for="conv-nome" class="rotulo rotulo-p">Seu nome completo</label>
-            <input type="text" id="conv-nome" autocomplete="name" placeholder="Nome e sobrenome completos">
-          </div>
-          <div>
+        <div class="cer-linha">
+          <div style="flex: 1; min-width: 180px;">
             <label for="conv-camiseta" class="rotulo rotulo-p">Número da camiseta</label>
             <input type="text" id="conv-camiseta" inputmode="numeric" autocomplete="off" placeholder="Ex: 042">
           </div>
-          <p class="hint-small form-grid-total">O cadastro é encontrado pelo número da camiseta. Ao salvar, seu nome completo é atualizado no cadastro.</p>
-          <button type="button" id="btn-conv-buscar" class="btn btn-primary form-grid-total">Buscar meu cadastro</button>
+          <button type="button" id="btn-conv-buscar" class="btn btn-primary">Buscar meu cadastro</button>
         </div>
         <div id="conv-aviso" class="aviso-caixa" role="status" hidden></div>
       </div>
@@ -953,6 +949,11 @@
         <div class="card">
           <h3 id="conv-aluno-nome"></h3>
           <p class="hint" id="conv-aluno-info"></p>
+          <div class="mt-12">
+            <label for="conv-nome" class="rotulo rotulo-p">Seu nome completo</label>
+            <input type="text" id="conv-nome" autocomplete="name" placeholder="Nome e sobrenome">
+            <p class="hint-small mt-12">Ao salvar, este nome substitui o do seu cadastro.</p>
+          </div>
           <div id="conv-turma-box" class="cer-linha mt-12" hidden>
             <div style="flex: 1; min-width: 160px;">
               <label for="conv-turma" class="rotulo rotulo-p">Sua turma</label>
@@ -1853,17 +1854,16 @@
     }
 
     async function cvBuscar() {
-      const nome = document.getElementById('conv-nome').value.trim();
       const cam = document.getElementById('conv-camiseta').value.trim();
       cvAviso('conv-aviso', '');
       if (!cam) { erroCampo('conv-camiseta', 'Informe o número da camiseta.'); return; }
       const btn = document.getElementById('btn-conv-buscar');
       btn.disabled = true; btn.textContent = 'Buscando...';
       try {
-        const r = await supabaseRequest('POST', 'rpc/consultar_convidados', { p_matricula: cam, p_nome: nome || '-' });
+        const r = await supabaseRequest('POST', 'rpc/consultar_convidados', { p_matricula: cam, p_nome: '-' });
         if (r.erro) { document.getElementById('conv-editor').hidden = true; cvAviso('conv-aviso', ERROS_CV[r.erro] || 'Não foi possível buscar.', 'erro'); return; }
         CV.aluno = r.aluno; CV.cam = cam;
-        if (!nome) document.getElementById('conv-nome').value = r.aluno.nome; CV.sol = []; CV.bai = []; CV.cri = [];
+        document.getElementById('conv-nome').value = r.aluno.nome; CV.sol = []; CV.bai = []; CV.cri = [];
         const mapa = {};
         (r.convidados || []).forEach(c => {
           if (c.tipo === 'crianca') { cvNovo('cri', { id: c.id, nome: c.nome, masc: c.cpf_mascarado, idade: c.idade }); return; }
@@ -1882,7 +1882,7 @@
         document.getElementById('conv-aluno-info').textContent = 'Camiseta ' + a.matricula + ' · Turma ' + (a.turma ? normalizarTurma(a.turma) : 'não informada') + ' · Inscrito em: ' + eventos;
         document.getElementById('conv-turma-box').hidden = !!a.turma;
         document.getElementById('conv-editor').hidden = false;
-        salvarIdentidade(nome || r.aluno.nome, cam);
+        salvarIdentidade(r.aluno.nome, cam);
         cvDesenhar();
       } catch (e) {
         cvAviso('conv-aviso', 'Não foi possível buscar agora. Verifique a conexão e tente de novo.', 'erro');
