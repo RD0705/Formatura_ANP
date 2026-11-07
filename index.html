@@ -1442,6 +1442,17 @@
         const tabBtn = document.getElementById('tab-' + t);
         if (tabBtn) tabBtn.addEventListener('click', () => irParaAba(t));
       });
+      // link direto: /#convidados abre a aba correspondente
+      function abaDoLink() {
+        const h = (location.hash || '').replace('#', '').toLowerCase();
+        return ABAS.indexOf(h) >= 0 && h !== 'admin' ? h : null;
+      }
+      ABAS.forEach(t => {
+        const tabBtn = document.getElementById('tab-' + t);
+        if (tabBtn) tabBtn.addEventListener('click', () => { try { history.replaceState(null, '', t === 'registro' ? location.pathname + location.search : '#' + t); } catch (e) {} });
+      });
+      window.addEventListener('hashchange', () => { const t = abaDoLink(); if (t) irParaAba(t); });
+      if (abaDoLink()) irParaAba(abaDoLink());
       // setas, Home e End entre as abas
       document.getElementById('tablist').addEventListener('keydown', e => {
         const abas = Array.from(document.querySelectorAll('#tablist [role="tab"]'));
