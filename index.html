@@ -600,8 +600,11 @@
     /* ==== Navegação fixa no topo ==== */
     .topo { position: sticky; top: 0; z-index: 60; background: rgba(6,13,24,0.94); border-bottom: 1px solid var(--pf-border); }
     .topo::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; background: linear-gradient(90deg, transparent, var(--pf-gold-dim), transparent); opacity: 0.7; pointer-events: none; }
-    .topo-in { max-width: 1100px; margin: 0 auto; padding: 0 20px; height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 16px; position: relative; }
-    .topo-marca { display: inline-flex; align-items: center; gap: 10px; background: none; border: 0; padding: 4px 0; cursor: pointer; color: var(--pf-text); font-family: var(--font-display); font-size: 19px; font-weight: 700; letter-spacing: 0.1em; min-height: 44px; }
+    .topo-in { max-width: 1100px; margin: 0 auto; padding: 0 20px; height: 58px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; position: relative; }
+    .topo-in .topo-marca { grid-column: 1; justify-self: start; }
+    .topo-in .tabs { grid-column: 2; justify-content: center; }
+    .topo-in .topo-menu { grid-column: 3; justify-self: end; }
+    .topo-marca { white-space: nowrap; display: inline-flex; align-items: center; gap: 10px; background: none; border: 0; padding: 4px 0; cursor: pointer; color: var(--pf-text); font-family: var(--font-display); font-size: 19px; font-weight: 700; letter-spacing: 0.1em; min-height: 44px; }
     .topo-marca img { height: 33px; width: auto; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5)); }
     .topo-menu { display: none; align-items: center; gap: 8px; background: transparent; border: 1px solid var(--pf-line); color: var(--pf-text); border-radius: 10px; padding: 0 14px; min-height: 44px; font: inherit; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; }
     .tabs { position: relative; display: flex; align-items: stretch; gap: 0; margin: 0; padding: 0; overflow: visible; justify-content: flex-end; }
@@ -614,6 +617,7 @@
     .hero-inner > :nth-child(5) { animation-delay: 0.5s; }
     @media (max-width: 1120px) { .tabs .tab-btn svg { display: none; } .tabs .tab-btn { padding: 0 10px; } }
     @media (max-width: 900px) {
+      .topo-in { display: flex; justify-content: space-between; }
       .topo-menu { display: inline-flex; }
       .tabs { position: absolute; left: 0; right: 0; top: 100%; display: none; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; padding: 12px 20px 16px; background: var(--pf-black); border-bottom: 1px solid var(--pf-gold-dim); }
       .topo.aberto .tabs { display: grid; animation: painelEntra 0.22s var(--ease-out); }
