@@ -1378,6 +1378,32 @@
             </div>
           </div>
 
+          <!-- ========== ADMIN CONVIDADOS ========== -->
+          <div style="margin-top: 40px; border-top: 1px solid var(--pf-border); padding-top: 32px;" id="admin-convidados">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 14px;">
+              <div>
+                <h3 style="font-size: 16px; font-weight: 700; color: var(--pf-gold); margin-bottom: 4px;">Convidados — Solenidade e Baile</h3>
+                <p style="font-size: 13px; color: var(--pf-muted);">Listas preenchidas pelos formandos na aba Convidados</p>
+              </div>
+              <button class="btn btn-secondary" id="btn-admin-conv-csv" style="padding: 9px 18px; display: flex; align-items: center; gap: 6px;">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v9M3 7l4 4 4-4M2 12h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Baixar planilha
+              </button>
+            </div>
+            <div id="admin-stats-conv" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px;"></div>
+            <div class="admin-busca">
+              <label for="admin-busca-conv" class="sr-only">Buscar convidados</label>
+              <input type="text" id="admin-busca-conv" placeholder="Buscar por formando, convidado, CPF ou turma" autocomplete="off">
+              <span id="admin-contagem-conv" class="admin-contagem" role="status"></span>
+            </div>
+            <div style="overflow-x: auto; border: 1px solid var(--pf-border); border-radius: 10px;">
+              <table class="admin-table" id="admin-table-conv">
+                <thead><tr><th>Turma</th><th>Formando</th><th>Camiseta</th><th>Convidado</th><th>CPF</th><th>Tipo</th><th>Solenidade</th><th>Baile</th><th>Observações</th></tr></thead>
+                <tbody id="admin-tbody-conv"><tr><td colspan="9" style="text-align:center;padding:40px;color:var(--pf-muted)">Carregando dados...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+
           <!-- ========== ADMIN VOTAÇÃO MUSICAL ========== -->
           <div style="margin-top: 40px; border-top: 1px solid var(--pf-border); padding-top: 32px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
@@ -3013,9 +3039,12 @@
 
       try {
         const hash = await sha256(pass);
-        const data = await supabaseRequest('GET', TABLE_ADMIN + '?usuario=eq.' + encodeURIComponent(user) + '&senha=eq.' + encodeURIComponent(hash) + '&select=id,usuario');
+        const resp = await supabaseRequest('POST', 'rpc/admin_login', { p_user: user, p_hash: hash });
 
-        if (data && data.length > 0) {
+        if (resp && resp.erro === 'bloqueado') {
+          showToast('Muitas tentativas. Aguarde 15 minutos.', 'error');
+        } else if (resp && resp.ok) {
+          adminCred = { user: user, hash: hash };
           document.getElementById('admin-login').style.display = 'none';
           document.getElementById('admin-panel').style.display = 'block';
           document.getElementById('admin-panel').classList.add('fade-in');
@@ -3033,7 +3062,10 @@
       }
     }
 
+    let adminCred = null;
+    let adminConvData = [];
     function adminLogout() {
+      adminCred = null; adminConvData = [];
       document.getElementById('admin-panel').style.display = 'none';
       document.getElementById('admin-login').style.display = 'block';
       document.getElementById('admin-user').value = '';
@@ -3064,6 +3096,10 @@
     async function loadAdmin() {
       const tbody = document.getElementById('admin-tbody');
       tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:40px;color:#8e9bb0"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="display:inline-block;animation:spin 1s linear infinite;margin-bottom:8px"><circle cx="12" cy="12" r="10" stroke="#1f3250" stroke-width="2.5" fill="none"/><path d="M12 2a10 10 0 0 1 10 10" stroke="#c9a94e" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg><br>Carregando registros...</td></tr>';
+
+      loadAdminCriancas();
+      loadAdminVotacao();
+      loadAdminConvidados();
 
       try {
         const data = await supabaseRequest('GET', TABLE + '?select=*&order=nome_completo.asc');
@@ -3114,8 +3150,6 @@
         tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:30px;color:#d9a3a3">Erro ao carregar dados.</td></tr>';
       }
 
-      loadAdminCriancas();
-      loadAdminVotacao();
     }
 
     function statCard(label, value, color) {
@@ -3207,6 +3241,57 @@
         tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:#d9a3a3">Erro ao carregar dados.</td></tr>';
       }
     }
+
+    function cpfFmt(c) { const d = String(c || '').replace(/\D/g, ''); return d.length === 11 ? d.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : d; }
+    function renderAdminConv() {
+      const tbody = document.getElementById('admin-tbody-conv');
+      const q = (document.getElementById('admin-busca-conv').value || '').trim().toLowerCase();
+      const qd = q.replace(/\D/g, '');
+      const linhas = adminConvData.filter(l => !q || [l.turma, l.aluno, l.camiseta, l.nome].join(' ').toLowerCase().indexOf(q) >= 0 || (qd && String(l.cpf).indexOf(qd) >= 0));
+      document.getElementById('admin-contagem-conv').textContent = adminConvData.length ? (q ? linhas.length + ' de ' + adminConvData.length : adminConvData.length) + ' convidado(s)' : '';
+      if (!adminConvData.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:#8e9bb0">Nenhum formando preencheu convidados ainda.</td></tr>'; return; }
+      if (!linhas.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:#8e9bb0">Nenhum convidado encontrado para essa busca.</td></tr>'; return; }
+      tbody.innerHTML = linhas.map(l => {
+        const obs = [l.comprou_convite ? 'Comprou convite de outro aluno' : '', l.atendimento_especial ? 'Atendimento especial: ' + (l.detalhe || '') : ''].filter(Boolean).join(' · ');
+        return '<tr><td>' + escXml(l.turma ? normalizarTurma(l.turma) : '—') + '</td><td>' + escXml(l.aluno) + '</td><td>' + escXml(l.camiseta) + '</td><td>' + escXml(l.nome) + '</td><td>' + escXml(cpfFmt(l.cpf)) + '</td>' +
+          '<td>' + (l.tipo === 'crianca' ? 'Criança (' + escXml(String(l.idade)) + ' anos)' : 'Adulto') + '</td><td>' + (l.solenidade ? '<span class="badge-sim">Sim</span>' : '<span class="badge-nao">—</span>') + '</td><td>' + (l.baile ? '<span class="badge-sim">Sim</span>' : '<span class="badge-nao">—</span>') + '</td><td>' + escXml(obs) + '</td></tr>';
+      }).join('');
+    }
+    async function loadAdminConvidados() {
+      const tbody = document.getElementById('admin-tbody-conv');
+      if (!adminCred) return;
+      try {
+        const r = await supabaseRequest('POST', 'rpc/admin_listar_convidados', { p_user: adminCred.user, p_hash: adminCred.hash });
+        if (!r || !r.ok) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:#d9a3a3">Não foi possível carregar os convidados. Entre novamente.</td></tr>'; return; }
+        adminConvData = r.linhas || [];
+        const adultos = adminConvData.filter(l => l.tipo !== 'crianca');
+        const sol = adultos.filter(l => l.solenidade).length, bai = adultos.filter(l => l.baile).length;
+        const cri = adminConvData.length - adultos.length;
+        const comprou = new Set(adminConvData.filter(l => l.comprou_convite).map(l => l.camiseta)).size;
+        document.getElementById('admin-stats-conv').innerHTML =
+          statCard('Formandos que preencheram', (r.formandos_preencheram || 0) + ' de ' + (r.formandos_ativos || 0), 'var(--pf-gold)') +
+          statCard('Convidados Solenidade', sol, 'var(--pf-gold-bright)') +
+          statCard('Convidados Baile', bai, 'var(--pf-gold)') +
+          statCard('Crianças', cri, 'var(--pf-gold)') +
+          statCard('Atendimento Especial', (r.atendimentos || []).length, '#e5c866') +
+          statCard('Compraram convite', comprou, 'var(--pf-gold-dim)');
+        renderAdminConv();
+      } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:#d9a3a3">Erro ao carregar os convidados. Tente atualizar.</td></tr>';
+      }
+    }
+    function baixarCsvConvidadosAdmin() {
+      if (!adminConvData.length) { showToast('Não há convidados para baixar.', 'error'); return; }
+      const cab = ['Turma', 'Formando', 'Camiseta', 'Tipo', 'Convidado', 'CPF', 'Idade', 'Solenidade', 'Baile', 'Comprou convite de outro aluno', 'Atendimento especial', 'Detalhe'];
+      const linhas = adminConvData.map(l => [l.turma ? normalizarTurma(l.turma) : '', l.aluno, l.camiseta, l.tipo === 'crianca' ? 'Criança' : 'Adulto', l.nome, cpfFmt(l.cpf), l.idade, l.solenidade ? 'Sim' : '', l.baile ? 'Sim' : '', l.comprou_convite ? 'Sim' : '', l.atendimento_especial ? 'Sim' : '', l.detalhe]);
+      const csv = '\uFEFF' + [cab].concat(linhas).map(r2 => r2.map(cvCsvCelula).join(';')).join('\r\n');
+      const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+      const a = document.createElement('a'); a.href = url; a.download = 'convidados-formatura.csv';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    }
+    document.addEventListener('input', e => { if (e.target && e.target.id === 'admin-busca-conv') renderAdminConv(); });
+    document.addEventListener('click', e => { if (e.target && e.target.closest && e.target.closest('#btn-admin-conv-csv')) baixarCsvConvidadosAdmin(); });
 
     async function loadAdminVotacao() {
       const tbody = document.getElementById('admin-tbody-vot');
