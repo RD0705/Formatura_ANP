@@ -357,6 +357,9 @@
     #view-convidados [hidden] { display: none !important; }
     .cv-linha { display: grid; grid-template-columns: minmax(0, 1fr) 170px auto; gap: 8px; align-items: center; padding: 6px 0; }
     .cv-linha.cv-cri { grid-template-columns: minmax(0, 1fr) 76px 170px auto; }
+    .cv-linha .cv-c-pf { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--pf-text-dim, #8e9bb0); }
+    .cv-linha .cv-c-pf input { min-height: 0; width: 18px; height: 18px; margin: 0; padding: 0; flex: none; }
+    .cv-linha .cv-c-pf label { cursor: pointer; }
     .cv-linha input { min-height: 44px; padding: 10px 12px; font-size: 14px; }
     .cv-rm { min-height: 44px; padding: 0 12px; font-size: 13px; }
     .cv-vazio { margin: 0; }
@@ -2222,6 +2225,8 @@
       return 6;
     }
 
+    function cvChaveItem(it) { return it.id || String(it.cpf || '').replace(/\D/g, ''); }
+    function cvConta(lista) { return lista === 'sol' ? CV.sol.filter(x => !x.pf).length : CV[lista].length; }
     function cvLinha(lista, item) {
       const i = CV[lista].indexOf(item);
       const pref = 'cv-' + lista + '-' + item.k;
@@ -2256,6 +2261,19 @@
       rm.setAttribute('aria-label', 'Remover ' + (item.nome || 'convidado ' + (i + 1)));
       rm.addEventListener('click', () => { CV[lista].splice(CV[lista].indexOf(item), 1); cvDesenhar(); });
       row.appendChild(rm);
+      if (lista !== 'cri') {
+        const pfw = document.createElement('div'); pfw.className = 'cv-c-pf';
+        const pf = document.createElement('input');
+        pf.type = 'checkbox'; pf.id = pref + '-pf'; pf.checked = !!item.pf;
+        pf.addEventListener('change', () => {
+          item.pf = pf.checked;
+          const outra = lista === 'sol' ? 'bai' : 'sol', ch = cvChaveItem(item);
+          if (ch) CV[outra].forEach(o => { if (cvChaveItem(o) === ch) o.pf = item.pf; });
+          cvDesenhar();
+        });
+        const pl = document.createElement('label'); pl.htmlFor = pf.id; pl.textContent = 'Já é policial federal';
+        pfw.appendChild(pf); pfw.appendChild(pl); row.appendChild(pfw);
+      }
       return row;
     }
 
@@ -2272,10 +2290,13 @@
         }
         const add = document.getElementById('btn-conv-add-' + l);
         const lim = cvLimite(l);
-        add.disabled = CV[l].length >= lim;
-        add.textContent = CV[l].length >= lim && l !== 'cri' ? 'Limite atingido' : (l === 'cri' ? 'Adicionar criança' : 'Adicionar convidado');
+        const usados = cvConta(l), nPf = l === 'sol' ? CV.sol.length - usados : 0;
+        // policiais federais não entram no limite da solenidade: o botão só trava no teto da lista (80)
+        const cheio = l === 'sol' ? CV.sol.length >= 80 : usados >= lim;
+        add.disabled = cheio;
+        add.textContent = cheio && l !== 'cri' ? 'Limite atingido' : (l === 'cri' ? 'Adicionar criança' : 'Adicionar convidado');
         const cont = document.getElementById('conv-' + l + '-cont');
-        if (cont) cont.textContent = lim ? CV[l].length + ' de ' + lim : CV[l].length + ' cadastrado(s)';
+        if (cont) cont.textContent = (lim ? usados + ' de ' + lim : usados + ' cadastrado(s)') + (nPf ? ' + ' + nPf + (nPf === 1 ? ' policial federal' : ' policiais federais') : '');
       });
       const a = CV.aluno;
       const comp = document.getElementById('conv-comprou').checked;
@@ -2285,7 +2306,7 @@
         sh.textContent = 'Inclua também os convidados dos convites comprados de outros alunos.';
         bh.textContent = 'Inclua também os convidados dos convites comprados de outros alunos.';
       } else {
-        sh.textContent = a.solenidade ? 'Até 4 convidados por formando.' : 'Você não está inscrito na solenidade. Atualize o Registro para cadastrar convidados.';
+        sh.textContent = a.solenidade ? 'Até 4 convidados por formando. Convidados que já são policiais federais não entram nesse limite: marque a opção na linha deles.' : 'Você não está inscrito na solenidade. Atualize o Registro para cadastrar convidados.';
         bh.textContent = a.baile ? 'Um convidado por convite registrado.' : 'Você não está inscrito no baile. Atualize o Registro para cadastrar convidados.';
       }
       document.getElementById('btn-conv-copiar').disabled = (!a.baile && !comp) || !CV.sol.length || CV.bai.length >= cvLimite('bai');
@@ -2293,7 +2314,7 @@
 
     function cvNovo(lista, dados) {
       CV.seq += 1;
-      const it = Object.assign({ k: CV.seq, id: null, nome: '', cpf: '', masc: '', idade: '' }, dados || {});
+      const it = Object.assign({ k: CV.seq, id: null, nome: '', cpf: '', masc: '', idade: '', pf: false }, dados || {});
       CV[lista].push(it);
       return it;
     }
@@ -2312,7 +2333,7 @@
         const mapa = {};
         (r.convidados || []).forEach(c => {
           if (c.tipo === 'crianca') { cvNovo('cri', { id: c.id, nome: c.nome, masc: c.cpf_mascarado, idade: c.idade }); return; }
-          const base = { id: c.id, nome: c.nome, masc: c.cpf_mascarado };
+          const base = { id: c.id, nome: c.nome, masc: c.cpf_mascarado, pf: !!c.pf };
           if (c.solenidade) cvNovo('sol', base);
           if (c.baile) cvNovo('bai', base);
         });
@@ -2368,10 +2389,11 @@
           if (!it.id && !cpfValido(digitos)) { erro = [pref + '-cpf', 'CPF inválido. Confira os números.']; return; }
           const chave = it.id || digitos;
           if (!porChave[chave]) {
-            porChave[chave] = { id: it.id || undefined, tipo: 'adulto', nome: it.nome.trim(), cpf: it.id ? undefined : digitos, solenidade: false, baile: false };
+            porChave[chave] = { id: it.id || undefined, tipo: 'adulto', nome: it.nome.trim(), cpf: it.id ? undefined : digitos, solenidade: false, baile: false, pf: false };
             ordem.push(chave);
           } else if (porChave[chave][flag]) { erro = [pref + '-cpf', 'Este convidado já está nesta lista.']; return; }
           porChave[chave][flag] = true;
+          if (it.pf) porChave[chave].pf = true;
         });
       };
       coletar('sol', 'solenidade');
@@ -2395,7 +2417,11 @@
         lista.push({ id: it.id || undefined, tipo: 'crianca', nome: it.nome.trim(), cpf: it.id ? undefined : digitos, idade: idade });
       });
       if (erro) { erroCampo(erro[0], erro[1]); return; }
-      if (!document.getElementById('conv-comprou').checked && lista.filter(x => x.solenidade).length > 4) { showToast(ERROS_CV.limite_solenidade, 'error'); return; }
+      if (!document.getElementById('conv-comprou').checked) {
+        const nSol = lista.filter(x => x.solenidade && !x.pf).length;
+        if (nSol > 4) { showToast(ERROS_CV.limite_solenidade, 'error'); return; }
+        if (nSol > 0 && !CV.aluno.solenidade) { showToast(ERROS_CV.sem_solenidade, 'error'); return; }
+      }
       const especial = document.getElementById('conv-especial').checked;
       const detalhe = document.getElementById('conv-detalhe').value.trim();
       if (especial && detalhe.length < 3) { erroCampo('conv-detalhe', 'Descreva o atendimento especial necessário.'); return; }
@@ -2430,8 +2456,8 @@
       try {
         const r = await supabaseRequest('POST', 'rpc/exportar_convidados', { p_master: pin });
         if (r.erro) { cvAviso('conv-master-aviso', r.erro === 'bloqueado' ? ERROS_CV.bloqueado : ERROS_CV.pin_invalido, 'erro'); return; }
-        const cab = ['Turma', 'Formando', 'Camiseta', 'Tipo', 'Convidado', 'CPF', 'Idade', 'Solenidade', 'Baile', 'Comprou convite de outro aluno', 'Vendedor do convite', 'Camiseta do vendedor', 'Atendimento especial', 'Detalhe'];
-        const linhas = (r.linhas || []).map(l => [l.turma ? normalizarTurma(l.turma) : '', l.aluno, l.camiseta, l.tipo === 'crianca' ? 'Criança' : 'Adulto', l.nome, cpfMascara(l.cpf), l.idade, l.solenidade ? 'Sim' : '', l.baile ? 'Sim' : '', l.comprou_convite ? 'Sim' : '', vendedorNomeCsv(l), vendedorCamCsv(l), l.atendimento_especial ? 'Sim' : '', l.detalhe]);
+        const cab = ['Turma', 'Formando', 'Camiseta', 'Tipo', 'Convidado', 'CPF', 'Idade', 'Solenidade', 'Baile', 'Policial federal', 'Comprou convite de outro aluno', 'Vendedor do convite', 'Camiseta do vendedor', 'Atendimento especial', 'Detalhe'];
+        const linhas = (r.linhas || []).map(l => [l.turma ? normalizarTurma(l.turma) : '', l.aluno, l.camiseta, l.tipo === 'crianca' ? 'Criança' : 'Adulto', l.nome, cpfMascara(l.cpf), l.idade, l.solenidade ? 'Sim' : '', l.baile ? 'Sim' : '', l.policial_federal ? 'Sim' : '', l.comprou_convite ? 'Sim' : '', vendedorNomeCsv(l), vendedorCamCsv(l), l.atendimento_especial ? 'Sim' : '', l.detalhe]);
         const csv = '﻿' + [cab].concat(linhas).map(r2 => r2.map(cvCsvCelula).join(';')).join('\r\n');
         const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
         const a = document.createElement('a'); a.href = url; a.download = 'convidados-formatura.csv';
@@ -2448,7 +2474,7 @@
       on('btn-conv-turma', 'click', cvSalvarTurma);
       on('btn-conv-salvar', 'click', cvSalvar);
       on('btn-conv-export', 'click', cvExportar);
-      on('btn-conv-add-sol', 'click', () => { if (CV.sol.length < cvLimite('sol')) { const it = cvNovo('sol'); cvDesenhar(); const el = document.getElementById('cv-sol-' + it.k + '-nome'); if (el) el.focus(); } });
+      on('btn-conv-add-sol', 'click', () => { if (CV.sol.length < 80) { const it = cvNovo('sol'); cvDesenhar(); const el = document.getElementById('cv-sol-' + it.k + '-nome'); if (el) el.focus(); } });
       on('btn-conv-add-bai', 'click', () => { if (CV.bai.length < cvLimite('bai')) { const it = cvNovo('bai'); cvDesenhar(); const el = document.getElementById('cv-bai-' + it.k + '-nome'); if (el) el.focus(); } });
       on('btn-conv-add-cri', 'click', () => { if (CV.cri.length < cvLimite('cri')) { const it = cvNovo('cri'); cvDesenhar(); const el = document.getElementById('cv-cri-' + it.k + '-nome'); if (el) el.focus(); } });
       on('btn-conv-copiar', 'click', () => {
@@ -2456,7 +2482,7 @@
         CV.sol.forEach(s => {
           if (CV.bai.length >= lim) return;
           const ja = CV.bai.some(b => (s.id && b.id === s.id) || (!s.id && s.cpf && b.cpf === s.cpf));
-          if (!ja) cvNovo('bai', { id: s.id, nome: s.nome, cpf: s.cpf, masc: s.masc });
+          if (!ja) cvNovo('bai', { id: s.id, nome: s.nome, cpf: s.cpf, masc: s.masc, pf: !!s.pf });
         });
         cvDesenhar();
       });
@@ -3520,14 +3546,15 @@
         if (g.comprou) info.push('<strong>Vendedor do convite:</strong> ' + escXml(vendTxt));
         if (g.esp) info.push('<strong>Atendimento especial:</strong> ' + escXml(g.det || ''));
         const n = g.itens.length;
-        const linhas = g.itens.map(l => '<tr><td>' + escXml(l.nome) + '</td><td>' + escXml(cpfFmt(l.cpf)) + '</td><td>' + (l.tipo === 'crianca' ? 'Criança (' + escXml(String(l.idade)) + ' anos)' : 'Adulto') + '</td><td>' + (l.solenidade ? '<span class="badge-sim">Sim</span>' : '<span class="badge-nao">—</span>') + '</td><td>' + (l.baile ? '<span class="badge-sim">Sim</span>' : '<span class="badge-nao">—</span>') + '</td></tr>').join('');
+        const nPf = g.itens.filter(l => l.policial_federal).length;
+        const linhas = g.itens.map(l => '<tr><td>' + escXml(l.nome) + '</td><td>' + escXml(cpfFmt(l.cpf)) + '</td><td>' + (l.tipo === 'crianca' ? 'Criança (' + escXml(String(l.idade)) + ' anos)' : 'Adulto') + '</td><td>' + (l.solenidade ? '<span class="badge-sim">Sim</span>' : '<span class="badge-nao">—</span>') + '</td><td>' + (l.baile ? '<span class="badge-sim">Sim</span>' : '<span class="badge-nao">—</span>') + '</td><td>' + (l.policial_federal ? '<span class="badge-sim">Sim</span>' : '<span class="badge-nao">—</span>') + '</td></tr>').join('');
         return '<details class="adm-grupo"' + (q ? ' open' : '') + '><summary><span class="adm-seta" aria-hidden="true"></span>' +
           '<span class="adm-g-nome">' + escXml(g.aluno) + '</span><span class="adm-g-meta">Turma ' + escXml(g.turma ? normalizarTurma(g.turma) : '—') + ' · Camiseta ' + escXml(g.camiseta) + '</span>' +
           '<span class="adm-chips"><span class="adm-chip ouro">' + n + (n === 1 ? ' convidado' : ' convidados') + '</span>' +
-          (g.comprou ? '<span class="adm-chip">' + (v.vendedor_comissao ? 'Comissão' : 'Comprou convite') + '</span>' : '') +
+          (nPf ? '<span class="adm-chip">' + nPf + (nPf === 1 ? ' policial federal' : ' policiais federais') + '</span>' : '') + (g.comprou ? '<span class="adm-chip">' + (v.vendedor_comissao ? 'Comissão' : 'Comprou convite') + '</span>' : '') +
           (g.esp ? '<span class="adm-chip aviso">Atendimento especial</span>' : '') + '</span></summary>' +
           '<div class="adm-grupo-corpo">' + (info.length ? '<p class="adm-grupo-info">' + info.join('<br>') + '</p>' : '') +
-          '<div class="adm-rolagem"><table class="admin-table"><thead><tr><th>Convidado</th><th>CPF</th><th>Tipo</th><th>Solenidade</th><th>Baile</th></tr></thead><tbody>' + linhas + '</tbody></table></div></div></details>';
+          '<div class="adm-rolagem"><table class="admin-table"><thead><tr><th>Convidado</th><th>CPF</th><th>Tipo</th><th>Solenidade</th><th>Baile</th><th>Policial federal</th></tr></thead><tbody>' + linhas + '</tbody></table></div></div></details>';
       }).join('');
     }
     function renderAdminVendas() {
@@ -3546,13 +3573,15 @@
         adminConvData = r.linhas || [];
         adminVendas = r.vendas || [];
         const adultos = adminConvData.filter(l => l.tipo !== 'crianca');
-        const sol = adultos.filter(l => l.solenidade).length, bai = adultos.filter(l => l.baile).length;
+        const sol = adultos.filter(l => l.solenidade && !l.policial_federal).length, bai = adultos.filter(l => l.baile).length;
+        const pfn = adultos.filter(l => l.policial_federal).length;
         const cri = adminConvData.length - adultos.length;
         const comprou = new Set(adminConvData.filter(l => l.comprou_convite).map(l => l.camiseta)).size;
         document.getElementById('admin-stats-conv').innerHTML =
           statCard('Formandos que preencheram (de ' + (r.formandos_ativos || 0) + ')', r.formandos_preencheram || 0, 'var(--pf-gold)') +
           statCard('Convidados Solenidade', sol, 'var(--pf-gold-bright)') +
           statCard('Convidados Baile', bai, 'var(--pf-gold)') +
+          statCard('Policiais federais (fora da conta)', pfn, 'var(--pf-gold)') +
           statCard('Crianças', cri, 'var(--pf-gold)') +
           statCard('Atendimento Especial', (r.atendimentos || []).length, '#e5c866') +
           statCard('Compraram convite', comprou, 'var(--pf-gold-dim)') +
@@ -3565,8 +3594,8 @@
     }
     function baixarCsvConvidadosAdmin() {
       if (!adminConvData.length) { showToast('Não há convidados para baixar.', 'error'); return; }
-      const cab = ['Turma', 'Formando', 'Camiseta', 'Tipo', 'Convidado', 'CPF', 'Idade', 'Solenidade', 'Baile', 'Comprou convite de outro aluno', 'Vendedor do convite', 'Camiseta do vendedor', 'Atendimento especial', 'Detalhe'];
-      const linhas = adminConvData.map(l => [l.turma ? normalizarTurma(l.turma) : '', l.aluno, l.camiseta, l.tipo === 'crianca' ? 'Criança' : 'Adulto', l.nome, cpfFmt(l.cpf), l.idade, l.solenidade ? 'Sim' : '', l.baile ? 'Sim' : '', l.comprou_convite ? 'Sim' : '', vendedorNomeCsv(l), vendedorCamCsv(l), l.atendimento_especial ? 'Sim' : '', l.detalhe]);
+      const cab = ['Turma', 'Formando', 'Camiseta', 'Tipo', 'Convidado', 'CPF', 'Idade', 'Solenidade', 'Baile', 'Policial federal', 'Comprou convite de outro aluno', 'Vendedor do convite', 'Camiseta do vendedor', 'Atendimento especial', 'Detalhe'];
+      const linhas = adminConvData.map(l => [l.turma ? normalizarTurma(l.turma) : '', l.aluno, l.camiseta, l.tipo === 'crianca' ? 'Criança' : 'Adulto', l.nome, cpfFmt(l.cpf), l.idade, l.solenidade ? 'Sim' : '', l.baile ? 'Sim' : '', l.policial_federal ? 'Sim' : '', l.comprou_convite ? 'Sim' : '', vendedorNomeCsv(l), vendedorCamCsv(l), l.atendimento_especial ? 'Sim' : '', l.detalhe]);
       const csv = '\uFEFF' + [cab].concat(linhas).map(r2 => r2.map(cvCsvCelula).join(';')).join('\r\n');
       const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
       const a = document.createElement('a'); a.href = url; a.download = 'convidados-formatura.csv';
