@@ -410,6 +410,68 @@
     .tabela-res td { padding: 7px 6px; border-top: 1px solid var(--pf-border); }
     .tabela-res td:last-child, .tabela-res th:last-child { text-align: right; font-variant-numeric: tabular-nums; }
     @media (max-width: 520px) { .cer-turma dl { grid-template-columns: 1fr; gap: 0; } .cer-turma dt { margin-top: 6px; } }
+
+    /* ===== Cerimônia: etapas, participação ao vivo, votação em cartões, resultado em gráfico ===== */
+    .cer-passos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; list-style: none; padding: 0; margin: 0 0 12px; }
+    .cer-passos li { display: flex; align-items: center; gap: 8px; padding: 9px 10px; border: 1px solid var(--pf-border); border-radius: 10px; font-size: 13px; font-weight: 600; color: var(--pf-muted); min-width: 0; }
+    .cer-passos li i { width: 20px; height: 20px; flex-shrink: 0; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: 11px; border: 1px solid var(--pf-border); }
+    .cer-passos li.feito { color: var(--pf-text); }
+    .cer-passos li.feito i { background: var(--pf-gold-dim); border-color: var(--pf-gold-dim); color: #0a1220; }
+    .cer-passos li.atual { color: var(--pf-gold-bright); border-color: var(--pf-gold-dim); background: rgba(201,169,78,0.08); }
+    .cer-passos li.atual i { border-color: var(--pf-gold); color: var(--pf-gold-bright); }
+    .cer-part { margin-top: 12px; }
+    .cer-part-topo { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; font-size: 14px; color: var(--pf-text); }
+    .cer-part-topo strong { font-family: var(--font-display); font-size: 22px; color: var(--pf-gold-bright); font-variant-numeric: tabular-nums; }
+    .cer-ao-vivo { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: #a3d9b1; }
+    .cer-ao-vivo::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #27ae60; animation: cerPulso 1.8s ease-in-out infinite; }
+    @keyframes cerPulso { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .cer-medidor { height: 8px; border-radius: 999px; background: rgba(201,169,78,0.14); overflow: hidden; }
+    .cer-medidor > span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--pf-gold), var(--pf-gold-bright)); transition: width .6s var(--ease-out); }
+    .cer-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+    .cer-tile { position: relative; display: flex; align-items: center; gap: 12px; padding: 12px 14px; min-height: 64px; background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 12px; cursor: pointer; transition: border-color .18s var(--ease-out), background-color .18s var(--ease-out), transform .12s var(--ease-out); -webkit-tap-highlight-color: transparent; }
+    .cer-tile:active { transform: scale(0.985); }
+    .cer-tile.sel { border-color: var(--pf-gold); background: rgba(201,169,78,0.1); }
+    .cer-tile:focus-within { outline: 2px solid var(--pf-gold-bright); outline-offset: 2px; }
+    .cer-av { width: 40px; height: 40px; flex-shrink: 0; border-radius: 50%; display: grid; place-items: center; font-family: var(--font-display); font-weight: 700; font-size: 17px; letter-spacing: 0.04em; background: #12233b; color: var(--pf-gold-bright); border: 1px solid var(--pf-border); transition: background-color .18s var(--ease-out), color .18s var(--ease-out); }
+    .cer-tile.sel .cer-av { background: var(--pf-gold); color: #0a1220; border-color: var(--pf-gold); }
+    .cer-tile-txt { display: flex; flex-direction: column; min-width: 0; }
+    .cer-tile-txt strong { font-size: 15px; font-weight: 600; color: var(--pf-text); overflow-wrap: anywhere; }
+    .cer-tile-txt small { font-size: 12px; color: var(--pf-muted); }
+    .cer-chk { margin-left: auto; width: 22px; height: 22px; flex-shrink: 0; border-radius: 50%; border: 1.5px solid var(--pf-border); display: grid; place-items: center; color: transparent; transition: background-color .18s var(--ease-out), border-color .18s var(--ease-out); }
+    .cer-tile.sel .cer-chk { background: var(--pf-gold); border-color: var(--pf-gold); color: #0a1220; }
+    .cer-st { margin-left: 8px; font-size: 11px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--pf-muted); }
+    .cer-st.ok { color: #a3d9b1; }
+    .cer-prog { font-size: 13px; color: var(--pf-muted); margin: 0 0 12px; }
+    .cer-enviar { position: sticky; bottom: 10px; z-index: 5; width: 100%; box-shadow: 0 8px 24px rgba(0,0,0,0.45); }
+    .cer-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 16px; }
+    .cer-kpi { background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 12px; padding: 14px 16px; }
+    .cer-kpi b { display: block; font-family: var(--font-display); font-size: clamp(30px, 8vw, 40px); font-weight: 700; color: var(--pf-gold-bright); line-height: 1.05; font-variant-numeric: tabular-nums; }
+    .cer-kpi span { font-size: 12px; color: var(--pf-muted); }
+    .cer-kpi .cer-medidor { margin-top: 8px; }
+    .cer-res { background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+    .cer-res h4 { margin-bottom: 6px; }
+    .cer-nota { font-size: 12px; color: var(--pf-muted); margin: 8px 0 12px; }
+    .cer-barras { display: grid; gap: 10px; }
+    .cer-barra { display: grid; grid-template-columns: 1fr auto; column-gap: 12px; row-gap: 5px; align-items: baseline; }
+    .cer-barra-nome { font-size: 14px; color: var(--pf-text); min-width: 0; overflow-wrap: anywhere; }
+    .cer-barra-nome small { color: var(--pf-muted); font-size: 12px; margin-left: 4px; }
+    .cer-tag { font-style: normal; font-size: 11px; font-weight: 700; color: #0a1220; background: var(--pf-gold-bright); border-radius: 999px; padding: 1px 8px; margin-left: 6px; white-space: nowrap; }
+    .cer-barra-val { font-size: 13px; color: var(--pf-text); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .cer-barra-val small { color: var(--pf-muted); }
+    .cer-trilho { grid-column: 1 / -1; height: 14px; background: rgba(255,255,255,0.05); border-radius: 0 4px 4px 0; }
+    .cer-fill { height: 100%; width: 0; border-radius: 0 4px 4px 0; background: #5d7396; transition: width .7s var(--ease-out); }
+    .cer-barra.topo .cer-fill { background: var(--pf-gold-bright); }
+    .cer-res details { margin-top: 12px; }
+    .cer-res summary { font-size: 13px; color: var(--pf-gold); cursor: pointer; min-height: 32px; }
+    @media (max-width: 520px) {
+      .cer-grade { grid-template-columns: 1fr; }
+      .cer-passos { gap: 4px; }
+      .cer-passos li { flex-direction: column; gap: 4px; padding: 8px 4px; text-align: center; font-size: 12px; }
+      .cer-kpis { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .cer-kpi { padding: 12px 10px; }
+      .cer-kpi span { display: block; font-size: 11px; line-height: 1.3; margin-top: 2px; }
+      .cer-res { padding: 14px 12px; }
+    }
     @media (max-width: 640px) {
       .tabs { justify-content: flex-start; overflow-x: auto; scrollbar-width: none; margin: 0 -20px 24px; padding: 0 20px 4px; -webkit-overflow-scrolling: touch; }
       .tabs::-webkit-scrollbar { display: none; }
@@ -1030,30 +1092,33 @@
       <div class="card card-top">
         <h2>Orador, juramentista e bradista</h2>
         <p class="hint mb-16">Cada turma indica 1 candidato para cada cargo da cerimônia. Depois, a academia vota entre os indicados.</p>
+        <ol class="cer-passos" id="cer-passos" aria-label="Etapas da eleição"></ol>
         <p id="cer-fase" class="cer-fase" role="status">Carregando...</p>
+        <div id="cer-part" class="cer-part" hidden></div>
       </div>
 
       <div class="card card-top" id="cer-card-resultado" hidden>
         <h3>Resultado final</h3>
-        <p class="hint mb-16">Quem ganhou em cada cargo, com os votos de todos os candidatos indicados pelas turmas.</p>
+        <p class="hint mb-16">Apuração aberta: quem ganhou em cada cargo e quantos votos cada candidato recebeu.</p>
         <div id="cer-resultado-publico"></div>
       </div>
 
       <div class="card" id="cer-card-votar" hidden>
         <h3>Vote nos candidatos</h3>
-        <p class="hint mb-16">Um voto por cargo. Você pode mudar o seu voto enquanto a votação estiver aberta.</p>
+        <p class="hint mb-16">Digite o número da sua camiseta, escolha um candidato em cada cargo e confirme. Você pode mudar o voto enquanto a votação estiver aberta.</p>
         <div class="cer-linha">
           <div style="flex: 1; min-width: 180px;">
             <label for="cer-camiseta" class="rotulo rotulo-p">Número da camiseta</label>
             <input type="text" id="cer-camiseta" placeholder="Ex: 042" inputmode="numeric" autocomplete="off">
           </div>
-          <button type="button" id="btn-cer-verificar" class="btn btn-secondary">Verificar</button>
+          <button type="button" id="btn-cer-verificar" class="btn btn-secondary">Continuar</button>
         </div>
         <div id="cer-voto-aviso" class="aviso-caixa" role="status" hidden></div>
         <div id="cer-voto-form" hidden>
           <p id="cer-voto-nome" class="cer-nome-eleitor"></p>
+          <p id="cer-voto-prog" class="cer-prog" aria-live="polite"></p>
           <div id="cer-voto-campos"></div>
-          <button type="button" id="btn-cer-votar" class="btn btn-primary" style="width: 100%;">Registrar votos</button>
+          <button type="button" id="btn-cer-votar" class="btn btn-primary cer-enviar">Confirmar votos</button>
         </div>
       </div>
 
@@ -1726,6 +1791,22 @@
       return cerDados.candidatos.filter(c => c.cargo === cargo && (!turma || c.turma === turma));
     }
 
+    let cerSig = '';
+    let cerPart = null;
+    let cerAuto = false;
+    let cerTimer = null;
+    const CER_CHECK = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 6.5l2.5 2.5 4.5-5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+    function cerAbaAberta() {
+      const v = document.getElementById('view-cerimonia');
+      return !!v && v.style.display !== 'none' && !document.hidden;
+    }
+    function cerAgendar() {
+      clearTimeout(cerTimer);
+      if (!cerAbaAberta() || cerDados.encerrada) return;
+      cerTimer = setTimeout(async () => { await atualizarCerimoniaAoVivo(); cerAgendar(); }, cerDados.aberta ? 6000 : 20000);
+    }
+
     async function carregarCerimonia() {
       try {
         const r = await supabaseRequest('POST', 'rpc/listar_candidatos_cerimonia', {});
@@ -1734,32 +1815,104 @@
         document.getElementById('cer-fase').textContent = 'Não foi possível carregar agora. Tente novamente em instantes.';
         return;
       }
+      cerSig = JSON.stringify(cerDados);
       desenharCerimonia();
-      await carregarResultadoPublicoCer();
+      await Promise.all([carregarParticipacaoCer(), carregarResultadoPublicoCer()]);
+      cerAgendar();
+    }
+
+    // Atualização silenciosa: só redesenha quando algo mudou, para não atrapalhar quem está votando.
+    async function atualizarCerimoniaAoVivo() {
+      try {
+        const r = await supabaseRequest('POST', 'rpc/listar_candidatos_cerimonia', {});
+        const novo = { aberta: !!r.aberta, encerrada: !!r.encerrada, candidatos: Array.isArray(r.candidatos) ? r.candidatos : [] };
+        const antes = cerDados;
+        const sig = JSON.stringify(novo);
+        if (sig !== cerSig) {
+          cerSig = sig; cerDados = novo;
+          desenharCerimonia();
+          if (!antes.aberta && novo.aberta) showToast('A votação foi aberta. Vote agora!', 'success');
+          if (!antes.encerrada && novo.encerrada) showToast('Votação encerrada. Veja o resultado.', 'success');
+        }
+        await Promise.all([carregarParticipacaoCer(), carregarResultadoPublicoCer()]);
+      } catch (err) { /* mantém a tela atual e tenta de novo no próximo ciclo */ }
+    }
+
+    async function carregarParticipacaoCer() {
+      if (!cerDados.aberta && !cerDados.encerrada) { cerPart = null; desenharParticipacaoCer(); return; }
+      try {
+        const r = await supabaseRequest('POST', 'rpc/participacao_cerimonia', {});
+        cerPart = { votantes: Number(r && r.votantes) || 0, ativos: Number(r && r.ativos) || 0 };
+      } catch (err) { return; }
+      desenharParticipacaoCer();
+    }
+    function cerPct(v, t) { return t > 0 ? Math.round(v * 1000 / t) / 10 : 0; }
+    function cerFmtPct(n) { return n.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + '%'; }
+
+    function desenharParticipacaoCer() {
+      const el = document.getElementById('cer-part');
+      if (!cerDados.aberta || !cerPart || !cerPart.ativos) { el.hidden = true; el.innerHTML = ''; return; }
+      const pct = cerPct(cerPart.votantes, cerPart.ativos);
+      el.innerHTML = '<div class="cer-part-topo"><span><strong>' + cerPart.votantes + '</strong> de ' + cerPart.ativos + ' formandos já votaram</span><span class="cer-ao-vivo">Ao vivo</span></div>' +
+        '<div class="cer-medidor" role="progressbar" aria-label="Participação na votação" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + Math.round(pct) + '"><span style="width:' + Math.min(100, pct) + '%"></span></div>';
+      el.hidden = false;
     }
 
     async function carregarResultadoPublicoCer() {
       const box = document.getElementById('cer-card-resultado');
-      if (!cerDados.encerrada) { box.hidden = true; return; }
+      if (!cerDados.encerrada) { box.hidden = true; box.dataset.pronto = ''; return; }
+      if (box.dataset.pronto === '1') { box.hidden = false; return; }
       try {
-        const r = await supabaseRequest('POST', 'rpc/resultado_publico_cerimonia', {});
+        const [r, pr] = await Promise.all([
+          supabaseRequest('POST', 'rpc/resultado_publico_cerimonia', {}),
+          supabaseRequest('POST', 'rpc/participacao_cerimonia', {}).catch(() => null)
+        ]);
         if (!r || !r.ok) { box.hidden = true; return; }
         const linhas = r.resultado || [];
-        document.getElementById('cer-resultado-publico').innerHTML = CARGOS_CER.map(([k, rot]) => {
-          const l = linhas.filter(x => x.cargo === k).sort((a, b) => Number(b.votos) - Number(a.votos));
-          if (!l.length) return '<div class="cer-cargo"><h4>' + rot + '</h4><p class="hint-small">Sem candidatos.</p></div>';
+        const ativos = Number(pr && pr.ativos) || 0, votantes = Number(pr && pr.votantes) || 0;
+        const totalVotos = linhas.reduce((a, x) => a + Number(x.votos || 0), 0);
+        const pctPart = cerPct(votantes, ativos);
+        const kpis = '<div class="cer-kpis">' +
+          '<div class="cer-kpi"><b>' + votantes + '</b><span>formandos votaram' + (ativos ? ' de ' + ativos + ' inscritos' : '') + '</span></div>' +
+          (ativos ? '<div class="cer-kpi"><b>' + cerFmtPct(pctPart) + '</b><span>de participação</span><div class="cer-medidor" aria-hidden="true"><span style="width:' + Math.min(100, pctPart) + '%"></span></div></div>' : '') +
+          '<div class="cer-kpi"><b>' + totalVotos + '</b><span>votos apurados nos 3 cargos</span></div></div>';
+        const cargos = CARGOS_CER.map(([k, rot]) => {
+          const l = linhas.filter(x => x.cargo === k).sort((a, b) => Number(b.votos) - Number(a.votos) || String(a.turma).localeCompare(String(b.turma)));
+          if (!l.length) return '<div class="cer-res"><h4>' + rot + '</h4><p class="hint-small">Sem candidatos.</p></div>';
           const topo = Number(l[0].votos);
+          const total = l.reduce((a, x) => a + Number(x.votos || 0), 0);
           const empatados = l.filter(x => Number(x.votos) === topo);
           let destaque;
           if (topo === 0) destaque = '<p class="cer-vencedor">Sem votos neste cargo.</p>';
           else if (empatados.length > 1) destaque = '<p class="cer-vencedor">Empate: ' + empatados.map(x => escXml(x.nome) + ' (turma ' + escXml(x.turma) + ')').join(' e ') + ', com ' + topo + ' voto' + (topo === 1 ? '' : 's') + ' cada.</p>';
-          else destaque = '<p class="cer-vencedor">' + escXml(l[0].nome) + ' <small>turma ' + escXml(l[0].turma) + ' · ' + topo + ' voto' + (topo === 1 ? '' : 's') + '</small></p>';
-          return '<div class="cer-cargo"><h4>' + rot + '</h4>' + destaque +
-            '<table class="tabela-res"><caption class="sr-only">Votos em ' + rot + '</caption><thead><tr><th>Candidato</th><th>Turma</th><th>Votos</th></tr></thead><tbody>' +
-            l.map(x => '<tr><td>' + escXml(x.nome) + '</td><td>' + escXml(x.turma) + '</td><td>' + Number(x.votos) + '</td></tr>').join('') + '</tbody></table></div>';
+          else destaque = '<p class="cer-vencedor">' + escXml(l[0].nome) + ' <small>turma ' + escXml(l[0].turma) + ' · ' + topo + ' voto' + (topo === 1 ? '' : 's') + ' (' + cerFmtPct(cerPct(topo, total)) + ')</small></p>';
+          const barras = l.map(x => {
+            const v = Number(x.votos), ehTopo = topo > 0 && v === topo;
+            const larg = topo > 0 ? Math.round(v * 1000 / topo) / 10 : 0;
+            const titulo = x.nome + ', turma ' + x.turma + ': ' + v + ' voto' + (v === 1 ? '' : 's') + ' (' + cerFmtPct(cerPct(v, total)) + ')';
+            return '<div class="cer-barra' + (ehTopo ? ' topo' : '') + '" title="' + escXml(titulo) + '">' +
+              '<span class="cer-barra-nome">' + escXml(x.nome) + '<small>turma ' + escXml(x.turma) + '</small>' + (ehTopo ? '<em class="cer-tag">' + (empatados.length > 1 ? 'Empate' : 'Mais votado') + '</em>' : '') + '</span>' +
+              '<span class="cer-barra-val">' + v + ' <small>· ' + cerFmtPct(cerPct(v, total)) + '</small></span>' +
+              '<span class="cer-trilho"><span class="cer-fill" data-larg="' + larg + '" style="display:block"></span></span></div>';
+          }).join('');
+          return '<div class="cer-res"><h4>' + rot + '</h4>' + destaque +
+            '<p class="cer-nota">' + total + ' voto' + (total === 1 ? '' : 's') + ' neste cargo. Barras proporcionais ao candidato mais votado.</p>' +
+            '<div class="cer-barras" aria-hidden="true">' + barras + '</div>' +
+            '<details><summary>Ver em tabela</summary><table class="tabela-res mt-12"><caption class="sr-only">Votos em ' + rot + '</caption><thead><tr><th>Candidato</th><th>Turma</th><th>Votos</th></tr></thead><tbody>' +
+            l.map(x => '<tr><td>' + escXml(x.nome) + '</td><td>' + escXml(x.turma) + '</td><td>' + Number(x.votos) + '</td></tr>').join('') + '</tbody></table></details></div>';
         }).join('');
-        box.hidden = false;
+        document.getElementById('cer-resultado-publico').innerHTML = kpis + cargos;
+        box.hidden = false; box.dataset.pronto = '1';
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          box.querySelectorAll('.cer-fill').forEach(f => { f.style.width = f.getAttribute('data-larg') + '%'; });
+        }));
       } catch (err) { box.hidden = true; }
+    }
+
+    function desenharPassosCer() {
+      const idx = cerDados.encerrada ? 2 : cerDados.aberta ? 1 : 0;
+      document.getElementById('cer-passos').innerHTML = ['Indicações', 'Votação', 'Resultado'].map((n, i) =>
+        '<li class="' + (i < idx ? 'feito' : i === idx ? 'atual' : '') + '"' + (i === idx ? ' aria-current="step"' : '') + '><i aria-hidden="true">' + (i < idx ? '✓' : (i + 1)) + '</i>' + n + '</li>').join('');
     }
 
     function desenharCerimonia() {
@@ -1767,6 +1920,8 @@
       fase.textContent = cerDados.encerrada ? 'Votação encerrada. Obrigado a todos que participaram.'
         : cerDados.aberta ? 'Votação aberta. Escolha um candidato por cargo.'
         : 'Indicações abertas. Cada turma indica 1 candidato por cargo; a votação abre depois.';
+      desenharPassosCer();
+      desenharParticipacaoCer();
       document.getElementById('cer-card-votar').hidden = !cerDados.aberta;
 
       const box = document.getElementById('cer-lista');
@@ -1784,6 +1939,11 @@
       box.innerHTML = html;
       if (cerRep) desenharEditorRep();
       if (cerDados.aberta && document.getElementById('cer-voto-form') && !document.getElementById('cer-voto-form').hidden) desenharCamposVoto(cerVotoAtual);
+      if (cerDados.aberta && !cerAuto) {
+        cerAuto = true;
+        const id = lerIdentidade(), inp = document.getElementById('cer-camiseta');
+        if (id && inp && !inp.value) { inp.value = id.camiseta; verificarEleitor(); }
+      }
     }
 
     // ----- representante da turma -----
@@ -1852,14 +2012,33 @@
     let cerVotoAtual = {}; // cargo -> id escolhido
     let cerEleitor = null;
 
+    function cerIniciais(nome) {
+      const p = String(nome || '').trim().split(/\s+/).filter(Boolean);
+      return ((p[0] || '?').charAt(0) + (p.length > 1 ? p[p.length - 1].charAt(0) : '')).toUpperCase();
+    }
+    function cerAtualizarProg() {
+      let n = 0;
+      CARGOS_CER.forEach(([k]) => {
+        const ok = !!cerVotoAtual[k]; if (ok) n++;
+        const st = document.querySelector('[data-cer-st="' + k + '"]');
+        if (st) { st.textContent = ok ? 'Escolhido' : 'Escolha um'; st.classList.toggle('ok', ok); }
+      });
+      const el = document.getElementById('cer-voto-prog');
+      if (el) el.textContent = n === 0 ? 'Toque em um candidato por cargo.' : n + ' de ' + CARGOS_CER.length + ' cargos escolhidos. Depois toque em Confirmar votos.';
+    }
     function desenharCamposVoto(marcados) {
       cerVotoAtual = Object.assign({}, marcados || {});
       document.getElementById('cer-voto-campos').innerHTML = CARGOS_CER.map(([k, rot]) => {
         const cands = cerCandidatos(k);
         const ops = cands.map(c =>
-          '<label class="cer-opcao"><input type="radio" name="cer-voto-' + k + '" value="' + escXml(c.id) + '"' + (cerVotoAtual[k] === c.id ? ' checked' : '') + '><span>' + escXml(c.nome) + ' <small>Turma ' + escXml(c.turma) + '</small></span></label>').join('');
-        return '<fieldset class="cer-cargo" style="border:none;"><legend>' + rot + '</legend>' + (ops || '<p class="hint-small">Nenhum candidato indicado para este cargo.</p>') + '</fieldset>';
+          '<label class="cer-tile' + (cerVotoAtual[k] === c.id ? ' sel' : '') + '"><input type="radio" class="campo-oculto" name="cer-voto-' + k + '" value="' + escXml(c.id) + '"' + (cerVotoAtual[k] === c.id ? ' checked' : '') + '>' +
+          '<span class="cer-av" aria-hidden="true">' + escXml(cerIniciais(c.nome)) + '</span>' +
+          '<span class="cer-tile-txt"><strong>' + escXml(c.nome) + '</strong><small>Turma ' + escXml(c.turma) + '</small></span>' +
+          '<span class="cer-chk" aria-hidden="true">' + CER_CHECK + '</span></label>').join('');
+        return '<fieldset class="cer-cargo" style="border:none;"><legend>' + rot + '<span class="cer-st" data-cer-st="' + k + '"></span></legend>' +
+          (ops ? '<div class="cer-grade">' + ops + '</div>' : '<p class="hint-small">Nenhum candidato indicado para este cargo.</p>') + '</fieldset>';
       }).join('');
+      cerAtualizarProg();
     }
 
     async function verificarEleitor() {
@@ -1876,6 +2055,7 @@
         document.getElementById('cer-voto-nome').textContent = r.nome;
         desenharCamposVoto(r.votos || {});
         cerAviso('cer-voto-aviso', r.votos && Object.keys(r.votos).length ? 'Você já votou. Pode alterar abaixo.' : '', '');
+        document.getElementById('cer-voto-nome').textContent = 'Olá, ' + String(r.nome || '').split(/\s+/)[0] + '. Escolha o seu candidato em cada cargo.';
         form.hidden = false;
       } catch (err) { cerAviso('cer-voto-aviso', mensagemErro(err, 'Não foi possível verificar agora. Tente novamente.'), 'erro'); }
     }
@@ -1934,6 +2114,13 @@
     document.getElementById('btn-cer-entrar').addEventListener('click', entrarRepresentante);
     document.getElementById('btn-cer-sair').addEventListener('click', sairRepresentante);
     document.getElementById('btn-cer-verificar').addEventListener('click', verificarEleitor);
+    document.getElementById('cer-voto-campos').addEventListener('change', e => {
+      const r = e.target; if (!r || !r.name || r.name.indexOf('cer-voto-') !== 0) return;
+      cerVotoAtual[r.name.slice(9)] = r.value;
+      document.querySelectorAll('input[name="' + r.name + '"]').forEach(i => { const t = i.closest('.cer-tile'); if (t) t.classList.toggle('sel', i.checked); });
+      cerAtualizarProg();
+    });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && cerAbaAberta()) { clearTimeout(cerTimer); atualizarCerimoniaAoVivo().then(cerAgendar); } });
     document.getElementById('btn-cer-votar').addEventListener('click', registrarVotosCer);
     document.getElementById('btn-cer-resultado').addEventListener('click', verResultadoCer);
     document.getElementById('cer-camiseta').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); verificarEleitor(); } });
