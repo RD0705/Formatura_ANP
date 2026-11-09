@@ -245,7 +245,38 @@
       background: linear-gradient(90deg, transparent, var(--pf-gold-dim), var(--pf-gold), var(--pf-gold-dim), transparent);
     }
     .hero-inner { max-width: 1100px; margin: 0 auto; padding: 34px 24px 46px; text-align: center; }
-    .hero-badge { width: 112px; height: auto; display: inline-block; filter: drop-shadow(0 10px 26px rgba(0,0,0,0.6)); }
+    /* palco do distintivo: feixe de luz na entrada, depois brilho ambiente e poeira em suspensão */
+    .hero-palco { --palco-w: 168px; --palco-up: 60px; position: relative; width: var(--palco-w); margin: 26px auto 0; isolation: isolate; }
+    .hero-palco::before {
+      content: ''; position: absolute; z-index: 0; left: -62%; right: -62%; top: -22%; bottom: -26%; pointer-events: none;
+      background: radial-gradient(closest-side, rgba(232,176,88,0.34), rgba(232,176,88,0.12) 55%, transparent 100%);
+      opacity: 0.5;
+    }
+    .hero-badge {
+      position: relative; z-index: 1; display: block; width: 100%; height: auto;
+      filter: brightness(1) saturate(1) drop-shadow(0 0 22px rgba(226,170,84,0.30)) drop-shadow(0 14px 26px rgba(0,0,0,0.55));
+    }
+    .hero-feixe {
+      position: absolute; z-index: 2; left: 50%; top: calc(-1 * var(--palco-up)); width: 200%; height: calc(var(--palco-up) + 76%);
+      transform: translateX(-50%); pointer-events: none; opacity: 0; mix-blend-mode: screen; filter: blur(9px);
+    }
+    .hero-feixe::before {
+      content: ''; position: absolute; inset: 0;
+      clip-path: polygon(34% 0, 66% 0, 100% 100%, 0 100%);
+      background: linear-gradient(180deg, rgba(255,247,232,0.62) 0%, rgba(255,236,204,0.40) 38%, rgba(255,222,168,0.16) 78%, rgba(255,222,168,0) 100%);
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 30%, #000 70%, transparent 100%);
+      mask-image: linear-gradient(90deg, transparent 0%, #000 30%, #000 70%, transparent 100%);
+    }
+    .hero-po { position: absolute; z-index: 3; left: 50%; top: calc(-1 * var(--palco-up)); width: 320%; height: calc(100% + var(--palco-up) + 16%); transform: translateX(-50%); pointer-events: none; }
+    /* estado inicial (só com JS): distintivo apagado; o feixe acende e depois some, mantendo o brilho */
+    .hero-palco.pre::before { opacity: 0; }
+    .hero-palco.pre .hero-badge { filter: brightness(0.13) saturate(0.5) drop-shadow(0 0 0 rgba(226,170,84,0)) drop-shadow(0 14px 26px rgba(0,0,0,0.55)); }
+    .hero-palco.pre.is-aceso::before { opacity: 0.5; transition: opacity 2.2s ease-out 0.2s; }
+    .hero-palco.pre.is-aceso .hero-badge { filter: brightness(1) saturate(1) drop-shadow(0 0 22px rgba(226,170,84,0.30)) drop-shadow(0 14px 26px rgba(0,0,0,0.55)); transition: filter 1.7s ease-out; }
+    .hero-palco.is-aceso .hero-feixe { opacity: 1; transition: opacity 1.1s ease-out; }
+    .hero-palco.is-final .hero-feixe { opacity: 0; transition: opacity 2.2s ease-in-out; }
+    @keyframes respirar { from { opacity: 0.42; } to { opacity: 0.62; } }
+    .hero-palco.is-final::before { animation: respirar 7s ease-in-out infinite alternate; }
     .hero-title { margin-top: 12px; font-weight: 800; }
     .hero-numeral {
       display: block; font-family: var(--font-display); font-weight: 800;
@@ -545,7 +576,7 @@
       .tab-btn { flex: 0 0 auto; white-space: nowrap; padding: 12px 16px; }
       .card { padding: 22px 18px; }
       .hero-inner { padding: 20px 20px 30px; }
-      .hero-badge { width: 72px; height: auto; }
+      .hero-palco { --palco-w: 112px; --palco-up: 42px; margin-top: 22px; }
       .hero-title { margin-top: 8px; }
       .hero-numeral { font-size: clamp(56px, 16vw, 72px); }
       .hero-course { font-size: 14px; letter-spacing: 0.1em; }
@@ -582,7 +613,11 @@
   <!-- HEADER -->
   <header class="hero">
     <div class="hero-inner">
-      <img class="hero-badge" src="brasao-pf.png" alt="Brasão da Polícia Federal" width="112" height="141">
+      <div class="hero-palco" id="hero-palco">
+        <img class="hero-badge" src="distintivo-pf.webp" alt="Distintivo da Polícia Federal" width="560" height="676" fetchpriority="high" decoding="async">
+        <div class="hero-feixe" aria-hidden="true"></div>
+        <canvas class="hero-po" id="hero-po" aria-hidden="true"></canvas>
+      </div>
       <h1 class="hero-title">
         <span class="hero-numeral">LXIII</span>
         <span class="hero-course">Curso de Formação de Agente de Polícia Federal</span>
@@ -596,6 +631,95 @@
       </div>
     </div>
   </header>
+  <script>
+    /* entrada do distintivo: feixe de luz acende o brasão e some; ficam o brilho e a poeira passando pela luz */
+    (function () {
+      const palco = document.getElementById('hero-palco'); if (!palco) return;
+      const img = palco.querySelector('.hero-badge'), cv = document.getElementById('hero-po');
+      const reduz = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+      const ctx = cv && cv.getContext ? cv.getContext('2d') : null;
+      palco.classList.add('pre');
+      let cw = 0, ch = 0, dpr = 1, bx = 0, by = 0, bw = 0, bh = 0, P = [], beamK = 0, ambK = 0, raf = 0, last = 0, t = 0, visivel = true, comecou = false;
+      const spr = document.createElement('canvas'); spr.width = spr.height = 32;
+      (function () { const g = spr.getContext('2d'), gr = g.createRadialGradient(16, 16, 0, 16, 16, 16);
+        gr.addColorStop(0, 'rgba(255,244,214,1)'); gr.addColorStop(0.16, 'rgba(255,232,182,0.85)'); gr.addColorStop(0.42, 'rgba(255,214,140,0.22)'); gr.addColorStop(1, 'rgba(255,208,130,0)');
+        g.fillStyle = gr; g.fillRect(0, 0, 32, 32); })();
+      const rnd = (a, b) => a + Math.random() * (b - a);
+      const suave = x => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
+      function medir() {
+        if (!ctx) return false;
+        const r = cv.getBoundingClientRect(), b = img.getBoundingClientRect();
+        if (!r.width || !b.width) return false;
+        const ow = cw, oh = ch;
+        const nd = Math.min(window.devicePixelRatio || 1, 2);
+        if (nd !== dpr || Math.abs(r.width - cw) > 0.5 || Math.abs(r.height - ch) > 0.5 || !cv.width) {
+          dpr = nd; cw = r.width; ch = r.height; cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr);
+        }
+        bx = b.left - r.left; by = b.top - r.top; bw = b.width; bh = b.height;
+        if (!P.length) {
+          const n = Math.max(26, Math.round(cw * ch / 2100));
+          for (let i = 0; i < n; i++) P.push({ x: rnd(0, cw), y: rnd(0, ch), r: 0.5 + Math.pow(Math.random(), 2) * 1.5, ph: rnd(0, 6.28), f1: rnd(0.15, 0.5), f2: rnd(0.12, 0.4), tf: rnd(0.6, 1.8), sp: rnd(0.6, 1.4), dx: rnd(-2, 2), vy: rnd(-7, 4) });
+        } else if (ow && oh) { P.forEach(p => { p.x *= cw / ow; p.y *= ch / oh; }); }
+        return true;
+      }
+      function luz(x, y) {
+        // feixe: trapézio que abre de cima para o distintivo (mesma geometria do CSS)
+        const cx = bx + bw / 2, yFim = by + bh * 0.76, up = by; let cone = 0;
+        if (y >= 0 && y <= yFim) {
+          const k = y / yFim, meia = bw * (0.34 + 0.66 * k);
+          cone = (1 - suave(Math.abs(x - cx) / meia)) * (1 - 0.55 * k);
+        }
+        const dx = (x - cx) / (bw * 1.2), dy = (y - (by + bh / 2)) / (bh * 0.86), d = Math.sqrt(dx * dx + dy * dy);
+        const amb = d < 1 ? Math.pow(1 - d, 0.8) : 0;
+        return [cone, amb];
+      }
+      function desenhar() {
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, cw, ch);
+        ctx.globalCompositeOperation = 'lighter';
+        for (let i = 0; i < P.length; i++) {
+          const p = P[i], c = luz(p.x, p.y), w = Math.max(c[0] * beamK, c[1] * ambK);
+          if (w < 0.02) continue;
+          let a = w * (0.55 + 0.45 * Math.sin(t * p.tf + p.ph)) * (1.1 + p.r * 0.5);
+          if (p.x > bx + bw * 0.04 && p.x < bx + bw * 0.96 && p.y > by + bh * 0.04 && p.y < by + bh * 0.96) a *= 0.3;
+          const s = 3 + p.r * 5.5;
+          ctx.globalAlpha = Math.min(1, a); ctx.drawImage(spr, p.x - s / 2, p.y - s / 2, s, s);
+        }
+        ctx.globalAlpha = 1;
+      }
+      function passo(ts) {
+        raf = 0;
+        if (!visivel || document.hidden) { last = 0; return; }
+        raf = requestAnimationFrame(passo);
+        if (last && ts - last < 30) return;
+        const dt = last ? Math.min(0.06, (ts - last) / 1000) : 0.016; last = ts; t += dt;
+        const aceso = palco.classList.contains('is-aceso'), fim = palco.classList.contains('is-final');
+        beamK += ((aceso && !fim ? 1 : 0) - beamK) * Math.min(1, dt * 1.7);
+        ambK += ((aceso ? 1 : 0) - ambK) * Math.min(1, dt * 0.9);
+        for (let i = 0; i < P.length; i++) {
+          const p = P[i];
+          p.x += (Math.sin(t * p.f1 + p.ph) * 5 + p.dx) * dt * p.sp;
+          p.y += (p.vy + Math.sin(t * p.f2 + p.ph * 1.7) * 4) * dt * p.sp;
+          if (p.x < -4) p.x = cw + 4; else if (p.x > cw + 4) p.x = -4;
+          if (p.y < -4) p.y = ch + 4; else if (p.y > ch + 4) p.y = -4;
+        }
+        desenhar();
+      }
+      function girar() { if (!raf && visivel && !document.hidden && ctx && P.length) raf = requestAnimationFrame(passo); }
+      function iniciar() {
+        if (comecou) return; comecou = true;
+        medir();
+        if (reduz) { palco.classList.add('is-aceso', 'is-final'); ambK = 1; if (ctx && P.length) desenhar(); return; }
+        setTimeout(() => palco.classList.add('is-aceso'), 350);
+        setTimeout(() => palco.classList.add('is-final'), 3900);
+        girar();
+      }
+      if ('IntersectionObserver' in window) new IntersectionObserver(es => { visivel = es[0].isIntersecting; if (visivel) girar(); }).observe(palco);
+      document.addEventListener('visibilitychange', girar);
+      let rt = 0; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (comecou && medir() && (reduz || !raf)) { if (reduz) desenhar(); } }, 150); });
+      const pronto = () => requestAnimationFrame(() => requestAnimationFrame(iniciar));
+      if (img.complete && img.naturalWidth) pronto(); else { img.addEventListener('load', pronto, { once: true }); img.addEventListener('error', () => { palco.classList.remove('pre'); }, { once: true }); setTimeout(iniciar, 2500); }
+    })();
+  </script>
 
   <!-- MAIN -->
   <main id="conteudo" tabindex="-1" style="max-width: 1100px; margin: 0 auto; padding: 32px 20px 60px; position: relative; z-index: 10;">
