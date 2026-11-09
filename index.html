@@ -414,6 +414,67 @@
     .tabela-res td:last-child, .tabela-res th:last-child { text-align: right; font-variant-numeric: tabular-nums; }
     @media (max-width: 520px) { .cer-turma dl { grid-template-columns: 1fr; gap: 0; } .cer-turma dt { margin-top: 6px; } }
 
+
+    /* ===== Painel admin: abas, indicadores e listas retráteis ===== */
+    .adm-topo { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; }
+    .adm-topo h2 { font-size: 18px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+    .adm-topo p { font-size: 13px; color: var(--pf-muted); max-width: 52ch; }
+    .adm-acoes { display: flex; gap: 8px; }
+    .adm-mini { min-height: 36px; padding: 6px 14px; background: transparent; border: 1px solid var(--pf-border); color: var(--pf-muted); border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: color .15s var(--ease-out), border-color .15s var(--ease-out); }
+    .adm-mini:hover { color: var(--pf-gold-bright); border-color: var(--pf-gold-dim); }
+    .adm-abas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 4px; background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 12px; margin-bottom: 24px; }
+    .adm-abas button { min-height: 42px; border: 0; background: transparent; color: var(--pf-muted); font: inherit; font-size: 13px; font-weight: 600; border-radius: 9px; cursor: pointer; transition: background-color .18s var(--ease-out), color .18s var(--ease-out); }
+    .adm-abas button:hover { color: var(--pf-text); }
+    .adm-abas button[aria-selected="true"] { background: rgba(201,169,78,0.14); color: var(--pf-gold-bright); }
+    .adm-abas button:focus-visible, .adm-det > summary:focus-visible, .adm-grupo > summary:focus-visible, .adm-mini:focus-visible { outline: 2px solid var(--pf-gold-bright); outline-offset: 2px; }
+    .adm-sec[hidden] { display: none; }
+    .adm-cab { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+    .adm-cab h3 { font-size: 16px; font-weight: 700; color: var(--pf-gold); margin-bottom: 2px; }
+    .adm-cab p { font-size: 13px; color: var(--pf-muted); }
+    .adm-baixar { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; width: auto; }
+    .adm-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
+    .adm-kpi { background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 12px; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+    .adm-kpi-l { font-size: 12px; color: var(--pf-muted); font-weight: 600; }
+    .adm-kpi b { font-size: clamp(24px, 6vw, 30px); font-weight: 800; line-height: 1.05; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .adm-grafico { background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 12px; padding: 18px; margin-bottom: 16px; }
+    .adm-grafico h4 { font-size: 13px; color: var(--pf-muted); margin-bottom: 14px; font-weight: 600; }
+    .adm-det { border: 1px solid var(--pf-border); border-radius: 12px; background: var(--pf-black); margin-bottom: 12px; }
+    .adm-det > summary, .adm-grupo > summary { list-style: none; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .adm-det > summary { padding: 14px 16px; min-height: 52px; font-weight: 700; font-size: 14px; color: var(--pf-text); }
+    .adm-det > summary::-webkit-details-marker, .adm-grupo > summary::-webkit-details-marker { display: none; }
+    .adm-seta { width: 18px; height: 18px; flex-shrink: 0; display: grid; place-items: center; transition: transform .2s var(--ease-out); }
+    .adm-seta::before { content: ""; width: 7px; height: 7px; border-right: 2px solid var(--pf-gold); border-bottom: 2px solid var(--pf-gold); transform: rotate(-45deg); }
+    details[open] > summary > .adm-seta { transform: rotate(90deg); }
+    .adm-n { margin-left: auto; font-size: 12px; font-weight: 600; color: var(--pf-muted); font-variant-numeric: tabular-nums; }
+    .adm-det-corpo { padding: 0 16px 16px; }
+    .adm-rolagem { overflow-x: auto; border: 1px solid var(--pf-border); border-radius: 10px; }
+    .adm-nota { font-size: 13px; color: var(--pf-muted); margin: 0 0 12px; }
+    .adm-botoes { display: flex; gap: 8px; margin-left: auto; }
+    .adm-grupos { border: 1px solid var(--pf-border); border-radius: 10px; overflow: hidden; }
+    .adm-vazio { text-align: center; padding: 28px 12px; color: var(--pf-muted); font-size: 13px; }
+    .adm-grupo + .adm-grupo { border-top: 1px solid var(--pf-border); }
+    .adm-grupo > summary { padding: 12px 14px; min-height: 52px; flex-wrap: wrap; row-gap: 4px; }
+    .adm-grupo > summary:hover { background: rgba(201,169,78,0.05); }
+    .adm-g-nome { font-weight: 600; font-size: 14px; color: var(--pf-text); min-width: 0; overflow-wrap: anywhere; flex: 1 1 180px; }
+    .adm-g-meta { font-size: 12px; color: var(--pf-muted); white-space: nowrap; }
+    .adm-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .adm-chip { font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 999px; border: 1px solid var(--pf-border); color: var(--pf-text); white-space: nowrap; }
+    .adm-chip.ouro { border-color: var(--pf-gold-dim); color: var(--pf-gold-bright); }
+    .adm-chip.aviso { border-color: #8a6d1d; color: #e5c866; }
+    .adm-grupo-corpo { padding: 0 14px 14px 42px; }
+    .adm-grupo-info { font-size: 13px; color: var(--pf-muted); margin: 0 0 10px; line-height: 1.5; }
+    .adm-grupo-info strong { color: var(--pf-text); font-weight: 600; }
+    @media (max-width: 520px) {
+      .adm-abas button { font-size: 12px; padding: 0 2px; }
+      .adm-baixar { width: 100%; justify-content: center; }
+      .adm-kpis { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .adm-kpi { padding: 12px 14px; }
+      #admin-panel > .gold-glow { padding: 18px 14px !important; }
+      .adm-cab > div { flex: 1 1 100%; }
+      .adm-grupo-corpo { padding-left: 14px; }
+      .adm-botoes { margin-left: 0; width: 100%; }
+    }
+
     /* ===== Cerimônia: etapas, participação ao vivo, votação em cartões, resultado em gráfico ===== */
     .cer-passos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; list-style: none; padding: 0; margin: 0 0 12px; }
     .cer-passos li { display: flex; align-items: center; gap: 8px; padding: 9px 10px; border: 1px solid var(--pf-border); border-radius: 10px; font-size: 13px; font-weight: 600; color: var(--pf-muted); min-width: 0; }
@@ -1350,180 +1411,127 @@
       <div id="admin-panel" style="display: none;">
         <div class="gold-glow" style="background: var(--pf-card); border: 1px solid var(--pf-border); border-radius: 14px; padding: 32px; position: relative; overflow: hidden;">
 
-          <!-- Header do painel -->
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
+          <!-- Cabeçalho do painel -->
+          <div class="adm-topo">
             <div>
-              <h2 style="font-size: 18px; font-weight: 700; color: var(--pf-text); margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 1a4 4 0 1 1 0 8 4 4 0 0 1 0-8zM3 18c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="#c9a94e" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
-                Painel Administrativo
-              </h2>
-              <p style="font-size: 13px; color: var(--pf-muted);">Visão geral de todos os registros de interesse</p>
+              <h2><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 1a4 4 0 1 1 0 8 4 4 0 0 1 0-8zM3 18c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="#c9a94e" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg> Painel Administrativo</h2>
+              <p>Escolha uma seção. Em cada uma, os números e o botão de planilha ficam no topo; as listas abrem e recolhem.</p>
             </div>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-              <button onclick="loadAdmin()" style="padding: 9px 18px; background: var(--pf-black); border: 1px solid var(--pf-border); color: var(--pf-muted); border-radius: 8px; font-size: 12px; cursor: pointer; font-family: inherit; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; gap: 6px;" onmouseover="this.style.borderColor='var(--pf-gold-dim)'; this.style.color='var(--pf-text)'" onmouseout="this.style.borderColor='var(--pf-border)'; this.style.color='var(--pf-muted)'">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M13 7A6 6 0 1 1 7 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 1l3 0 0 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                Atualizar
-              </button>
-              <button class="btn btn-secondary" onclick="exportExcel()" style="padding: 9px 18px; display: flex; align-items: center; gap: 6px;">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v9M3 7l4 4 4-4M2 12h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                Exportar Excel
-              </button>
-              <button onclick="adminLogout()" style="padding: 9px 18px; background: transparent; border: 1px solid var(--pf-border); color: var(--pf-muted); border-radius: 8px; font-size: 12px; cursor: pointer; font-family: inherit; font-weight: 500; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--pf-danger)'; this.style.color='#d9a3a3'" onmouseout="this.style.borderColor='var(--pf-border)'; this.style.color='var(--pf-muted)'">Sair</button>
+            <div class="adm-acoes">
+              <button type="button" class="adm-mini" onclick="loadAdmin()">Atualizar</button>
+              <button type="button" class="adm-mini" onclick="adminLogout()">Sair</button>
             </div>
           </div>
 
-          <!-- Stats -->
-          <div id="admin-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 24px;"></div>
-
-          <div class="admin-busca">
-            <label for="admin-busca" class="sr-only">Buscar nos registros</label>
-            <input type="text" id="admin-busca" placeholder="Buscar por nome ou camiseta" autocomplete="off">
-            <span id="admin-contagem" class="admin-contagem" role="status"></span>
+          <div class="adm-abas" role="tablist" aria-label="Seções do painel">
+            <button type="button" role="tab" id="adm-tab-form" data-adm="form" aria-selected="true" aria-controls="adm-sec-form" tabindex="0">Formandos</button>
+            <button type="button" role="tab" id="adm-tab-conv" data-adm="conv" aria-selected="false" aria-controls="adm-sec-conv" tabindex="-1">Convidados</button>
+            <button type="button" role="tab" id="adm-tab-cri" data-adm="cri" aria-selected="false" aria-controls="adm-sec-cri" tabindex="-1">Crianças</button>
+            <button type="button" role="tab" id="adm-tab-vot" data-adm="vot" aria-selected="false" aria-controls="adm-sec-vot" tabindex="-1">Música</button>
           </div>
 
-          <!-- Table container -->
-          <div style="overflow-x: auto; border: 1px solid var(--pf-border); border-radius: 10px;">
-            <table class="admin-table" id="admin-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Nome Completo</th>
-                  <th>Camiseta</th>
-                  <th>Solenidade</th>
-                  <th>Interesse +4</th>
-                  <th>Baile</th>
-                  <th>Qtd. Baile</th>
-                  <th>Vender Sol.</th>
-                  <th>Qtd. Venda</th>
-                  <th>Registrado em</th>
-                </tr>
-              </thead>
-              <tbody id="admin-tbody">
-                <tr>
-                  <td colspan="10" style="text-align: center; padding: 40px; color: var(--pf-muted);">Carregando dados...</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- ========== ADMIN CRIANÇAS ========== -->
-          <div style="margin-top: 40px; border-top: 1px solid var(--pf-border); padding-top: 32px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
-              <div>
-                <h3 style="font-size: 16px; font-weight: 700; color: var(--pf-gold); margin-bottom: 4px;">Registros — Crianças / Espaço Kids</h3>
-                <p style="font-size: 13px; color: var(--pf-muted);">Acompanhamento e turmas interessadas</p>
-              </div>
-              <button class="btn btn-secondary" onclick="exportExcelCriancas()" style="padding: 9px 18px; display: flex; align-items: center; gap: 6px;">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v9M3 7l4 4 4-4M2 12h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                Exportar Excel
-              </button>
+          <section id="adm-sec-form" class="adm-sec" role="tabpanel" aria-labelledby="adm-tab-form">
+            <div class="adm-cab">
+              <div><h3>Registros de interesse</h3><p>Solenidade, baile e venda de ingressos</p></div>
+              <button type="button" class="btn btn-primary adm-baixar" onclick="exportExcel()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1v9M3 7l4 4 4-4M2 12h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Baixar planilha</button>
             </div>
-            
-            <div id="admin-stats-cri" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 24px;"></div>
-            
-            <div style="display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 24px;">
-              <div style="background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 10px; padding: 20px;">
-                <h4 style="font-size: 13px; color: var(--pf-muted); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Crianças por Turma</h4>
-                <div id="admin-chart-turmas" style="display: flex; flex-direction: column; gap: 12px; min-height: 80px;">
-                  <div style="color: var(--pf-muted); font-size: 13px; text-align: center; padding: 20px 0;">Carregando...</div>
+            <div id="admin-stats" class="adm-kpis"></div>
+            <details class="adm-det" id="adm-det-form">
+              <summary><span class="adm-seta" aria-hidden="true"></span>Lista de formandos<span class="adm-n" id="adm-n-form"></span></summary>
+              <div class="adm-det-corpo">
+                <div class="admin-busca">
+                  <label for="admin-busca" class="sr-only">Buscar nos registros</label>
+                  <input type="text" id="admin-busca" placeholder="Buscar por nome ou camiseta" autocomplete="off">
+                  <span id="admin-contagem" class="admin-contagem" role="status"></span>
+                </div>
+                <div class="adm-rolagem">
+                  <table class="admin-table" id="admin-table">
+                    <thead><tr><th>#</th><th>Nome Completo</th><th>Camiseta</th><th>Solenidade</th><th>Interesse +4</th><th>Baile</th><th>Qtd. Baile</th><th>Vender Sol.</th><th>Qtd. Venda</th><th>Registrado em</th></tr></thead>
+                    <tbody id="admin-tbody"><tr><td colspan="10" style="text-align: center; padding: 40px; color: var(--pf-muted);">Carregando dados...</td></tr></tbody>
+                  </table>
                 </div>
               </div>
+            </details>
+          </section>
+          <section id="adm-sec-conv" class="adm-sec" role="tabpanel" aria-labelledby="adm-tab-conv" hidden>
+            <div class="adm-cab">
+              <div><h3>Convidados — Solenidade e Baile</h3><p>Listas preenchidas pelos formandos na aba Convidados</p></div>
+              <button type="button" class="btn btn-primary adm-baixar" id="btn-admin-conv-csv"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1v9M3 7l4 4 4-4M2 12h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Baixar planilha</button>
             </div>
-
-            <div style="overflow-x: auto; border: 1px solid var(--pf-border); border-radius: 10px;">
-              <table class="admin-table" id="admin-table-cri">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Nome Completo</th>
-                    <th>Camiseta</th>
-                    <th>Turma</th>
-                    <th>Crianças</th>
-                    <th>Qtd</th>
-                    <th>Espaço Kids</th>
-                    <th>Registrado em</th>
-                  </tr>
-                </thead>
-                <tbody id="admin-tbody-cri">
-                  <tr><td colspan="8" style="text-align: center; padding: 40px; color: var(--pf-muted);">Carregando dados...</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- ========== ADMIN CONVIDADOS ========== -->
-          <div style="margin-top: 40px; border-top: 1px solid var(--pf-border); padding-top: 32px;" id="admin-convidados">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 14px;">
-              <div>
-                <h3 style="font-size: 16px; font-weight: 700; color: var(--pf-gold); margin-bottom: 4px;">Convidados — Solenidade e Baile</h3>
-                <p style="font-size: 13px; color: var(--pf-muted);">Listas preenchidas pelos formandos na aba Convidados</p>
+            <div id="admin-stats-conv" class="adm-kpis"></div>
+            <details class="adm-det" id="adm-det-conv">
+              <summary><span class="adm-seta" aria-hidden="true"></span>Lista por formando<span class="adm-n" id="adm-n-conv"></span></summary>
+              <div class="adm-det-corpo">
+                <div class="admin-busca">
+                  <label for="admin-busca-conv" class="sr-only">Buscar convidados</label>
+                  <input type="text" id="admin-busca-conv" placeholder="Buscar por formando, convidado, CPF ou turma" autocomplete="off">
+                  <span id="admin-contagem-conv" class="admin-contagem" role="status"></span>
+                  <span class="adm-botoes"><button type="button" class="adm-mini" id="btn-adm-conv-abrir">Expandir tudo</button><button type="button" class="adm-mini" id="btn-adm-conv-fechar">Recolher tudo</button></span>
+                </div>
+                <div id="admin-grupos-conv" class="adm-grupos"><p class="adm-vazio">Carregando dados...</p></div>
               </div>
-              <button class="btn btn-secondary" id="btn-admin-conv-csv" style="padding: 9px 18px; display: flex; align-items: center; gap: 6px;">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v9M3 7l4 4 4-4M2 12h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                Baixar planilha
-              </button>
-            </div>
-            <div id="admin-stats-conv" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px;"></div>
-            <div class="admin-busca">
-              <label for="admin-busca-conv" class="sr-only">Buscar convidados</label>
-              <input type="text" id="admin-busca-conv" placeholder="Buscar por formando, convidado, CPF ou turma" autocomplete="off">
-              <span id="admin-contagem-conv" class="admin-contagem" role="status"></span>
-            </div>
-            <div style="overflow-x: auto; border: 1px solid var(--pf-border); border-radius: 10px;">
-              <table class="admin-table" id="admin-table-conv">
-                <thead><tr><th>Turma</th><th>Formando</th><th>Camiseta</th><th>Convidado</th><th>CPF</th><th>Tipo</th><th>Solenidade</th><th>Baile</th><th>Vendedor do convite</th><th>Observações</th></tr></thead>
-                <tbody id="admin-tbody-conv"><tr><td colspan="10" style="text-align:center;padding:40px;color:var(--pf-muted)">Carregando dados...</td></tr></tbody>
-              </table>
-            </div>
-          </div>
-
-          <div style="margin-top: 28px;" id="admin-vendas">
-            <h4 style="font-size: 15px; font-weight: 700; color: var(--pf-gold); margin-bottom: 4px;">Convites comprados de outros alunos</h4>
-            <p style="font-size: 13px; color: var(--pf-muted); margin-bottom: 12px;">Quem vendeu para quem. Compras com o código da comissão aparecem como “Comissão”.</p>
-            <div style="overflow-x: auto; border: 1px solid var(--pf-border); border-radius: 10px;">
-              <table class="admin-table" id="admin-table-vendas">
-                <thead><tr><th>Turma</th><th>Comprador</th><th>Camiseta</th><th>Vendedor</th><th>Camiseta do vendedor</th><th>Convidados</th></tr></thead>
-                <tbody id="admin-tbody-vendas"><tr><td colspan="6" style="text-align:center;padding:24px;color:var(--pf-muted)">Carregando...</td></tr></tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- ========== ADMIN VOTAÇÃO MUSICAL ========== -->
-          <div style="margin-top: 40px; border-top: 1px solid var(--pf-border); padding-top: 32px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
-              <div>
-                <h3 style="font-size: 16px; font-weight: 700; color: var(--pf-gold); margin-bottom: 4px;">Ranking — Votação Musical</h3>
-                <p style="font-size: 13px; color: var(--pf-muted);">Estilos mais votados para a festa</p>
+            </details>
+            <details class="adm-det" id="adm-det-vendas">
+              <summary><span class="adm-seta" aria-hidden="true"></span>Convites comprados de outros alunos<span class="adm-n" id="adm-n-vendas"></span></summary>
+              <div class="adm-det-corpo">
+                <p class="adm-nota">Quem vendeu para quem. Compras com o código da comissão aparecem como “Comissão”.</p>
+                <div class="adm-rolagem">
+                  <table class="admin-table" id="admin-table-vendas">
+                    <thead><tr><th>Turma</th><th>Comprador</th><th>Camiseta</th><th>Vendedor</th><th>Camiseta do vendedor</th><th>Convidados</th></tr></thead>
+                    <tbody id="admin-tbody-vendas"><tr><td colspan="6" style="text-align:center;padding:24px;color:var(--pf-muted)">Carregando...</td></tr></tbody>
+                  </table>
+                </div>
               </div>
-              <button class="btn btn-secondary" onclick="exportExcelVotacao()" style="padding: 9px 18px; display: flex; align-items: center; gap: 6px;">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v9M3 7l4 4 4-4M2 12h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                Exportar Excel
-              </button>
+            </details>
+          </section>
+          <section id="adm-sec-cri" class="adm-sec" role="tabpanel" aria-labelledby="adm-tab-cri" hidden>
+            <div class="adm-cab">
+              <div><h3>Crianças e Espaço Kids</h3><p>Acompanhamento e turmas interessadas</p></div>
+              <button type="button" class="btn btn-primary adm-baixar" onclick="exportExcelCriancas()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1v9M3 7l4 4 4-4M2 12h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Baixar planilha</button>
             </div>
-            
-            <div style="background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 10px; padding: 20px; margin-bottom: 24px;">
+            <div id="admin-stats-cri" class="adm-kpis"></div>
+            <div class="adm-grafico">
+              <h4>Crianças por turma</h4>
+              <div id="admin-chart-turmas" style="display: flex; flex-direction: column; gap: 12px; min-height: 80px;">
+                <div style="color: var(--pf-muted); font-size: 13px; text-align: center; padding: 20px 0;">Carregando...</div>
+              </div>
+            </div>
+            <details class="adm-det" id="adm-det-cri">
+              <summary><span class="adm-seta" aria-hidden="true"></span>Lista de registros<span class="adm-n" id="adm-n-cri"></span></summary>
+              <div class="adm-det-corpo">
+                <div class="adm-rolagem">
+                  <table class="admin-table" id="admin-table-cri">
+                    <thead><tr><th>#</th><th>Nome Completo</th><th>Camiseta</th><th>Turma</th><th>Crianças</th><th>Qtd</th><th>Espaço Kids</th><th>Registrado em</th></tr></thead>
+                    <tbody id="admin-tbody-cri"><tr><td colspan="8" style="text-align: center; padding: 40px; color: var(--pf-muted);">Carregando dados...</td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+            </details>
+          </section>
+          <section id="adm-sec-vot" class="adm-sec" role="tabpanel" aria-labelledby="adm-tab-vot" hidden>
+            <div class="adm-cab">
+              <div><h3>Votação musical</h3><p>Estilos mais votados para a festa</p></div>
+              <button type="button" class="btn btn-primary adm-baixar" onclick="exportExcelVotacao()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1v9M3 7l4 4 4-4M2 12h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Baixar planilha</button>
+            </div>
+            <div id="admin-stats-vot" class="adm-kpis"></div>
+            <div class="adm-grafico">
+              <h4>Estilos mais votados</h4>
               <div id="admin-chart-votacao" style="display: flex; flex-direction: column; gap: 12px; min-height: 80px;">
                 <div style="color: var(--pf-muted); font-size: 13px; text-align: center; padding: 20px 0;">Carregando...</div>
               </div>
             </div>
-
-            <div style="overflow-x: auto; border: 1px solid var(--pf-border); border-radius: 10px;">
-              <table class="admin-table" id="admin-table-vot">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Nome Completo</th>
-                    <th>Camiseta</th>
-                    <th>Estilo Votado</th>
-                    <th>Registrado em</th>
-                  </tr>
-                </thead>
-                <tbody id="admin-tbody-vot">
-                  <tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--pf-muted);">Carregando dados...</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+            <details class="adm-det" id="adm-det-vot">
+              <summary><span class="adm-seta" aria-hidden="true"></span>Lista de votos<span class="adm-n" id="adm-n-vot"></span></summary>
+              <div class="adm-det-corpo">
+                <div class="adm-rolagem">
+                  <table class="admin-table" id="admin-table-vot">
+                    <thead><tr><th>#</th><th>Nome Completo</th><th>Camiseta</th><th>Estilo Votado</th><th>Registrado em</th></tr></thead>
+                    <tbody id="admin-tbody-vot"><tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--pf-muted);">Carregando dados...</td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+            </details>
+          </section>
 
         </div>
       </div>
@@ -3285,7 +3293,7 @@
     let adminConvData = [];
     let adminVendas = [];
     function adminLogout() {
-      adminCred = null; adminConvData = []; adminVendas = [];
+      adminCred = null; adminConvData = []; adminVendas = []; admAba('form');
       document.getElementById('admin-panel').style.display = 'none';
       document.getElementById('admin-login').style.display = 'block';
       document.getElementById('admin-user').value = '';
@@ -3324,6 +3332,7 @@
       try {
         const data = await supabaseRequest('GET', TABLE + '?select=*&order=nome_completo.asc');
         adminData = data || [];
+        admContar();
 
         // Stats
         const ativos = adminData.filter(a => a.ativo !== false);
@@ -3373,10 +3382,33 @@
     }
 
     function statCard(label, value, color) {
-      return '<div style="background:#060d18;border:1px solid #1f3250;border-radius:10px;padding:16px 18px;text-align:center">' +
-        '<p class="stat-num" data-alvo="' + value + '" style="font-size:24px;font-weight:800;color:' + color + ';margin-bottom:4px">' + value + '</p>' +
-        '<p style="font-size:11px;color:#8e9bb0;text-transform:uppercase;letter-spacing:0.5px;font-weight:600">' + label + '</p></div>';
+      return '<div class="adm-kpi"><span class="adm-kpi-l">' + label + '</span>' +
+        '<b class="stat-num" data-alvo="' + value + '" style="color:' + (color === 'var(--pf-gold-dim)' ? 'var(--pf-gold)' : color) + '">' + value + '</b></div>';
     }
+    function admContar() {
+      const set = (id, n, um, varios) => { const el = document.getElementById(id); if (el) el.textContent = n ? n + ' ' + (n === 1 ? um : varios) : ''; };
+      set('adm-n-form', adminData.length, 'registro', 'registros');
+      set('adm-n-cri', adminCriancasData.length, 'registro', 'registros');
+      set('adm-n-vot', adminVotacaoData.length, 'voto', 'votos');
+      set('adm-n-vendas', adminVendas.length, 'compra', 'compras');
+      const g = new Set(adminConvData.map(l => l.camiseta)).size;
+      set('adm-n-conv', g, 'formando', 'formandos');
+    }
+    function admAba(nome, foco) {
+      document.querySelectorAll('.adm-abas [role=tab]').forEach(b => {
+        const on = b.getAttribute('data-adm') === nome;
+        b.setAttribute('aria-selected', on ? 'true' : 'false'); b.tabIndex = on ? 0 : -1;
+        if (on && foco) b.focus();
+      });
+      document.querySelectorAll('.adm-sec').forEach(sec => { sec.hidden = sec.id !== 'adm-sec-' + nome; });
+    }
+    document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('.adm-abas [role=tab]'); if (b) admAba(b.getAttribute('data-adm')); });
+    document.addEventListener('keydown', e => {
+      const b = e.target.closest && e.target.closest('.adm-abas [role=tab]'); if (!b) return;
+      const abas = Array.from(document.querySelectorAll('.adm-abas [role=tab]')); let i = abas.indexOf(b);
+      if (e.key === 'ArrowRight') i = (i + 1) % abas.length; else if (e.key === 'ArrowLeft') i = (i - 1 + abas.length) % abas.length; else if (e.key === 'Home') i = 0; else if (e.key === 'End') i = abas.length - 1; else return;
+      e.preventDefault(); admAba(abas[i].getAttribute('data-adm'), true);
+    });
 
     let adminCriancasData = [];
     let adminVotacaoData = [];
@@ -3415,6 +3447,7 @@
       try {
         const data = await supabaseRequest('GET', TABLE_CRIANCAS + '?select=*&order=criado_em.desc');
         adminCriancasData = data || [];
+        admContar();
         
         // Stats
         const totalRegistros = adminCriancasData.length;
@@ -3464,18 +3497,37 @@
 
     function cpfFmt(c) { const d = String(c || '').replace(/\D/g, ''); return d.length === 11 ? d.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : d; }
     function renderAdminConv() {
-      const tbody = document.getElementById('admin-tbody-conv');
+      const box = document.getElementById('admin-grupos-conv');
       const q = (document.getElementById('admin-busca-conv').value || '').trim().toLowerCase();
       const qd = q.replace(/\D/g, '');
-      const linhas = adminConvData.filter(l => !q || [l.turma, l.aluno, l.camiseta, l.nome, l.vendedor_nome, l.vendedor_camiseta, l.vendedor_comissao ? 'comissao comissão' : ''].join(' ').toLowerCase().indexOf(q) >= 0 || (qd && String(l.cpf).indexOf(qd) >= 0));
-      document.getElementById('admin-contagem-conv').textContent = adminConvData.length ? (q ? linhas.length + ' de ' + adminConvData.length : adminConvData.length) + ' convidado(s)' : '';
-      if (!adminConvData.length) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:30px;color:#8e9bb0">Nenhum formando preencheu convidados ainda.</td></tr>'; return; }
-      if (!linhas.length) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:30px;color:#8e9bb0">Nenhum convidado encontrado para essa busca.</td></tr>'; return; }
-      tbody.innerHTML = linhas.map(l => {
-        const vend = l.comprou_convite ? (l.vendedor_comissao ? 'Comissão' : (l.vendedor_camiseta ? escXml(l.vendedor_nome ? l.vendedor_nome + ' (' + l.vendedor_camiseta + ')' : 'Camiseta ' + l.vendedor_camiseta + ' (sem cadastro)') : 'Não informado')) : '—';
-        const obs = [l.comprou_convite ? 'Comprou convite de outro aluno' : '', l.atendimento_especial ? 'Atendimento especial: ' + (l.detalhe || '') : ''].filter(Boolean).join(' · ');
-        return '<tr><td>' + escXml(l.turma ? normalizarTurma(l.turma) : '—') + '</td><td>' + escXml(l.aluno) + '</td><td>' + escXml(l.camiseta) + '</td><td>' + escXml(l.nome) + '</td><td>' + escXml(cpfFmt(l.cpf)) + '</td>' +
-          '<td>' + (l.tipo === 'crianca' ? 'Criança (' + escXml(String(l.idade)) + ' anos)' : 'Adulto') + '</td><td>' + (l.solenidade ? '<span class="badge-sim">Sim</span>' : '<span class="badge-nao">—</span>') + '</td><td>' + (l.baile ? '<span class="badge-sim">Sim</span>' : '<span class="badge-nao">—</span>') + '</td><td>' + vend + '</td><td>' + escXml(obs) + '</td></tr>';
+      const grupos = new Map();
+      adminConvData.forEach(l => {
+        if (!grupos.has(l.camiseta)) grupos.set(l.camiseta, { aluno: l.aluno, turma: l.turma, camiseta: l.camiseta, comprou: !!l.comprou_convite, vend: l, esp: !!l.atendimento_especial, det: l.detalhe, itens: [] });
+        grupos.get(l.camiseta).itens.push(l);
+      });
+      const todos = Array.from(grupos.values());
+      const acha = g => !q || [g.turma, g.aluno, g.camiseta, g.vend.vendedor_nome, g.vend.vendedor_camiseta, g.vend.vendedor_comissao ? 'comissao comissão' : ''].join(' ').toLowerCase().indexOf(q) >= 0 ||
+        g.itens.some(l => String(l.nome).toLowerCase().indexOf(q) >= 0 || (qd && String(l.cpf).indexOf(qd) >= 0));
+      const lista = todos.filter(acha);
+      const totConv = lista.reduce((n, g) => n + g.itens.length, 0);
+      document.getElementById('admin-contagem-conv').textContent = todos.length ? (q ? lista.length + ' de ' + todos.length + ' formandos' : todos.length + ' formandos · ' + adminConvData.length + ' convidados') : '';
+      if (!todos.length) { box.innerHTML = '<p class="adm-vazio">Nenhum formando preencheu convidados ainda.</p>'; return; }
+      if (!lista.length) { box.innerHTML = '<p class="adm-vazio">Nenhum convidado encontrado para essa busca.</p>'; return; }
+      box.innerHTML = lista.map(g => {
+        const v = g.vend;
+        const vendTxt = !g.comprou ? '' : v.vendedor_comissao ? 'Comissão' : v.vendedor_camiseta ? (v.vendedor_nome ? v.vendedor_nome + ' (camiseta ' + v.vendedor_camiseta + ')' : 'camiseta ' + v.vendedor_camiseta + ' (sem cadastro)') : 'não informado';
+        const info = [];
+        if (g.comprou) info.push('<strong>Vendedor do convite:</strong> ' + escXml(vendTxt));
+        if (g.esp) info.push('<strong>Atendimento especial:</strong> ' + escXml(g.det || ''));
+        const n = g.itens.length;
+        const linhas = g.itens.map(l => '<tr><td>' + escXml(l.nome) + '</td><td>' + escXml(cpfFmt(l.cpf)) + '</td><td>' + (l.tipo === 'crianca' ? 'Criança (' + escXml(String(l.idade)) + ' anos)' : 'Adulto') + '</td><td>' + (l.solenidade ? '<span class="badge-sim">Sim</span>' : '<span class="badge-nao">—</span>') + '</td><td>' + (l.baile ? '<span class="badge-sim">Sim</span>' : '<span class="badge-nao">—</span>') + '</td></tr>').join('');
+        return '<details class="adm-grupo"' + (q ? ' open' : '') + '><summary><span class="adm-seta" aria-hidden="true"></span>' +
+          '<span class="adm-g-nome">' + escXml(g.aluno) + '</span><span class="adm-g-meta">Turma ' + escXml(g.turma ? normalizarTurma(g.turma) : '—') + ' · Camiseta ' + escXml(g.camiseta) + '</span>' +
+          '<span class="adm-chips"><span class="adm-chip ouro">' + n + (n === 1 ? ' convidado' : ' convidados') + '</span>' +
+          (g.comprou ? '<span class="adm-chip">' + (v.vendedor_comissao ? 'Comissão' : 'Comprou convite') + '</span>' : '') +
+          (g.esp ? '<span class="adm-chip aviso">Atendimento especial</span>' : '') + '</span></summary>' +
+          '<div class="adm-grupo-corpo">' + (info.length ? '<p class="adm-grupo-info">' + info.join('<br>') + '</p>' : '') +
+          '<div class="adm-rolagem"><table class="admin-table"><thead><tr><th>Convidado</th><th>CPF</th><th>Tipo</th><th>Solenidade</th><th>Baile</th></tr></thead><tbody>' + linhas + '</tbody></table></div></div></details>';
       }).join('');
     }
     function renderAdminVendas() {
@@ -3486,11 +3538,11 @@
         '<td>' + (v.comissao ? '—' : escXml(v.vendedor_camiseta || '—')) + '</td><td>' + Number(v.convidados || 0) + '</td></tr>').join('');
     }
     async function loadAdminConvidados() {
-      const tbody = document.getElementById('admin-tbody-conv');
+      const tbody = document.getElementById('admin-grupos-conv');
       if (!adminCred) return;
       try {
         const r = await supabaseRequest('POST', 'rpc/admin_listar_convidados', { p_user: adminCred.user, p_hash: adminCred.hash });
-        if (!r || !r.ok) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:30px;color:#d9a3a3">Não foi possível carregar os convidados. Entre novamente.</td></tr>'; return; }
+        if (!r || !r.ok) { tbody.innerHTML = '<p class="adm-vazio" style="color:#d9a3a3">Não foi possível carregar os convidados. Entre novamente.</p>'; return; }
         adminConvData = r.linhas || [];
         adminVendas = r.vendas || [];
         const adultos = adminConvData.filter(l => l.tipo !== 'crianca');
@@ -3498,7 +3550,7 @@
         const cri = adminConvData.length - adultos.length;
         const comprou = new Set(adminConvData.filter(l => l.comprou_convite).map(l => l.camiseta)).size;
         document.getElementById('admin-stats-conv').innerHTML =
-          statCard('Formandos que preencheram', (r.formandos_preencheram || 0) + ' de ' + (r.formandos_ativos || 0), 'var(--pf-gold)') +
+          statCard('Formandos que preencheram (de ' + (r.formandos_ativos || 0) + ')', r.formandos_preencheram || 0, 'var(--pf-gold)') +
           statCard('Convidados Solenidade', sol, 'var(--pf-gold-bright)') +
           statCard('Convidados Baile', bai, 'var(--pf-gold)') +
           statCard('Crianças', cri, 'var(--pf-gold)') +
@@ -3506,9 +3558,9 @@
           statCard('Compraram convite', comprou, 'var(--pf-gold-dim)') +
           statCard('Pela comissão', adminVendas.filter(v => v.comissao).length, 'var(--pf-gold-dim)') +
           statCard('Sem vendedor informado', adminVendas.filter(v => !v.comissao && !v.vendedor_camiseta).length, '#e5c866');
-        renderAdminConv(); renderAdminVendas();
+        renderAdminConv(); renderAdminVendas(); admContar();
       } catch (e) {
-        tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:30px;color:#d9a3a3">Erro ao carregar os convidados. Tente atualizar.</td></tr>';
+        tbody.innerHTML = '<p class="adm-vazio" style="color:#d9a3a3">Erro ao carregar os convidados. Tente atualizar.</p>';
       }
     }
     function baixarCsvConvidadosAdmin() {
@@ -3522,6 +3574,11 @@
       setTimeout(() => URL.revokeObjectURL(url), 2000);
     }
     document.addEventListener('input', e => { if (e.target && e.target.id === 'admin-busca-conv') renderAdminConv(); });
+    document.addEventListener('click', e => {
+      const t = e.target.closest && e.target.closest('#btn-adm-conv-abrir, #btn-adm-conv-fechar'); if (!t) return;
+      const abrir = t.id === 'btn-adm-conv-abrir';
+      document.querySelectorAll('#admin-grupos-conv details').forEach(d => { d.open = abrir; });
+    });
     document.addEventListener('click', e => { if (e.target && e.target.closest && e.target.closest('#btn-admin-conv-csv')) baixarCsvConvidadosAdmin(); });
 
     async function loadAdminVotacao() {
@@ -3529,7 +3586,10 @@
       try {
         const data = await supabaseRequest('GET', TABLE_VOTACAO + '?select=*&order=criado_em.desc');
         adminVotacaoData = data || [];
-        
+        admContar();
+        { const ct = {}; adminVotacaoData.forEach(d => { ct[d.estilo_musical] = (ct[d.estilo_musical] || 0) + 1; }); const top = Object.entries(ct).sort((a, b) => b[1] - a[1])[0];
+          document.getElementById('admin-stats-vot').innerHTML = statCard('Votos', adminVotacaoData.length, 'var(--pf-gold)') + statCard('Estilos votados', Object.keys(ct).length, 'var(--pf-gold)') + (top ? statCard('Mais votado', escXml(top[0]), 'var(--pf-gold-bright)') : ''); }
+
         // Votos Chart
         const estilos = {};
         adminVotacaoData.forEach(d => {
