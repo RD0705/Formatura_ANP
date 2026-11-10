@@ -1721,6 +1721,25 @@
       return text ? JSON.parse(text) : null;
     }
 
+    // Chama uma função do banco; se ela responder {erro}, vira exceção tratada por mensagemErro.
+    async function rpcOk(fn, args) {
+      const r = await supabaseRequest('POST', 'rpc/' + fn, args || {});
+      if (r && r.erro) throw new Error(JSON.stringify({ erroApp: r.erro }));
+      return r;
+    }
+    const ERROS_APP = {
+      matricula_invalida: 'Número da camiseta inválido.',
+      nome_invalido: 'Informe o nome completo.',
+      dados_invalidos: 'Algum valor está fora do permitido (confira as quantidades).',
+      estilo_invalido: 'Escolha um estilo musical.',
+      turma_invalida: 'Selecione a turma.',
+      qtd_invalida: 'A quantidade deve ser entre 0 e 4.',
+      nao_encontrado: 'Camiseta não encontrada. Faça primeiro o registro de presença.',
+      nao_confere: 'Número da camiseta incorreto. Apenas o anunciante pode alterar.',
+      invalido: 'Sessão do admin expirada. Entre novamente.',
+      bloqueado: 'Muitas tentativas. Aguarde 15 minutos.'
+    };
+
     // ==========================================
     // SHA-256 HASH (Web Crypto API)
     // ==========================================
@@ -2557,7 +2576,7 @@
       const t = normalizarTurma(document.getElementById('conv-turma').value);
       if (!t) { erroCampo('conv-turma', 'Selecione a turma.'); return; }
       try {
-        await supabaseRequest('PATCH', 'alunos_formatura?matricula=eq.' + encodeURIComponent(CV.cam), { turma: t });
+        await rpcOk('salvar_turma_aluno', { p_matricula: CV.cam, p_turma: t });
         CV.aluno.turma = t;
         document.getElementById('conv-turma-box').hidden = true;
         document.getElementById('conv-aluno-info').textContent = document.getElementById('conv-aluno-info').textContent.replace('não informada', t);
@@ -2917,9 +2936,9 @@
       if (!cam) { erroCampo('cri-consulta-camiseta', 'Informe o número da camiseta para consultar.'); return; }
       mostrar('Consultando...', 'var(--pf-muted)');
       try {
-        const data = await supabaseRequest('GET', TABLE_CRIANCAS + '?numero_camiseta=eq.' + encodeURIComponent(cam) + '&select=nome_completo,numero_camiseta,turma,interesse_criancas,qtd_criancas,interesse_espaco_kids');
-        if (!data || data.length === 0) { mostrar('Nenhum registro encontrado para este número de camiseta.', '#d9a3a3'); return; }
-        const r = data[0];
+        const d = await supabaseRequest('POST', 'rpc/consultar_criancas', { p_camiseta: cam });
+        if (!d || !d.encontrado) { mostrar('Nenhum registro encontrado para este número de camiseta.', '#d9a3a3'); return; }
+        const r = d.registro;
         document.getElementById('cri-nome').value = r.nome_completo || '';
         document.getElementById('cri-camiseta').value = r.numero_camiseta || '';
         const turma = normalizarTurma(r.turma);
@@ -2947,6 +2966,7 @@
     function mensagemErro(err, padrao) {
       let info = {};
       try { info = JSON.parse(err && err.message); } catch (e) {}
+      if (info && info.erroApp) return ERROS_APP[info.erroApp] || padrao;
       const code = String(info.code || '');
       if (code === '23505') return 'Já existe um registro com este código. Use "Consultar" para carregar e editar.';
       if (code === '42501' || /row-level security/i.test(info.message || '')) return 'Sem permissão para salvar este registro.';
@@ -2984,14 +3004,7 @@
           qtd_criancas: interesse ? qtd : 0,
           interesse_espaco_kids: interesse ? espacoKids : false
         };
-        const headers = {
-          'apikey': SUPABASE_KEY,
-          'Authorization': 'Bearer ' + SUPABASE_KEY,
-          'Content-Type': 'application/json',
-          'Prefer': 'resolution=merge-duplicates,return=representation'
-        };
-        const res = await fetch(SUPABASE_URL + '/rest/v1/' + TABLE_CRIANCAS + '?on_conflict=numero_camiseta', { method: 'POST', headers, body: JSON.stringify(body) });
-        if (!res.ok) throw new Error(await res.text());
+        await rpcOk('salvar_criancas', { p_dados: body });
         
         showToast('Registro de crianças atualizado com sucesso!', 'success');
         salvarIdentidade(nome, camiseta);
@@ -3023,19 +3036,7 @@
       btn.disabled = true; txt.style.display = 'none'; spin.style.display = 'inline-block';
 
       try {
-        const body = {
-          nome_completo: nome,
-          numero_camiseta: camiseta,
-          estilo_musical: estilo
-        };
-        const headers = {
-          'apikey': SUPABASE_KEY,
-          'Authorization': 'Bearer ' + SUPABASE_KEY,
-          'Content-Type': 'application/json',
-          'Prefer': 'resolution=merge-duplicates,return=representation'
-        };
-        const res = await fetch(SUPABASE_URL + '/rest/v1/' + TABLE_VOTACAO + '?on_conflict=numero_camiseta', { method: 'POST', headers, body: JSON.stringify(body) });
-        if (!res.ok) throw new Error(await res.text());
+        await rpcOk('salvar_votacao_musical', { p_nome: nome, p_camiseta: camiseta, p_estilo: estilo });
         
         showToast('Voto registrado com sucesso!', 'success');
         salvarIdentidade(nome, camiseta);
@@ -3081,17 +3082,8 @@
           vender_solenidade: venderSol, qtd_vender_solenidade: venderSol ? qtdVenderSol : 0,
           telefone_contato: venderSol ? telVenderSol : null
         };
-        // Se não está vendendo, resetar o status de vendido
-        if (!venderSol) body.permuta_vendido = false;
-
-        const headers = {
-          'apikey': SUPABASE_KEY,
-          'Authorization': 'Bearer ' + SUPABASE_KEY,
-          'Content-Type': 'application/json',
-          'Prefer': 'resolution=merge-duplicates,return=representation'
-        };
-        const res = await fetch(SUPABASE_URL + '/rest/v1/' + TABLE + '?on_conflict=matricula', { method: 'POST', headers, body: JSON.stringify(body) });
-        if (!res.ok) throw new Error(await res.text());
+        // o banco zera o status de vendido quando não está vendendo
+        await rpcOk('registrar_aluno', { p_dados: body });
 
         document.getElementById('view-registro').style.display = 'none';
         document.getElementById('view-sucesso').style.display = 'block';
@@ -3153,12 +3145,12 @@
       resEl.innerHTML = '<p style="font-size:13px;color:var(--pf-muted);">Consultando registro...</p>';
       
       try {
-        const data = await supabaseRequest('GET', TABLE + '?matricula=eq.' + encodeURIComponent(mat) + '&select=*');
-        if (!data || data.length === 0) {
+        const d = await supabaseRequest('POST', 'rpc/consultar_aluno', { p_matricula: mat });
+        if (!d || !d.encontrado) {
           resEl.innerHTML = '<p style="font-size:13px;color:#d9a3a3;font-weight:600;">Nenhum registro encontrado para esta camiseta.</p>';
           return;
         }
-        const aluno = data[0];
+        const aluno = d.aluno;
         
         // Preencher formulário principal
         document.getElementById('nome').value = aluno.nome_completo || '';
@@ -3219,9 +3211,8 @@
       const resEl = document.getElementById('consulta-resultado');
       if (!window.confirm('Cancelar a inscrição de ' + nome + '?\n\nVocê deixa de ser contado(a) na formatura e seus ingressos saem da Permuta. Se mudar de ideia, é só se registrar de novo.')) return;
       try {
-        const r = await supabaseRequest('PATCH', TABLE + '?matricula=eq.' + encodeURIComponent(matricula),
-          { ativo: false, cancelado_em: new Date().toISOString() });
-        if (!r || r.length === 0) { showToast('Não foi possível cancelar: registro não encontrado.', 'error'); return; }
+        const r = await supabaseRequest('POST', 'rpc/cancelar_inscricao', { p_matricula: matricula });
+        if (!r || !r.ok) { showToast('Não foi possível cancelar: registro não encontrado.', 'error'); return; }
         showToast('Inscrição cancelada.', 'success');
         resetForm();
         resEl.style.display = 'block';
@@ -3303,7 +3294,7 @@
       const listEl = document.getElementById('permuta-list');
       listEl.innerHTML = '<div style="text-align: center; padding: 40px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="display:inline-block;animation:spin 1s linear infinite;margin-bottom:12px"><circle cx="12" cy="12" r="10" stroke="#1f3250" stroke-width="2.5" fill="none"/><path d="M12 2a10 10 0 0 1 10 10" stroke="#c9a94e" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg><p style="font-size:13px;color:#8e9bb0">Carregando...</p></div>';
       try {
-        const data = await supabaseRequest('GET', TABLE + '?ativo=eq.true&vender_solenidade=eq.true&qtd_vender_solenidade=gt.0&select=nome_completo,qtd_vender_solenidade,permuta_vendido,telefone_contato,criado_em&order=permuta_vendido.asc,criado_em.desc');
+        const data = await supabaseRequest('POST', 'rpc/listar_permuta', {});
         if (!data || data.length === 0) {
           listEl.innerHTML = '<div style="text-align:center;padding:40px"><p style="font-size:14px;color:#8e9bb0;font-weight:500">Nenhum aluno disponibilizou ingressos ainda.</p><p style="font-size:12px;color:#8e9bb0;margin-top:4px;opacity:0.7">Utilize o formulário acima para disponibilizar seus ingressos.</p></div>';
           return;
@@ -3402,14 +3393,9 @@
           btnAlterar.disabled = true;
           btnAlterar.textContent = 'Atualizando...';
           try {
-            // A conferência acontece no servidor: o PATCH só atinge a linha se
-            // código de aluno E nome baterem. O código não vem mais na listagem.
-            const r = await supabaseRequest('PATCH',
-              TABLE + '?matricula=eq.' + encodeURIComponent(digitado) +
-              '&nome_completo=eq.' + encodeURIComponent(nome) +
-              '&vender_solenidade=eq.true',
-              { permuta_vendido: !vendido });
-            if (!r || r.length === 0) {
+            // A conferência acontece no servidor: só altera se camiseta E nome baterem.
+            const r = await supabaseRequest('POST', 'rpc/permuta_marcar_vendido', { p_matricula: digitado, p_nome: nome, p_vendido: !vendido });
+            if (!r || !r.ok) {
               showToast('Número da camiseta incorreto. Apenas o anunciante pode alterar.', 'error');
               btnAlterar.disabled = false;
               btnAlterar.textContent = toggleActionText;
@@ -3439,15 +3425,8 @@
       
       try {
         const ehVendido = (status === 'vendido');
-        const patchData = {
-          vender_solenidade: qtd > 0,
-          qtd_vender_solenidade: qtd,
-          permuta_vendido: qtd > 0 ? ehVendido : false
-        };
-        if (telefone) patchData.telefone_contato = telefone;
-
-        const alterados = await supabaseRequest('PATCH', TABLE + '?matricula=eq.' + encodeURIComponent(matricula), patchData);
-        if (!alterados || alterados.length === 0) {
+        const alterados = await supabaseRequest('POST', 'rpc/salvar_permuta', { p_matricula: matricula, p_qtd: qtd, p_vendido: ehVendido, p_telefone: telefone });
+        if (!alterados || !alterados.ok) {
           showToast('Camiseta não encontrada. Faça primeiro o registro de presença.', 'error');
           return;
         }
@@ -3552,7 +3531,7 @@
       loadAdminConvidados();
 
       try {
-        const data = await supabaseRequest('GET', TABLE + '?select=*&order=nome_completo.asc');
+        const data = (await rpcOk('admin_listar_alunos', { p_user: adminCred && adminCred.user, p_hash: adminCred && adminCred.hash })).linhas;
         adminData = data || [];
         admContar();
 
@@ -3667,7 +3646,7 @@
     async function loadAdminCriancas() {
       const tbody = document.getElementById('admin-tbody-cri');
       try {
-        const data = await supabaseRequest('GET', TABLE_CRIANCAS + '?select=*&order=criado_em.desc');
+        const data = (await rpcOk('admin_listar_criancas', { p_user: adminCred && adminCred.user, p_hash: adminCred && adminCred.hash })).linhas;
         adminCriancasData = data || [];
         admContar();
         
@@ -3810,7 +3789,7 @@
     async function loadAdminVotacao() {
       const tbody = document.getElementById('admin-tbody-vot');
       try {
-        const data = await supabaseRequest('GET', TABLE_VOTACAO + '?select=*&order=criado_em.desc');
+        const data = (await rpcOk('admin_listar_votacao_musical', { p_user: adminCred && adminCred.user, p_hash: adminCred && adminCred.hash })).linhas;
         adminVotacaoData = data || [];
         admContar();
         { const ct = {}; adminVotacaoData.forEach(d => { ct[d.estilo_musical] = (ct[d.estilo_musical] || 0) + 1; }); const top = Object.entries(ct).sort((a, b) => b[1] - a[1])[0];
