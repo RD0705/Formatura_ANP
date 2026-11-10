@@ -2104,11 +2104,6 @@
       box.innerHTML = html;
       if (cerRep) desenharEditorRep();
       if (cerDados.aberta && document.getElementById('cer-voto-form') && !document.getElementById('cer-voto-form').hidden) desenharCamposVoto(cerVotoAtual);
-      if (cerDados.aberta && !cerAuto) {
-        cerAuto = true;
-        const id = lerIdentidade(), inp = document.getElementById('cer-camiseta');
-        if (id && inp && !inp.value) { inp.value = id.camiseta; verificarEleitor(); }
-      }
     }
 
     // ----- representante da turma -----
@@ -2342,6 +2337,12 @@
     document.addEventListener('visibilitychange', () => { if (!document.hidden && cerAbaAberta()) { clearTimeout(cerTimer); atualizarCerimoniaAoVivo().then(cerAgendar); } });
     document.getElementById('btn-cer-votar').addEventListener('click', registrarVotosCer);
     document.getElementById('btn-cer-resultado').addEventListener('click', verResultadoCer);
+    // a camiseta da votação nunca fica lembrada: ao recarregar, o campo começa vazio
+    (function () {
+      const limpar = () => { const i = document.getElementById('cer-camiseta'); if (i) i.value = ''; };
+      limpar();
+      window.addEventListener('pageshow', limpar);
+    })();
     document.getElementById('cer-camiseta').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); verificarEleitor(); } });
     document.getElementById('cer-pin').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); entrarRepresentante(); } });
     document.querySelectorAll('[data-cer-acao]').forEach(b => b.addEventListener('click', () => acaoComissao(b.getAttribute('data-cer-acao'))));
@@ -2717,7 +2718,7 @@
     // IDENTIDADE LEMBRADA (nome + camiseta, só neste navegador)
     // ==========================================
     const IDENT_KEY = 'anp_identidade';
-    const IDENT_CAMPOS = [['nome', 'matricula'], ['cri-nome', 'cri-camiseta'], ['vot-nome', 'vot-camiseta'], [null, 'cer-camiseta'], ['conv-nome', 'conv-camiseta']];
+    const IDENT_CAMPOS = [['nome', 'matricula'], ['cri-nome', 'cri-camiseta'], ['vot-nome', 'vot-camiseta'], ['conv-nome', 'conv-camiseta']];
 
     function lerIdentidade() {
       try {
