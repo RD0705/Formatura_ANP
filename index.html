@@ -1407,9 +1407,9 @@
         <div class="card" id="conv-card-comprou">
           <label class="cv-check"><input type="checkbox" id="conv-comprou"> <span>Comprei convite de outro aluno <span class="hint-small" style="display:block;">Libera mais convidados abaixo, cada um com nome completo e CPF.</span></span></label>
           <div id="conv-vendedor-box" class="cv-vendedor" hidden>
-            <label for="conv-vendedor" class="rotulo rotulo-p">Camiseta de quem vendeu o convite</label>
-            <input type="text" id="conv-vendedor" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="40" placeholder="Número da camiseta do vendedor">
-            <p class="hint-small" id="conv-vendedor-hint">Informe o número da camiseta de quem vendeu o convite para você. Pode ser de alguém que ainda não se cadastrou. Membros da comissão usam o código que receberam.</p>
+            <label for="conv-vendedor" class="rotulo rotulo-p">Camiseta de quem vendeu os convites</label>
+            <input type="text" id="conv-vendedor" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="300" placeholder="Ex: 123, 456">
+            <p class="hint-small" id="conv-vendedor-hint">Informe o número da camiseta de quem vendeu o convite para você. Comprou de mais de um aluno? Separe por vírgula, por exemplo: 123, 456. Pode ser de alguém que ainda não se cadastrou. Membros da comissão usam o código que receberam e podem juntar as camisetas de quem vendeu: código, 123, 456.</p>
           </div>
         </div>
 
@@ -2377,8 +2377,8 @@
       limite_criancas: 'Limite de 6 crianças por formando.',
       nome_aluno_invalido: 'Informe seu nome completo, com sobrenome.',
       pin_invalido: 'PIN da comissão incorreto.',
-      vendedor_obrigatorio: 'Informe a camiseta de quem vendeu o convite.',
-      vendedor_invalido: 'Camiseta do vendedor inválida. Use só letras e números.',
+      vendedor_obrigatorio: 'Informe a camiseta de quem vendeu o convite. Mais de uma? Separe por vírgula.',
+      vendedor_invalido: 'Camiseta do vendedor inválida. Use só letras e números, separando por vírgula.',
       vendedor_proprio: 'A camiseta do vendedor não pode ser a sua.'
     };
     const CV = { aluno: null, nome: '', cam: '', sol: [], bai: [], cri: [], seq: 0, vendedorJa: false };
@@ -2533,7 +2533,11 @@
         CV.vendedorJa = !!(r.grupo && (r.grupo.vendedor || r.grupo.vendedor_comissao));
         const iv = document.getElementById('conv-vendedor');
         iv.value = (r.grupo && r.grupo.vendedor) || '';
-        iv.placeholder = (r.grupo && r.grupo.vendedor_comissao) ? 'Já informado. Deixe em branco para manter.' : 'Número da camiseta do vendedor';
+        CV.vendedorCarregado = iv.value.trim();
+        CV.vendedorComissao = !!(r.grupo && r.grupo.vendedor_comissao);
+        iv.placeholder = CV.vendedorComissao ? 'Já informado. Deixe em branco para manter.' : 'Ex: 123, 456';
+        document.getElementById('conv-vendedor-hint').dataset.base = document.getElementById('conv-vendedor-hint').dataset.base || document.getElementById('conv-vendedor-hint').textContent;
+        document.getElementById('conv-vendedor-hint').textContent = (CV.vendedorComissao ? 'O código da comissão já está registrado neste cadastro. Para mudar a lista, digite tudo de novo, incluindo o código. ' : '') + document.getElementById('conv-vendedor-hint').dataset.base;
         document.getElementById('conv-aceite').checked = false;
         const a = r.aluno;
         document.getElementById('conv-aluno-nome').textContent = a.nome;
@@ -2616,7 +2620,9 @@
       if (especial && detalhe.length < 3) { erroCampo('conv-detalhe', 'Descreva o atendimento especial necessário.'); return; }
       if (!document.getElementById('conv-aceite').checked) { erroCampo('conv-aceite', 'Confirme a autorização dos convidados para salvar.'); return; }
       const comprouSalvar = document.getElementById('conv-comprou').checked;
-      const vendedor = document.getElementById('conv-vendedor').value.trim();
+      let vendedor = document.getElementById('conv-vendedor').value.trim();
+      // sem alteração no campo: envia em branco para o servidor manter o que já está salvo (inclusive o código da comissão)
+      if (CV.vendedorJa && vendedor === (CV.vendedorCarregado || '')) vendedor = '';
       if (comprouSalvar && !vendedor && !CV.vendedorJa) { erroCampo('conv-vendedor', ERROS_CV.vendedor_obrigatorio); return; }
       const btn = document.getElementById('btn-conv-salvar');
       btn.disabled = true; btn.textContent = 'Salvando...';
@@ -2636,8 +2642,8 @@
       if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
       return '"' + s.replace(/"/g, '""') + '"';
     }
-    function vendedorNomeCsv(l) { return l.comprou_convite ? (l.vendedor_comissao ? 'Comissão' : (l.vendedor_nome || '')) : ''; }
-    function vendedorCamCsv(l) { return l.comprou_convite && !l.vendedor_comissao ? (l.vendedor_camiseta || '') : ''; }
+    function vendedorNomeCsv(l) { return l.comprou_convite ? [l.vendedor_comissao ? 'Comissão' : '', l.vendedor_nome || ''].filter(Boolean).join(', ') : ''; }
+    function vendedorCamCsv(l) { return l.comprou_convite ? (l.vendedor_camiseta || '') : ''; }
     async function cvExportar() {
       const pin = document.getElementById('conv-master').value.trim();
       if (!/^\d{6}$/.test(pin)) { erroCampo('conv-master', 'Informe o PIN de 6 dígitos.'); return; }
@@ -3730,7 +3736,8 @@
       if (!lista.length) { box.innerHTML = '<p class="adm-vazio">Nenhum convidado encontrado para essa busca.</p>'; return; }
       box.innerHTML = lista.map(g => {
         const v = g.vend;
-        const vendTxt = !g.comprou ? '' : v.vendedor_comissao ? 'Comissão' : v.vendedor_camiseta ? (v.vendedor_nome ? v.vendedor_nome + ' (camiseta ' + v.vendedor_camiseta + ')' : 'camiseta ' + v.vendedor_camiseta + ' (sem cadastro)') : 'não informado';
+        const vendCam = v.vendedor_camiseta ? (v.vendedor_nome ? v.vendedor_nome + ' (camiseta ' + v.vendedor_camiseta + ')' : 'camiseta ' + v.vendedor_camiseta + ' (sem cadastro)') : '';
+        const vendTxt = !g.comprou ? '' : ([v.vendedor_comissao ? 'Comissão' : '', vendCam].filter(Boolean).join(' + ') || 'não informado');
         const info = [];
         if (g.comprou) info.push('<strong>Vendedor do convite:</strong> ' + escXml(vendTxt));
         if (g.esp) info.push('<strong>Atendimento especial:</strong> ' + escXml(g.det || ''));
@@ -3750,8 +3757,8 @@
       const tb = document.getElementById('admin-tbody-vendas');
       if (!adminVendas.length) { tb.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:#8e9bb0">Nenhum convite comprado de outro aluno até agora.</td></tr>'; return; }
       tb.innerHTML = adminVendas.map(v => '<tr><td>' + escXml(v.comprador_turma ? normalizarTurma(v.comprador_turma) : '—') + '</td><td>' + escXml(v.comprador) + '</td><td>' + escXml(v.comprador_camiseta) + '</td>' +
-        '<td>' + (v.comissao ? '<span class="badge-sim">Comissão</span>' : v.vendedor_camiseta ? (v.vendedor ? escXml(v.vendedor) : '<span class="badge-nao">Sem cadastro</span>') : '<span class="badge-nao">Não informado</span>') + '</td>' +
-        '<td>' + (v.comissao ? '—' : escXml(v.vendedor_camiseta || '—')) + '</td><td>' + Number(v.convidados || 0) + '</td></tr>').join('');
+        '<td>' + (v.comissao ? '<span class="badge-sim">Comissão</span>' + (v.vendedor ? ' ' + escXml(v.vendedor) : '') : v.vendedor_camiseta ? (v.vendedor ? escXml(v.vendedor) : '<span class="badge-nao">Sem cadastro</span>') : '<span class="badge-nao">Não informado</span>') + '</td>' +
+        '<td>' + escXml(v.vendedor_camiseta || '—') + '</td><td>' + Number(v.convidados || 0) + '</td></tr>').join('');
     }
     async function loadAdminConvidados() {
       const tbody = document.getElementById('admin-grupos-conv');
