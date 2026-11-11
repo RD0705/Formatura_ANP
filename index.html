@@ -1379,8 +1379,13 @@
             <label for="conv-camiseta" class="rotulo rotulo-p">Número da camiseta</label>
             <input type="text" id="conv-camiseta" inputmode="numeric" autocomplete="off" placeholder="Ex: 042">
           </div>
+          <div style="flex: 1; min-width: 180px;">
+            <label for="conv-cpf-aluno" class="rotulo rotulo-p">Seu CPF</label>
+            <input type="text" id="conv-cpf-aluno" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00">
+          </div>
           <button type="button" id="btn-conv-buscar" class="btn btn-primary">Buscar meu cadastro</button>
         </div>
+        <p class="hint-small" style="margin-top: 8px;">Seu CPF protege sua lista: no primeiro acesso ele fica registrado, e depois só entra quem informar o mesmo CPF. Digitou errado? Fale com a comissão para liberar.</p>
         <div id="conv-aviso" class="aviso-caixa" role="status" hidden></div>
       </div>
 
@@ -1591,6 +1596,12 @@
               <button type="button" class="btn btn-primary adm-baixar" id="btn-admin-conv-csv"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1v9M3 7l4 4 4-4M2 12h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Baixar planilha</button>
             </div>
             <div id="admin-stats-conv" class="adm-kpis"></div>
+            <div class="admin-busca" style="margin-bottom: 12px;">
+              <label for="adm-cpf-camiseta" class="sr-only">Camiseta para liberar o CPF</label>
+              <input type="text" id="adm-cpf-camiseta" placeholder="Camiseta do formando" autocomplete="off" style="max-width: 220px;">
+              <button type="button" class="adm-mini" id="btn-adm-liberar-cpf">Liberar CPF do formando</button>
+              <span class="hint-small">Use quando o formando digitou o CPF errado ou outra pessoa usou a camiseta dele. Ele registra o CPF de novo no próximo acesso.</span>
+            </div>
             <details class="adm-det" id="adm-det-conv">
               <summary><span class="adm-seta" aria-hidden="true"></span>Lista por formando<span class="adm-n" id="adm-n-conv"></span></summary>
               <div class="adm-det-corpo">
@@ -2377,8 +2388,12 @@
     // CONVIDADOS
     // ==========================================
     const ERROS_CV = {
-      nao_confere: 'Camiseta e nome não conferem com o cadastro. Use o nome completo como no Registro.',
+      nao_confere: 'Não encontramos esta camiseta no cadastro. Faça o registro na aba Registro primeiro.',
       bloqueado: 'Muitas tentativas. Aguarde 15 minutos e tente de novo.',
+      cpf_aluno_obrigatorio: 'Informe o seu CPF. Se a página estava aberta, recarregue.',
+      cpf_aluno_invalido: 'Seu CPF está inválido. Confira os números.',
+      cpf_aluno_nao_confere: 'O CPF não confere com o registrado para esta camiseta. Se você digitou errado no primeiro acesso, fale com a comissão.',
+      cpf_aluno_em_uso: 'Este CPF já está registrado em outra camiseta. Confira o número da camiseta ou fale com a comissão.',
       inscricao_cancelada: 'Sua inscrição está cancelada. Fale com a comissão.',
       sem_aceite: 'Confirme a autorização dos convidados para salvar.',
       lista_invalida: 'A lista de convidados é inválida. Recarregue a página e tente de novo.',
@@ -2532,12 +2547,15 @@
       const cam = document.getElementById('conv-camiseta').value.trim();
       cvAviso('conv-aviso', '');
       if (!cam) { erroCampo('conv-camiseta', 'Informe o número da camiseta.'); return; }
+      const cpfAluno = document.getElementById('conv-cpf-aluno').value;
+      if (!cpfValido(cpfAluno)) { erroCampo('conv-cpf-aluno', 'Informe o seu CPF completo.'); return; }
       const btn = document.getElementById('btn-conv-buscar');
       btn.disabled = true; btn.textContent = 'Buscando...';
       try {
-        const r = await supabaseRequest('POST', 'rpc/consultar_convidados', { p_matricula: cam, p_nome: '-' });
+        const r = await supabaseRequest('POST', 'rpc/consultar_convidados_v2', { p_matricula: cam, p_cpf: cpfAluno });
         if (r.erro) { document.getElementById('conv-editor').hidden = true; cvAviso('conv-aviso', ERROS_CV[r.erro] || 'Não foi possível buscar.', 'erro'); return; }
-        CV.aluno = r.aluno; CV.cam = cam;
+        CV.aluno = r.aluno; CV.cam = cam; CV.cpf = cpfAluno;
+        if (r.cpf_novo) cvAviso('conv-aviso', 'CPF registrado. A partir de agora, só quem informar este CPF abre a lista desta camiseta.', 'ok');
         document.getElementById('conv-nome').value = r.aluno.nome; CV.sol = []; CV.bai = []; CV.cri = [];
         const mapa = {};
         (r.convidados || []).forEach(c => {
@@ -2647,7 +2665,7 @@
       const btn = document.getElementById('btn-conv-salvar');
       btn.disabled = true; btn.textContent = 'Salvando...';
       try {
-        const r = await supabaseRequest('POST', 'rpc/salvar_convidados', { p_matricula: CV.cam, p_nome: CV.nome, p_lista: lista, p_especial: especial, p_detalhe: especial ? detalhe : '', p_aceite: true, p_comprou: comprouSalvar, p_vendedor: comprouSalvar ? vendedor : '' });
+        const r = await supabaseRequest('POST', 'rpc/salvar_convidados_v2', { p_matricula: CV.cam, p_cpf: CV.cpf, p_nome: CV.nome, p_lista: lista, p_especial: especial, p_detalhe: especial ? detalhe : '', p_aceite: true, p_comprou: comprouSalvar, p_vendedor: comprouSalvar ? vendedor : '' });
         if (r.erro) { showToast(ERROS_CV[r.erro] || 'Não foi possível salvar.', 'error'); return; }
         showToast('Convidados salvos.', 'success');
         await cvBuscar();
@@ -3779,6 +3797,21 @@
       setTimeout(() => URL.revokeObjectURL(url), 2000);
     }
     document.addEventListener('input', e => { if (e.target && e.target.id === 'admin-busca-conv') renderAdminConv(); });
+    document.addEventListener('input', e => { if (e.target && e.target.id === 'conv-cpf-aluno') e.target.value = cpfMascara(e.target.value); });
+    document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target && e.target.id === 'conv-cpf-aluno') { e.preventDefault(); cvBuscar(); } });
+    document.addEventListener('click', async e => {
+      const b = e.target.closest && e.target.closest('#btn-adm-liberar-cpf'); if (!b) return;
+      const inp = document.getElementById('adm-cpf-camiseta'), cam = inp.value.trim();
+      if (!cam) { showToast('Informe a camiseta do formando.', 'error'); return; }
+      if (!confirm('Liberar o CPF da camiseta ' + cam + '? O formando vai registrar o CPF de novo no próximo acesso.')) return;
+      b.disabled = true;
+      try {
+        const r = await supabaseRequest('POST', 'rpc/admin_liberar_cpf_aluno', { p_user: adminCred && adminCred.user, p_hash: adminCred && adminCred.hash, p_matricula: cam });
+        if (r && r.ok) { showToast('CPF da camiseta ' + cam + ' liberado.', 'success'); inp.value = ''; }
+        else showToast(r && r.erro === 'sem_cpf' ? 'Esta camiseta não tem CPF registrado (ou não existe).' : (ERROS_APP[r && r.erro] || 'Não foi possível liberar.'), 'error');
+      } catch (err) { showToast('Não foi possível liberar. Tente novamente.', 'error'); }
+      finally { b.disabled = false; }
+    });
     document.addEventListener('click', e => {
       const t = e.target.closest && e.target.closest('#btn-adm-conv-abrir, #btn-adm-conv-fechar'); if (!t) return;
       const abrir = t.id === 'btn-adm-conv-abrir';
