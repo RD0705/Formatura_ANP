@@ -2408,7 +2408,7 @@
       limite_solenidade: 'A solenidade permite no máximo 4 convidados por formando.',
       sem_solenidade: 'Você não está inscrito na solenidade. Atualize o Registro primeiro.',
       sem_baile: 'Você não está inscrito no baile. Atualize o Registro primeiro.',
-      limite_baile: 'Quantidade de convidados do baile acima do permitido.',
+      limite_baile: 'O baile aceita no máximo 100 convidados por formando. Fale com a comissão se precisar de mais.',
       limite_criancas: 'Limite de 6 crianças por formando.',
       nome_aluno_invalido: 'Informe seu nome completo, com sobrenome.',
       pin_invalido: 'PIN da comissão incorreto.',
@@ -2445,7 +2445,7 @@
       if (!CV.aluno) return 0;
       const comprou = document.getElementById('conv-comprou').checked;
       if (lista === 'sol') return comprou ? 20 : (CV.aluno.solenidade ? 4 : 0);
-      if (lista === 'bai') return comprou ? 40 : (CV.aluno.baile ? Math.max(CV.aluno.qtd_baile || 0, 0) : 0);
+      if (lista === 'bai') return 100; // convites do baile são vendidos à parte: sem limite por registro (teto técnico)
       return 6;
     }
 
@@ -2520,7 +2520,7 @@
         add.disabled = cheio;
         add.textContent = cheio && l !== 'cri' ? 'Limite atingido' : (l === 'cri' ? 'Adicionar criança' : 'Adicionar convidado');
         const cont = document.getElementById('conv-' + l + '-cont');
-        if (cont) cont.textContent = (lim ? usados + ' de ' + lim : usados + ' cadastrado(s)') + (nPf ? ' + ' + nPf + (nPf === 1 ? ' policial federal' : ' policiais federais') : '');
+        if (cont) cont.textContent = (lim && l !== 'bai' ? usados + ' de ' + lim : usados + ' cadastrado' + (usados === 1 ? '' : 's')) + (nPf ? ' + ' + nPf + (nPf === 1 ? ' policial federal' : ' policiais federais') : '');
       });
       const a = CV.aluno;
       const comp = document.getElementById('conv-comprou').checked;
@@ -2528,12 +2528,11 @@
       const sh = document.getElementById('conv-sol-hint'), bh = document.getElementById('conv-bai-hint');
       if (comp) {
         sh.textContent = 'Inclua também os convidados dos convites comprados de outros alunos.';
-        bh.textContent = 'Inclua também os convidados dos convites comprados de outros alunos.';
       } else {
         sh.textContent = a.solenidade ? 'Até 4 convidados por formando. Convidados que já são policiais federais não entram nesse limite: marque a opção na linha deles.' : 'Você não está inscrito na solenidade. Atualize o Registro para cadastrar convidados.';
-        bh.textContent = a.baile ? 'Um convidado por convite registrado.' : 'Você não está inscrito no baile. Atualize o Registro para cadastrar convidados.';
       }
-      document.getElementById('btn-conv-copiar').disabled = (!a.baile && !comp) || !CV.sol.length || CV.bai.length >= cvLimite('bai');
+      bh.textContent = 'Cadastre quantos convidados quiser: os convites do baile são vendidos à parte.';
+      document.getElementById('btn-conv-copiar').disabled = !CV.sol.length || CV.bai.length >= cvLimite('bai');
     }
 
     function cvNovo(lista, dados) {
