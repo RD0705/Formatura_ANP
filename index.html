@@ -416,6 +416,19 @@
     }
     .cv-check { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.5; cursor: pointer; }
     .cv-check input { width: 20px; height: 20px; margin-top: 2px; flex: none; }
+    .cv-bloco { border: 1px solid var(--pf-border); border-radius: 12px; padding: 12px 14px; margin: 10px 0; background: var(--pf-black); }
+    .cv-bloco-topo { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+    .cv-bloco-topo strong { color: var(--pf-text); font-size: 14px; }
+    .cv-bloco-topo small { color: var(--pf-muted); font-size: 12px; display: block; font-weight: 400; }
+    .cv-tag { display: inline-block; font-size: 11px; font-weight: 700; color: var(--pf-gold-bright); border: 1px solid var(--pf-gold-dim); border-radius: 999px; padding: 1px 8px; margin-left: 6px; vertical-align: middle; }
+    .cv-rec { padding: 8px 0; border-top: 1px solid var(--pf-border); font-size: 14px; }
+    .cv-rec:first-child { border-top: 0; }
+    .cv-rec small { display: block; color: var(--pf-muted); font-size: 12px; }
+    .cv-novo-comp { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--pf-border); }
+    .adm-turma-filtros { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+    .adm-turma-filtros select { max-width: 200px; }
+    .adm-turma-def { display: flex; gap: 6px; align-items: center; }
+    .adm-turma-def select { min-height: 32px; padding: 2px 8px; max-width: 80px; }
     .cv-vendedor { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--pf-border); }
     .cv-vendedor input { max-width: 280px; text-transform: uppercase; }
     .cv-vendedor input::placeholder { text-transform: none; }
@@ -456,9 +469,10 @@
     .adm-acoes { display: flex; gap: 8px; }
     .adm-mini { min-height: 36px; padding: 6px 14px; background: transparent; border: 1px solid var(--pf-border); color: var(--pf-muted); border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: color .15s var(--ease-out), border-color .15s var(--ease-out); }
     .adm-mini:hover { color: var(--pf-gold-bright); border-color: var(--pf-gold-dim); }
-    .adm-abas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 4px; background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 12px; margin-bottom: 24px; }
+    .adm-abas { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; padding: 4px; background: var(--pf-black); border: 1px solid var(--pf-border); border-radius: 12px; margin-bottom: 24px; }
     .adm-abas button { min-height: 42px; border: 0; background: transparent; color: var(--pf-muted); font: inherit; font-size: 13px; font-weight: 600; border-radius: 9px; cursor: pointer; transition: background-color .18s var(--ease-out), color .18s var(--ease-out); }
     .adm-abas button:hover { color: var(--pf-text); }
+    @media (max-width: 560px) { .adm-abas { grid-template-columns: repeat(3, 1fr); } }
     .adm-abas button[aria-selected="true"] { background: rgba(201,169,78,0.14); color: var(--pf-gold-bright); }
     .adm-abas button:focus-visible, .adm-det > summary:focus-visible, .adm-grupo > summary:focus-visible, .adm-mini:focus-visible { outline: 2px solid var(--pf-gold-bright); outline-offset: 2px; }
     .adm-sec[hidden] { display: none; }
@@ -1409,16 +1423,8 @@
           </div>
         </div>
 
-        <div class="card" id="conv-card-comprou">
-          <label class="cv-check"><input type="checkbox" id="conv-comprou"> <span>Comprei convite de outro aluno <span class="hint-small" style="display:block;">Libera mais convidados abaixo, cada um com nome completo e CPF.</span></span></label>
-          <div id="conv-vendedor-box" class="cv-vendedor" hidden>
-            <label for="conv-vendedor" class="rotulo rotulo-p">Camiseta de quem vendeu os convites</label>
-            <input type="text" id="conv-vendedor" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="300" placeholder="Ex: 123, 456">
-            <p class="hint-small" id="conv-vendedor-hint">Informe o número da camiseta de quem vendeu o convite para você. Comprou de mais de um aluno? Separe por vírgula, por exemplo: 123, 456. Pode ser de alguém que ainda não se cadastrou. Membros da comissão usam o código que receberam e podem juntar as camisetas de quem vendeu: código, 123, 456.</p>
-          </div>
-        </div>
-
         <div class="card">
+          <div id="conv-legado" class="aviso-caixa" role="status" hidden></div>
           <div class="cv-topo"><h3>Solenidade</h3><span class="cv-contagem" id="conv-sol-cont"></span></div>
           <p class="hint" id="conv-sol-hint"></p>
           <div id="conv-lista-sol"></div>
@@ -1431,6 +1437,30 @@
             <button type="button" id="btn-conv-add-bai" class="btn btn-secondary cv-add">Adicionar convidado</button>
             <button type="button" id="btn-conv-copiar" class="btn btn-secondary cv-add">Copiar da solenidade</button>
           </div>
+        </div>
+
+        <div class="card" id="conv-card-vendidos">
+          <div class="cv-topo"><h3>Convites da solenidade que vendi</h3><span class="cv-contagem" id="conv-ven-cont"></span></div>
+          <p class="hint">Vendeu convite da solenidade para outro aluno? Registre aqui os convidados dele: você fica responsável por eles na lista enviada à ANP. Cada convite vendido sai dos seus 4.</p>
+          <div id="conv-lista-ven"></div>
+          <div class="cv-novo-comp">
+            <label for="conv-comprador" class="rotulo rotulo-p">Camiseta de quem comprou</label>
+            <div class="cer-linha" style="gap: 8px;">
+              <input type="text" id="conv-comprador" autocomplete="off" inputmode="numeric" placeholder="Ex: 123" style="max-width: 200px;">
+              <button type="button" id="btn-conv-add-comp" class="btn btn-secondary">Adicionar comprador</button>
+            </div>
+            <label class="cv-check mt-12"><input type="checkbox" id="conv-comp-comissao"> <span>Convite vendido pela comissão <span class="hint-small" style="display:block;">Só para membros da comissão. Não conta nos seus 4 convites e pede o código da comissão.</span></span></label>
+          </div>
+          <div id="conv-codigo-box" class="cv-vendedor" hidden>
+            <label for="conv-codigo" class="rotulo rotulo-p">Código da comissão</label>
+            <input type="password" id="conv-codigo" autocomplete="off" placeholder="Informe a cada vez que salvar">
+          </div>
+        </div>
+
+        <div class="card" id="conv-card-recebidos" hidden>
+          <h3>Convites que você comprou</h3>
+          <p class="hint">Estes convidados da solenidade foram registrados por quem vendeu o convite para você. Para corrigir algo, fale com essa pessoa.</p>
+          <div id="conv-lista-rec"></div>
         </div>
 
         <div class="card">
@@ -1563,6 +1593,7 @@
           <div class="adm-abas" role="tablist" aria-label="Seções do painel">
             <button type="button" role="tab" id="adm-tab-form" data-adm="form" aria-selected="true" aria-controls="adm-sec-form" tabindex="0">Formandos</button>
             <button type="button" role="tab" id="adm-tab-conv" data-adm="conv" aria-selected="false" aria-controls="adm-sec-conv" tabindex="-1">Convidados</button>
+            <button type="button" role="tab" id="adm-tab-turma" data-adm="turma" aria-selected="false" aria-controls="adm-sec-turma" tabindex="-1">Por turma</button>
             <button type="button" role="tab" id="adm-tab-cri" data-adm="cri" aria-selected="false" aria-controls="adm-sec-cri" tabindex="-1">Crianças</button>
             <button type="button" role="tab" id="adm-tab-vot" data-adm="vot" aria-selected="false" aria-controls="adm-sec-vot" tabindex="-1">Música</button>
           </div>
@@ -1614,10 +1645,22 @@
                 <div id="admin-grupos-conv" class="adm-grupos"><p class="adm-vazio">Carregando dados...</p></div>
               </div>
             </details>
-            <details class="adm-det" id="adm-det-vendas">
-              <summary><span class="adm-seta" aria-hidden="true"></span>Convites comprados de outros alunos<span class="adm-n" id="adm-n-vendas"></span></summary>
+            <details class="adm-det" id="adm-det-vend2">
+              <summary><span class="adm-seta" aria-hidden="true"></span>Convites vendidos<span class="adm-n" id="adm-n-vend2"></span></summary>
               <div class="adm-det-corpo">
-                <p class="adm-nota">Quem vendeu para quem. Compras com o código da comissão aparecem como “Comissão”.</p>
+                <p class="adm-nota">Registrados pelo vendedor, que é o responsável pelos convidados na lista da ANP.</p>
+                <div class="adm-rolagem">
+                  <table class="admin-table">
+                    <thead><tr><th>Vendedor (responsável)</th><th>Camiseta</th><th>Comprador</th><th>Camiseta</th><th>Turma do comprador</th><th>Convidados</th></tr></thead>
+                    <tbody id="admin-tbody-vend2"></tbody>
+                  </table>
+                </div>
+              </div>
+            </details>
+            <details class="adm-det" id="adm-det-vendas">
+              <summary><span class="adm-seta" aria-hidden="true"></span>Cadastros antigos a regularizar<span class="adm-n" id="adm-n-vendas"></span></summary>
+              <div class="adm-det-corpo">
+                <p class="adm-nota">Cadastros feitos pelo comprador com a opção antiga “comprei convite de outro aluno”. Agora o vendedor registra os convidados dos convites vendidos; peça a esses formandos que refaçam da forma correta.</p>
                 <div class="adm-rolagem">
                   <table class="admin-table" id="admin-table-vendas">
                     <thead><tr><th>Turma</th><th>Comprador</th><th>Camiseta</th><th>Vendedor</th><th>Camiseta do vendedor</th><th>Convidados</th></tr></thead>
@@ -1626,6 +1669,25 @@
                 </div>
               </div>
             </details>
+          </section>
+          <section id="adm-sec-turma" class="adm-sec" role="tabpanel" aria-labelledby="adm-tab-turma" hidden>
+            <div class="adm-cab">
+              <div><h3>Convidados por turma</h3><p>Quem já cadastrou os convidados e quem falta, para os xerifes acompanharem</p></div>
+              <button type="button" class="btn btn-primary adm-baixar" id="btn-adm-turma-csv"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1v9M3 7l4 4 4-4M2 12h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Baixar planilha da turma</button>
+            </div>
+            <div class="adm-turma-filtros">
+              <label for="adm-turma-sel" class="rotulo rotulo-p" style="margin: 0;">Turma</label>
+              <select id="adm-turma-sel" class="campo-select"></select>
+              <button type="button" class="adm-mini" id="btn-adm-turma-copiar">Copiar pendentes</button>
+              <button type="button" class="adm-mini" id="btn-adm-turma-atualizar">Atualizar</button>
+            </div>
+            <div id="adm-turma-kpis" class="adm-kpis"></div>
+            <div class="adm-rolagem">
+              <table class="admin-table">
+                <thead><tr><th>Formando</th><th>Camiseta</th><th>Turma</th><th>Situação</th><th>Solenidade</th><th>Baile</th><th>Crianças</th><th>Vendidos</th><th>Comprados</th></tr></thead>
+                <tbody id="adm-turma-tbody"><tr><td colspan="9" style="text-align:center;padding:24px;color:#8e9bb0">Carregando...</td></tr></tbody>
+              </table>
+            </div>
           </section>
           <section id="adm-sec-cri" class="adm-sec" role="tabpanel" aria-labelledby="adm-tab-cri" hidden>
             <div class="adm-cab">
@@ -2405,7 +2467,13 @@
       idade_invalida: 'Informe a idade da criança.',
       crianca_maior: 'Crianças só até 12 anos. Cadastre como convidado comum.',
       sem_evento: 'Marque solenidade ou baile para o convidado.',
-      limite_solenidade: 'A solenidade permite no máximo 4 convidados por formando.',
+      limite_solenidade: 'Passou dos seus 4 convites da solenidade: seus convidados mais os convites que você vendeu somam mais de 4.',
+      turma_obrigatoria: 'Selecione e salve a sua turma antes de salvar os convidados.',
+      comprador_obrigatorio: 'Informe a camiseta de quem comprou.',
+      comprador_proprio: 'A camiseta de quem comprou não pode ser a sua.',
+      comprador_invalido: 'Não encontramos essa camiseta de comprador no cadastro (ou a inscrição está cancelada).',
+      comprador_repetido: 'Esse comprador já está na lista.',
+      codigo_comissao_invalido: 'Código da comissão incorreto.',
       sem_solenidade: 'Você não está inscrito na solenidade. Atualize o Registro primeiro.',
       sem_baile: 'Você não está inscrito no baile. Atualize o Registro primeiro.',
       limite_baile: 'O baile aceita no máximo 100 convidados por formando. Fale com a comissão se precisar de mais.',
@@ -2416,7 +2484,7 @@
       vendedor_invalido: 'Camiseta do vendedor inválida. Use só letras e números, separando por vírgula.',
       vendedor_proprio: 'A camiseta do vendedor não pode ser a sua.'
     };
-    const CV = { aluno: null, nome: '', cam: '', sol: [], bai: [], cri: [], seq: 0, vendedorJa: false };
+    const CV = { aluno: null, nome: '', cam: '', sol: [], bai: [], cri: [], ven: [], rec: [], seq: 0 };
 
     function cvAviso(id, msg, tipo) {
       const el = document.getElementById(id);
@@ -2443,12 +2511,13 @@
     }
     function cvLimite(lista) {
       if (!CV.aluno) return 0;
-      const comprou = document.getElementById('conv-comprou').checked;
-      if (lista === 'sol') return comprou ? 20 : (CV.aluno.solenidade ? 4 : 0);
+      if (lista === 'sol') return CV.aluno.solenidade ? Math.max(0, 4 - cvVendidosConta()) : 0;
       if (lista === 'bai') return 100; // convites do baile são vendidos à parte: sem limite por registro (teto técnico)
       return 6;
     }
 
+    // convites vendidos que saem dos 4 do formando (comissão e policiais federais não contam)
+    function cvVendidosConta() { return (CV.ven || []).filter(b => !b.comissao).reduce((n, b) => n + b.itens.filter(x => !x.pf).length, 0); }
     function cvChaveItem(it) { return it.id || String(it.cpf || '').replace(/\D/g, ''); }
     function cvConta(lista) { return lista === 'sol' ? CV.sol.filter(x => !x.pf).length : CV[lista].length; }
     function cvLinha(lista, item) {
@@ -2523,16 +2592,104 @@
         if (cont) cont.textContent = (lim && l !== 'bai' ? usados + ' de ' + lim : usados + ' cadastrado' + (usados === 1 ? '' : 's')) + (nPf ? ' + ' + nPf + (nPf === 1 ? ' policial federal' : ' policiais federais') : '');
       });
       const a = CV.aluno;
-      const comp = document.getElementById('conv-comprou').checked;
-      document.getElementById('conv-vendedor-box').hidden = !comp;
       const sh = document.getElementById('conv-sol-hint'), bh = document.getElementById('conv-bai-hint');
-      if (comp) {
-        sh.textContent = 'Inclua também os convidados dos convites comprados de outros alunos.';
-      } else {
-        sh.textContent = a.solenidade ? 'Até 4 convidados por formando. Convidados que já são policiais federais não entram nesse limite: marque a opção na linha deles.' : 'Você não está inscrito na solenidade. Atualize o Registro para cadastrar convidados.';
-      }
+      const nv = cvVendidosConta();
+      sh.textContent = !a.solenidade ? 'Você não está inscrito na solenidade. Atualize o Registro para cadastrar convidados.'
+        : 'Até 4 convidados por formando' + (nv ? ' (você vendeu ' + nv + ', então sobram ' + Math.max(0, 4 - nv) + ' para os seus)' : '') + '. Convidados que já são policiais federais não entram nesse limite: marque a opção na linha deles.';
+      cvDesenharVendidos();
       bh.textContent = 'Cadastre quantos convidados quiser: os convites do baile são vendidos à parte.';
       document.getElementById('btn-conv-copiar').disabled = !CV.sol.length || CV.bai.length >= cvLimite('bai');
+    }
+
+    function cvDesenharVendidos() {
+      const box = document.getElementById('conv-lista-ven');
+      box.textContent = '';
+      const livres = () => CV.aluno.solenidade ? 4 - cvConta('sol') - cvVendidosConta() : 0;
+      CV.ven.forEach(b => {
+        const blk = document.createElement('div'); blk.className = 'cv-bloco';
+        const topo = document.createElement('div'); topo.className = 'cv-bloco-topo';
+        const t = document.createElement('strong');
+        t.textContent = b.nome || ('Camiseta ' + b.comprador);
+        if (b.comissao) { const tg = document.createElement('span'); tg.className = 'cv-tag'; tg.textContent = 'Comissão'; t.appendChild(tg); }
+        const sm = document.createElement('small'); sm.textContent = 'Comprou o convite · Camiseta ' + b.comprador + (b.turma ? ' · Turma ' + normalizarTurma(b.turma) : '');
+        t.appendChild(sm);
+        const rmb = document.createElement('button'); rmb.type = 'button'; rmb.className = 'btn btn-secondary cv-rm'; rmb.textContent = 'Remover comprador';
+        rmb.addEventListener('click', () => { CV.ven.splice(CV.ven.indexOf(b), 1); cvDesenhar(); });
+        topo.appendChild(t); topo.appendChild(rmb); blk.appendChild(topo);
+        if (b.itens.some(x => x.transferido)) {
+          const nt = document.createElement('p'); nt.className = 'hint-small';
+          nt.textContent = 'Estes convidados foram cadastrados antes por quem comprou e passaram para você, que vendeu o convite. Confira os nomes e salve.';
+          blk.appendChild(nt);
+        }
+        b.itens.forEach(it => {
+          const pref = 'cv-ven-' + it.k;
+          const row = document.createElement('div'); row.className = 'cv-linha';
+          const mk = (cls, id, label, el) => { const w = document.createElement('div'); w.className = cls; const l = document.createElement('label'); l.htmlFor = id; l.className = 'sr-only'; l.textContent = label; w.appendChild(l); w.appendChild(el); return w; };
+          const nome = document.createElement('input'); nome.type = 'text'; nome.id = pref + '-nome'; nome.maxLength = 80; nome.placeholder = 'Nome completo'; nome.autocomplete = 'off'; nome.value = it.nome || '';
+          nome.addEventListener('input', () => { it.nome = nome.value; });
+          row.appendChild(mk('cv-c-nome', nome.id, 'Nome completo', nome));
+          const cpf = document.createElement('input'); cpf.type = 'text'; cpf.id = pref + '-cpf'; cpf.inputMode = 'numeric'; cpf.autocomplete = 'off'; cpf.placeholder = '000.000.000-00';
+          if (it.id) { cpf.value = it.masc; cpf.readOnly = true; cpf.setAttribute('aria-readonly', 'true'); }
+          else { cpf.value = cpfMascara(it.cpf); cpf.addEventListener('input', () => { cpf.value = cpfMascara(cpf.value); it.cpf = cpf.value; }); }
+          row.appendChild(mk('cv-c-cpf', cpf.id, 'CPF', cpf));
+          const rm = document.createElement('button'); rm.type = 'button'; rm.className = 'btn btn-secondary cv-rm'; rm.textContent = 'Remover';
+          rm.setAttribute('aria-label', 'Remover ' + (it.nome || 'convidado'));
+          rm.addEventListener('click', () => { b.itens.splice(b.itens.indexOf(it), 1); cvDesenhar(); });
+          row.appendChild(rm);
+          const pfw = document.createElement('div'); pfw.className = 'cv-c-pf';
+          const pf = document.createElement('input'); pf.type = 'checkbox'; pf.id = pref + '-pf'; pf.checked = !!it.pf;
+          pf.addEventListener('change', () => { it.pf = pf.checked; cvDesenhar(); });
+          const pl = document.createElement('label'); pl.htmlFor = pf.id; pl.textContent = 'Já é policial federal';
+          pfw.appendChild(pf); pfw.appendChild(pl); row.appendChild(pfw);
+          blk.appendChild(row);
+        });
+        const add = document.createElement('button'); add.type = 'button'; add.className = 'btn btn-secondary cv-add';
+        const cheio = !b.comissao && livres() <= 0;
+        add.disabled = cheio || b.itens.length >= 40;
+        add.textContent = cheio ? 'Seus 4 convites já foram usados' : 'Adicionar convidado de ' + (String(b.nome || '').split(/\s+/)[0] || 'quem comprou');
+        add.addEventListener('click', () => { const it = cvNovoVend(b); cvDesenhar(); const el = document.getElementById('cv-ven-' + it.k + '-nome'); if (el) el.focus(); });
+        blk.appendChild(add);
+        box.appendChild(blk);
+      });
+      if (!CV.ven.length) { const p = document.createElement('p'); p.className = 'hint-small cv-vazio'; p.textContent = 'Nenhum convite vendido registrado.'; box.appendChild(p); }
+      const nTot = CV.ven.reduce((n, b) => n + b.itens.length, 0), nv = cvVendidosConta();
+      document.getElementById('conv-ven-cont').textContent = nTot ? nTot + (nTot === 1 ? ' convidado' : ' convidados') + (nv ? ' · usa ' + nv + ' dos seus 4' : '') : '';
+      document.getElementById('conv-codigo-box').hidden = !CV.ven.some(b => b.comissao);
+      const rec = CV.rec || [];
+      document.getElementById('conv-card-recebidos').hidden = !rec.length;
+      const rbox = document.getElementById('conv-lista-rec'); rbox.textContent = '';
+      rec.forEach(x => {
+        const d = document.createElement('div'); d.className = 'cv-rec';
+        d.textContent = x.nome + ' · CPF ' + x.cpf_mascarado + (x.pf ? ' · policial federal' : '');
+        const sm = document.createElement('small'); sm.textContent = 'Registrado por ' + (x.comissao ? 'Comissão, ' : '') + (x.responsavel || '') + ' (camiseta ' + x.responsavel_camiseta + ')';
+        d.appendChild(sm); rbox.appendChild(d);
+      });
+    }
+    function cvNovoVend(bloco, dados) {
+      CV.seq += 1;
+      const it = Object.assign({ k: CV.seq, id: null, nome: '', cpf: '', masc: '', pf: false }, dados || {});
+      bloco.itens.push(it);
+      return it;
+    }
+    async function cvAddComprador() {
+      const inp = document.getElementById('conv-comprador');
+      const cam = inp.value.trim();
+      if (!cam) { erroCampo('conv-comprador', ERROS_CV.comprador_obrigatorio); return; }
+      if (CV.ven.some(b => String(b.comprador).toUpperCase() === cam.toUpperCase())) { erroCampo('conv-comprador', ERROS_CV.comprador_repetido); return; }
+      const btn = document.getElementById('btn-conv-add-comp'); btn.disabled = true;
+      try {
+        const r = await supabaseRequest('POST', 'rpc/conferir_comprador', { p_matricula: CV.cam, p_cpf: CV.cpf, p_comprador: cam });
+        if (!r || r.erro) { erroCampo('conv-comprador', ERROS_CV[r && r.erro] || 'Não foi possível conferir o comprador.'); return; }
+        if (CV.ven.some(b => b.comprador === r.camiseta)) { erroCampo('conv-comprador', ERROS_CV.comprador_repetido); return; }
+        const comissao = document.getElementById('conv-comp-comissao').checked;
+        const b = { comprador: r.camiseta, nome: r.nome, turma: r.turma, comissao: comissao, itens: [] };
+        CV.ven.push(b);
+        const it = cvNovoVend(b);
+        inp.value = ''; document.getElementById('conv-comp-comissao').checked = false;
+        cvDesenhar();
+        const el = document.getElementById('cv-ven-' + it.k + '-nome'); if (el) el.focus();
+      } catch (e) { erroCampo('conv-comprador', 'Não foi possível conferir agora. Tente de novo.'); }
+      finally { btn.disabled = false; }
     }
 
     function cvNovo(lista, dados) {
@@ -2551,7 +2708,7 @@
       const btn = document.getElementById('btn-conv-buscar');
       btn.disabled = true; btn.textContent = 'Buscando...';
       try {
-        const r = await supabaseRequest('POST', 'rpc/consultar_convidados_v2', { p_matricula: cam, p_cpf: cpfAluno });
+        const r = await supabaseRequest('POST', 'rpc/consultar_convidados_v3', { p_matricula: cam, p_cpf: cpfAluno });
         if (r.erro) { document.getElementById('conv-editor').hidden = true; cvAviso('conv-aviso', ERROS_CV[r.erro] || 'Não foi possível buscar.', 'erro'); return; }
         CV.aluno = r.aluno; CV.cam = cam; CV.cpf = cpfAluno;
         if (r.cpf_novo) cvAviso('conv-aviso', 'CPF registrado. A partir de agora, só quem informar este CPF abre a lista desta camiseta.', 'ok');
@@ -2566,15 +2723,17 @@
         document.getElementById('conv-especial').checked = !!(r.grupo && r.grupo.especial);
         document.getElementById('conv-detalhe').value = (r.grupo && r.grupo.detalhe) || '';
         document.getElementById('conv-especial-box').hidden = !document.getElementById('conv-especial').checked;
-        document.getElementById('conv-comprou').checked = !!(r.grupo && r.grupo.comprou);
-        CV.vendedorJa = !!(r.grupo && (r.grupo.vendedor || r.grupo.vendedor_comissao));
-        const iv = document.getElementById('conv-vendedor');
-        iv.value = (r.grupo && r.grupo.vendedor) || '';
-        CV.vendedorCarregado = iv.value.trim();
-        CV.vendedorComissao = !!(r.grupo && r.grupo.vendedor_comissao);
-        iv.placeholder = CV.vendedorComissao ? 'Já informado. Deixe em branco para manter.' : 'Ex: 123, 456';
-        document.getElementById('conv-vendedor-hint').dataset.base = document.getElementById('conv-vendedor-hint').dataset.base || document.getElementById('conv-vendedor-hint').textContent;
-        document.getElementById('conv-vendedor-hint').textContent = (CV.vendedorComissao ? 'O código da comissão já está registrado neste cadastro. Para mudar a lista, digite tudo de novo, incluindo o código. ' : '') + document.getElementById('conv-vendedor-hint').dataset.base;
+        CV.ven = (r.vendidos || []).map(v => {
+          const b = { comprador: v.comprador, nome: v.comprador_nome, turma: v.comprador_turma, comissao: !!v.comissao, itens: [] };
+          (v.convidados || []).forEach(c => cvNovoVend(b, { id: c.id, nome: c.nome, masc: c.cpf_mascarado, pf: !!c.pf, transferido: !!c.transferido }));
+          return b;
+        });
+        CV.rec = r.recebidos || [];
+        document.getElementById('conv-codigo').value = '';
+        const leg = document.getElementById('conv-legado');
+        const nSolProp = (r.convidados || []).filter(c => c.solenidade && !c.pf).length;
+        leg.hidden = !(r.grupo && r.grupo.legado_comprou);
+        leg.textContent = 'Seu cadastro estava marcado como "comprei convite de outro aluno". Agora quem vendeu é quem registra os convidados dos convites vendidos. Deixe aqui só os seus convidados (até 4' + (nSolProp > 4 ? '; hoje há ' + nSolProp : '') + ') e peça ao vendedor que registre os demais na aba Convidados dele.';
         document.getElementById('conv-aceite').checked = false;
         const a = r.aluno;
         document.getElementById('conv-aluno-nome').textContent = a.nome;
@@ -2647,28 +2806,43 @@
         lista.push({ id: it.id || undefined, tipo: 'crianca', nome: it.nome.trim(), cpf: it.id ? undefined : digitos, idade: idade });
       });
       if (erro) { erroCampo(erro[0], erro[1]); return; }
-      if (!document.getElementById('conv-comprou').checked) {
-        const nSol = lista.filter(x => x.solenidade && !x.pf).length;
-        if (nSol > 4) { showToast(ERROS_CV.limite_solenidade, 'error'); return; }
-        if (nSol > 0 && !CV.aluno.solenidade) { showToast(ERROS_CV.sem_solenidade, 'error'); return; }
-      }
+      if (!CV.aluno.turma) { erroCampo('conv-turma', ERROS_CV.turma_obrigatoria); return; }
+      // convites da solenidade vendidos
+      const vendidos = [];
+      CV.ven.forEach(b => {
+        if (erro) return;
+        const conv = [];
+        b.itens.forEach(it => {
+          if (erro) return;
+          const pref = 'cv-ven-' + it.k;
+          const digitos = String(it.cpf || '').replace(/\D/g, '');
+          if (!it.id && !String(it.nome || '').trim() && !digitos) return;
+          if (String(it.nome || '').trim().length < 2) { erro = [pref + '-nome', 'Informe o nome do convidado.']; return; }
+          if (!it.id && !cpfValido(digitos)) { erro = [pref + '-cpf', 'CPF inválido. Confira os números.']; return; }
+          if (!it.id && porChave[digitos]) { erro = [pref + '-cpf', 'Este CPF já está na sua lista.']; return; }
+          conv.push({ id: it.id || undefined, nome: String(it.nome).trim(), cpf: it.id ? undefined : digitos, pf: !!it.pf });
+        });
+        vendidos.push({ comprador: b.comprador, comissao: !!b.comissao, convidados: conv });
+      });
+      if (erro) { erroCampo(erro[0], erro[1]); return; }
+      const codigo = document.getElementById('conv-codigo').value.trim();
+      if (vendidos.some(b => b.comissao) && !codigo) { erroCampo('conv-codigo', 'Informe o código da comissão para salvar os convites da comissão.'); return; }
+      const nSol = lista.filter(x => x.solenidade && !x.pf).length;
+      const nVend = vendidos.filter(b => !b.comissao).reduce((n, b) => n + b.convidados.filter(c => !c.pf).length, 0);
+      if (nSol + nVend > 4) { showToast(ERROS_CV.limite_solenidade, 'error'); return; }
+      if (nSol + nVend > 0 && !CV.aluno.solenidade) { showToast(ERROS_CV.sem_solenidade, 'error'); return; }
       const especial = document.getElementById('conv-especial').checked;
       const detalhe = document.getElementById('conv-detalhe').value.trim();
       if (especial && detalhe.length < 3) { erroCampo('conv-detalhe', 'Descreva o atendimento especial necessário.'); return; }
       if (!document.getElementById('conv-aceite').checked) { erroCampo('conv-aceite', 'Confirme a autorização dos convidados para salvar.'); return; }
-      const comprouSalvar = document.getElementById('conv-comprou').checked;
-      let vendedor = document.getElementById('conv-vendedor').value.trim();
-      // sem alteração no campo: envia em branco para o servidor manter o que já está salvo (inclusive o código da comissão)
-      if (CV.vendedorJa && vendedor === (CV.vendedorCarregado || '')) vendedor = '';
-      if (comprouSalvar && !vendedor && !CV.vendedorJa) { erroCampo('conv-vendedor', ERROS_CV.vendedor_obrigatorio); return; }
       const btn = document.getElementById('btn-conv-salvar');
       btn.disabled = true; btn.textContent = 'Salvando...';
       try {
-        const r = await supabaseRequest('POST', 'rpc/salvar_convidados_v2', { p_matricula: CV.cam, p_cpf: CV.cpf, p_nome: CV.nome, p_lista: lista, p_especial: especial, p_detalhe: especial ? detalhe : '', p_aceite: true, p_comprou: comprouSalvar, p_vendedor: comprouSalvar ? vendedor : '' });
-        if (r.erro) { showToast(ERROS_CV[r.erro] || 'Não foi possível salvar.', 'error'); return; }
+        const r = await supabaseRequest('POST', 'rpc/salvar_convidados_v3', { p_matricula: CV.cam, p_cpf: CV.cpf, p_nome: CV.nome, p_lista: lista, p_vendidos: vendidos, p_codigo: codigo, p_especial: especial, p_detalhe: especial ? detalhe : '', p_aceite: true });
+        if (r.erro) { showToast((ERROS_CV[r.erro] || 'Não foi possível salvar.') + (r.comprador ? ' (comprador ' + r.comprador + ')' : ''), 'error'); return; }
         showToast('Convidados salvos.', 'success');
         await cvBuscar();
-        cvAviso('conv-aviso', 'Convidados salvos (' + r.total + '). Você pode voltar aqui e alterar quando precisar.', 'ok');
+        cvAviso('conv-aviso', 'Convidados salvos (' + r.total + (r.vendidos ? ' seus e ' + r.vendidos + ' de convites vendidos' : '') + '). Você pode voltar aqui e alterar quando precisar.', 'ok');
       } catch (e) {
         showToast('Não foi possível salvar agora. Tente de novo.', 'error');
       } finally { btn.disabled = false; btn.textContent = 'Salvar convidados'; }
@@ -2679,6 +2853,7 @@
       if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
       return '"' + s.replace(/"/g, '""') + '"';
     }
+    function origemCsv(l) { return l.tipo === 'crianca' ? '' : l.origem === 'vendido' ? 'Vendido' : l.origem === 'comissao' ? 'Vendido pela comissão' : 'Próprio'; }
     function vendedorNomeCsv(l) { return l.comprou_convite ? [l.vendedor_comissao ? 'Comissão' : '', l.vendedor_nome || ''].filter(Boolean).join(', ') : ''; }
     function vendedorCamCsv(l) { return l.comprou_convite ? (l.vendedor_camiseta || '') : ''; }
     async function cvExportar() {
@@ -2688,8 +2863,8 @@
       try {
         const r = await supabaseRequest('POST', 'rpc/exportar_convidados', { p_master: pin });
         if (r.erro) { cvAviso('conv-master-aviso', r.erro === 'bloqueado' ? ERROS_CV.bloqueado : ERROS_CV.pin_invalido, 'erro'); return; }
-        const cab = ['Turma', 'Formando', 'Camiseta', 'Tipo', 'Convidado', 'CPF', 'Idade', 'Solenidade', 'Baile', 'Policial federal', 'Comprou convite de outro aluno', 'Vendedor do convite', 'Camiseta do vendedor', 'Atendimento especial', 'Detalhe'];
-        const linhas = (r.linhas || []).map(l => [l.turma ? normalizarTurma(l.turma) : '', l.aluno, l.camiseta, l.tipo === 'crianca' ? 'Criança' : 'Adulto', l.nome, cpfMascara(l.cpf), l.idade, l.solenidade ? 'Sim' : '', l.baile ? 'Sim' : '', l.policial_federal ? 'Sim' : '', l.comprou_convite ? 'Sim' : '', vendedorNomeCsv(l), vendedorCamCsv(l), l.atendimento_especial ? 'Sim' : '', l.detalhe]);
+        const cab = ['Turma', 'Formando responsável', 'Camiseta', 'Tipo', 'Convidado', 'CPF', 'Idade', 'Solenidade', 'Baile', 'Policial federal', 'Convite', 'Comprador', 'Camiseta do comprador', 'Turma do comprador', 'Cadastro antigo a regularizar', 'Atendimento especial', 'Detalhe'];
+        const linhas = (r.linhas || []).map(l => [l.turma ? normalizarTurma(l.turma) : '', l.aluno, l.camiseta, l.tipo === 'crianca' ? 'Criança' : 'Adulto', l.nome, cpfMascara(l.cpf), l.idade, l.solenidade ? 'Sim' : '', l.baile ? 'Sim' : '', l.policial_federal ? 'Sim' : '', origemCsv(l), l.comprador_nome || '', l.comprador_camiseta || '', l.comprador_turma ? normalizarTurma(l.comprador_turma) : '', l.comprou_convite ? 'Sim' : '', l.atendimento_especial ? 'Sim' : '', l.detalhe]);
         const csv = '﻿' + [cab].concat(linhas).map(r2 => r2.map(cvCsvCelula).join(';')).join('\r\n');
         const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
         const a = document.createElement('a'); a.href = url; a.download = 'convidados-formatura.csv';
@@ -2718,7 +2893,8 @@
         });
         cvDesenhar();
       });
-      on('conv-comprou', 'change', cvDesenhar);
+      on('btn-conv-add-comp', 'click', cvAddComprador);
+      on('conv-comprador', 'keydown', e => { if (e.key === 'Enter') { e.preventDefault(); cvAddComprador(); } });
       on('permuta-busca', 'input', () => { if (permutaCache.length) desenharPermuta(); });
       document.querySelectorAll('#permuta-filtros .chip').forEach(c => c.addEventListener('click', () => {
         permutaFiltro = c.dataset.filtro;
@@ -3546,6 +3722,7 @@
       loadAdminCriancas();
       loadAdminVotacao();
       loadAdminConvidados();
+      loadAdminTurma();
 
       try {
         const data = (await rpcOk('admin_listar_alunos', { p_user: adminCred && adminCred.user, p_hash: adminCred && adminCred.hash })).linhas;
@@ -3608,7 +3785,8 @@
       set('adm-n-form', adminData.length, 'registro', 'registros');
       set('adm-n-cri', adminCriancasData.length, 'registro', 'registros');
       set('adm-n-vot', adminVotacaoData.length, 'voto', 'votos');
-      set('adm-n-vendas', adminVendas.length, 'compra', 'compras');
+      set('adm-n-vendas', adminVendas.length, 'cadastro', 'cadastros');
+      set('adm-n-vend2', (typeof adminVend2 !== 'undefined' ? adminVend2 : []).length, 'venda', 'vendas');
       const g = new Set(adminConvData.map(l => l.camiseta)).size;
       set('adm-n-conv', g, 'formando', 'formandos');
     }
@@ -3736,23 +3914,119 @@
         const vendCam = v.vendedor_camiseta ? (v.vendedor_nome ? v.vendedor_nome + ' (camiseta ' + v.vendedor_camiseta + ')' : 'camiseta ' + v.vendedor_camiseta + ' (sem cadastro)') : '';
         const vendTxt = !g.comprou ? '' : ([v.vendedor_comissao ? 'Comissão' : '', vendCam].filter(Boolean).join(' + ') || 'não informado');
         const info = [];
-        if (g.comprou) info.push('<strong>Vendedor do convite:</strong> ' + escXml(vendTxt));
+        if (g.comprou) info.push('<strong>Cadastro antigo (comprou de outro aluno):</strong> vendedor informado ' + escXml(vendTxt) + '. Os convites comprados devem ser registrados pelo vendedor.');
         if (g.esp) info.push('<strong>Atendimento especial:</strong> ' + escXml(g.det || ''));
         const n = g.itens.length;
         const nPf = g.itens.filter(l => l.policial_federal).length;
-        const linhas = g.itens.map(l => '<tr><td>' + escXml(l.nome) + '</td><td>' + escXml(cpfFmt(l.cpf)) + '</td><td>' + (l.tipo === 'crianca' ? 'Criança (' + escXml(String(l.idade)) + ' anos)' : 'Adulto') + '</td><td>' + (l.solenidade ? '<span class="badge-sim">Sim</span>' : '<span class="badge-nao">—</span>') + '</td><td>' + (l.baile ? '<span class="badge-sim">Sim</span>' : '<span class="badge-nao">—</span>') + '</td><td>' + (l.policial_federal ? '<span class="badge-sim">Sim</span>' : '<span class="badge-nao">—</span>') + '</td></tr>').join('');
+        const linhas = g.itens.map(l => '<tr><td>' + escXml(l.nome) + '</td><td>' + escXml(cpfFmt(l.cpf)) + '</td><td>' + (l.tipo === 'crianca' ? 'Criança (' + escXml(String(l.idade)) + ' anos)' : 'Adulto') + '</td><td>' + (l.solenidade ? '<span class="badge-sim">Sim</span>' : '<span class="badge-nao">—</span>') + '</td><td>' + (l.baile ? '<span class="badge-sim">Sim</span>' : '<span class="badge-nao">—</span>') + '</td><td>' + (l.policial_federal ? '<span class="badge-sim">Sim</span>' : '<span class="badge-nao">—</span>') + '</td><td>' + (l.tipo === 'crianca' ? '—' : (l.origem === 'proprio' || !l.origem) ? 'Próprio' : (l.origem === 'comissao' ? 'Comissão → ' : 'Vendido → ') + escXml((l.comprador_nome || '') + ' (camiseta ' + (l.comprador_camiseta || '') + ')')) + '</td></tr>').join('');
         return '<details class="adm-grupo"' + (q ? ' open' : '') + '><summary><span class="adm-seta" aria-hidden="true"></span>' +
           '<span class="adm-g-nome">' + escXml(g.aluno) + '</span><span class="adm-g-meta">Turma ' + escXml(g.turma ? normalizarTurma(g.turma) : '—') + ' · Camiseta ' + escXml(g.camiseta) + '</span>' +
           '<span class="adm-chips"><span class="adm-chip ouro">' + n + (n === 1 ? ' convidado' : ' convidados') + '</span>' +
-          (nPf ? '<span class="adm-chip">' + nPf + (nPf === 1 ? ' policial federal' : ' policiais federais') + '</span>' : '') + (g.comprou ? '<span class="adm-chip">' + (v.vendedor_comissao ? 'Comissão' : 'Comprou convite') + '</span>' : '') +
+          (nPf ? '<span class="adm-chip">' + nPf + (nPf === 1 ? ' policial federal' : ' policiais federais') + '</span>' : '') + (g.itens.some(l => l.origem && l.origem !== 'proprio') ? '<span class="adm-chip">Vendeu ' + g.itens.filter(l => l.origem && l.origem !== 'proprio').length + '</span>' : '') + (g.comprou ? '<span class="adm-chip aviso">Cadastro antigo a regularizar</span>' : '') +
           (g.esp ? '<span class="adm-chip aviso">Atendimento especial</span>' : '') + '</span></summary>' +
           '<div class="adm-grupo-corpo">' + (info.length ? '<p class="adm-grupo-info">' + info.join('<br>') + '</p>' : '') +
-          '<div class="adm-rolagem"><table class="admin-table"><thead><tr><th>Convidado</th><th>CPF</th><th>Tipo</th><th>Solenidade</th><th>Baile</th><th>Policial federal</th></tr></thead><tbody>' + linhas + '</tbody></table></div></div></details>';
+          '<div class="adm-rolagem"><table class="admin-table"><thead><tr><th>Convidado</th><th>CPF</th><th>Tipo</th><th>Solenidade</th><th>Baile</th><th>Policial federal</th><th>Convite</th></tr></thead><tbody>' + linhas + '</tbody></table></div></div></details>';
       }).join('');
     }
+    let adminTurmaData = [];
+    function admTurmaSel() { return document.getElementById('adm-turma-sel').value || 'todas'; }
+    function admTurmaFiltra() {
+      const t = admTurmaSel();
+      return adminTurmaData.filter(a => t === 'todas' || (t === 'sem' ? !a.turma : a.turma === t));
+    }
+    function admTurmaSituacao(a) { return a.salvou ? (a.legado_comprou ? 'Cadastrou (antigo, a regularizar)' : 'Cadastrou') : 'Pendente'; }
+    function admTurmaNomeSel() { const t = admTurmaSel(); return t === 'todas' ? 'Todas as turmas' : t === 'sem' ? 'Sem turma' : 'Turma ' + t; }
+    function renderAdminTurma() {
+      const sel = document.getElementById('adm-turma-sel');
+      if (!sel.options.length) {
+        sel.innerHTML = '<option value="todas">Todas as turmas</option>' + TURMAS.map(t => '<option value="' + t + '">Turma ' + t + '</option>').join('') + '<option value="sem">Sem turma</option>';
+      }
+      const lista = admTurmaFiltra();
+      const feitos = lista.filter(a => a.salvou).length, pend = lista.length - feitos;
+      const soma = k => lista.reduce((n, a) => n + Number(a[k] || 0), 0);
+      document.getElementById('adm-turma-kpis').innerHTML =
+        statCard('Formandos', lista.length, 'var(--pf-gold)') +
+        statCard('Já cadastraram', feitos, 'var(--pf-gold-bright)') +
+        statCard('Pendentes', pend, '#e5c866') +
+        statCard('Convidados solenidade', soma('sol') + soma('vendidos'), 'var(--pf-gold)') +
+        statCard('Convidados baile', soma('bai'), 'var(--pf-gold)') +
+        statCard('Crianças', soma('cri'), 'var(--pf-gold)');
+      const tb = document.getElementById('adm-turma-tbody');
+      if (!lista.length) { tb.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:24px;color:#8e9bb0">Nenhum formando nesta seleção.</td></tr>'; return; }
+      const ordem = lista.slice().sort((x, y) => (x.salvou - y.salvou) || String(x.nome).localeCompare(String(y.nome), 'pt-BR'));
+      tb.innerHTML = ordem.map(a => {
+        const turma = a.turma ? escXml(a.turma) : '<span class="adm-turma-def"><label class="sr-only" for="adm-def-' + escXml(a.camiseta) + '">Turma de ' + escXml(a.nome) + '</label><select class="campo-select" id="adm-def-' + escXml(a.camiseta) + '"><option value="">—</option>' + TURMAS.map(t => '<option>' + t + '</option>').join('') + '</select><button type="button" class="adm-mini" data-def-turma="' + escXml(a.camiseta) + '">Salvar</button></span>';
+        const sit = admTurmaSituacao(a);
+        return '<tr><td style="font-weight:600">' + escXml(a.nome) + '</td><td>' + escXml(a.camiseta) + '</td><td>' + turma + '</td>' +
+          '<td>' + (a.salvou ? '<span class="badge-sim">' + escXml(sit) + '</span>' : '<span class="badge-nao">Pendente</span>') + '</td>' +
+          '<td>' + Number(a.sol || 0) + (a.pf ? ' <small style="color:#8e9bb0">+' + a.pf + ' PF</small>' : '') + '</td><td>' + Number(a.bai || 0) + '</td><td>' + Number(a.cri || 0) + '</td><td>' + Number(a.vendidos || 0) + '</td><td>' + Number(a.recebidos || 0) + '</td></tr>';
+      }).join('');
+    }
+    async function loadAdminTurma() {
+      if (!adminCred) return;
+      try {
+        const r = await rpcOk('admin_por_turma', { p_user: adminCred.user, p_hash: adminCred.hash });
+        adminTurmaData = r.linhas || [];
+        renderAdminTurma();
+      } catch (e) {
+        document.getElementById('adm-turma-tbody').innerHTML = '<tr><td colspan="9" style="text-align:center;padding:24px;color:#d9a3a3">Não foi possível carregar. Tente atualizar.</td></tr>';
+      }
+    }
+    async function admCopiarTexto(txt) {
+      try { await navigator.clipboard.writeText(txt); return true; } catch (e) {
+        const ta = document.createElement('textarea'); ta.value = txt; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (e2) {} ta.remove(); return ok;
+      }
+    }
+    document.addEventListener('change', e => { if (e.target && e.target.id === 'adm-turma-sel') renderAdminTurma(); });
+    document.addEventListener('click', async e => {
+      const t = e.target.closest && e.target.closest('#btn-adm-turma-copiar, #btn-adm-turma-atualizar, #btn-adm-turma-csv, [data-def-turma]');
+      if (!t) return;
+      if (t.id === 'btn-adm-turma-atualizar') { loadAdminTurma(); return; }
+      const lista = admTurmaFiltra();
+      if (t.id === 'btn-adm-turma-copiar') {
+        const pend = lista.filter(a => !a.salvou).sort((x, y) => String(x.nome).localeCompare(String(y.nome), 'pt-BR'));
+        if (!pend.length) { showToast('Ninguém pendente nesta seleção.', 'success'); return; }
+        const txt = admTurmaNomeSel() + ': faltam cadastrar os convidados (' + pend.length + ')\n' + pend.map(a => '- ' + a.nome + ' (camiseta ' + a.camiseta + ')').join('\n');
+        showToast(await admCopiarTexto(txt) ? 'Lista de pendentes copiada (' + pend.length + ').' : 'Não foi possível copiar.', 'success');
+        return;
+      }
+      if (t.id === 'btn-adm-turma-csv') {
+        if (!lista.length) { showToast('Nenhum formando nesta seleção.', 'error'); return; }
+        const cab = ['Turma', 'Formando', 'Camiseta', 'Situação', 'Convidados solenidade', 'Policiais federais', 'Convidados baile', 'Crianças', 'Convidados de convites vendidos', 'Convidados recebidos (comprou)', 'Última atualização'];
+        const linhas = lista.map(a => [a.turma || 'Sem turma', a.nome, a.camiseta, admTurmaSituacao(a), a.sol, a.pf, a.bai, a.cri, a.vendidos, a.recebidos, a.atualizado_em ? new Date(a.atualizado_em).toLocaleString('pt-BR') : '']);
+        const csv = '﻿' + [cab].concat(linhas).map(r2 => r2.map(cvCsvCelula).join(';')).join('\r\n');
+        const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+        const a = document.createElement('a'); a.href = url; a.download = 'convidados-' + admTurmaNomeSel().toLowerCase().replace(/\s+/g, '-') + '.csv';
+        document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 2000);
+        return;
+      }
+      const cam = t.getAttribute('data-def-turma');
+      const sel = document.getElementById('adm-def-' + cam);
+      if (!sel || !sel.value) { showToast('Escolha a turma.', 'error'); return; }
+      t.disabled = true;
+      try {
+        await rpcOk('admin_definir_turma', { p_user: adminCred && adminCred.user, p_hash: adminCred && adminCred.hash, p_matricula: cam, p_turma: sel.value });
+        const a = adminTurmaData.find(x => x.camiseta === cam); if (a) a.turma = sel.value;
+        showToast('Turma salva.', 'success'); renderAdminTurma();
+      } catch (err) { showToast(mensagemErro(err, 'Não foi possível salvar a turma.'), 'error'); t.disabled = false; }
+    });
+    function renderAdminVend2() {
+      const tb = document.getElementById('admin-tbody-vend2');
+      const m = new Map();
+      adminConvData.filter(l => l.origem && l.origem !== 'proprio').forEach(l => {
+        const k = l.camiseta + '|' + l.comprador_camiseta;
+        if (!m.has(k)) m.set(k, { vend: l.aluno, vcam: l.camiseta, comp: l.comprador_nome, ccam: l.comprador_camiseta, cturma: l.comprador_turma, comissao: l.origem === 'comissao', n: 0 });
+        m.get(k).n += 1;
+      });
+      adminVend2 = Array.from(m.values());
+      if (!adminVend2.length) { tb.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:#8e9bb0">Nenhum convite vendido registrado até agora.</td></tr>'; return; }
+      tb.innerHTML = adminVend2.map(v => '<tr><td>' + escXml(v.vend) + (v.comissao ? ' <span class="badge-sim">Comissão</span>' : '') + '</td><td>' + escXml(v.vcam) + '</td><td>' + escXml(v.comp || '') + '</td><td>' + escXml(v.ccam || '') + '</td><td>' + escXml(v.cturma ? normalizarTurma(v.cturma) : '—') + '</td><td>' + v.n + '</td></tr>').join('');
+    }
+    let adminVend2 = [];
     function renderAdminVendas() {
       const tb = document.getElementById('admin-tbody-vendas');
-      if (!adminVendas.length) { tb.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:#8e9bb0">Nenhum convite comprado de outro aluno até agora.</td></tr>'; return; }
+      if (!adminVendas.length) { tb.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:#8e9bb0">Nenhum cadastro antigo a regularizar. Nenhum convite comprado de outro aluno até agora.</td></tr>'; return; }
       tb.innerHTML = adminVendas.map(v => '<tr><td>' + escXml(v.comprador_turma ? normalizarTurma(v.comprador_turma) : '—') + '</td><td>' + escXml(v.comprador) + '</td><td>' + escXml(v.comprador_camiseta) + '</td>' +
         '<td>' + (v.comissao ? '<span class="badge-sim">Comissão</span>' + (v.vendedor ? ' ' + escXml(v.vendedor) : '') : v.vendedor_camiseta ? (v.vendedor ? escXml(v.vendedor) : '<span class="badge-nao">Sem cadastro</span>') : '<span class="badge-nao">Não informado</span>') + '</td>' +
         '<td>' + escXml(v.vendedor_camiseta || '—') + '</td><td>' + Number(v.convidados || 0) + '</td></tr>').join('');
@@ -3777,18 +4051,18 @@
           statCard('Policiais federais (fora da conta)', pfn, 'var(--pf-gold)') +
           statCard('Crianças', cri, 'var(--pf-gold)') +
           statCard('Atendimento Especial', (r.atendimentos || []).length, '#e5c866') +
-          statCard('Compraram convite', comprou, 'var(--pf-gold-dim)') +
-          statCard('Pela comissão', adminVendas.filter(v => v.comissao).length, 'var(--pf-gold-dim)') +
-          statCard('Sem vendedor informado', adminVendas.filter(v => !v.comissao && !v.vendedor_camiseta).length, '#e5c866');
-        renderAdminConv(); renderAdminVendas(); admContar();
+          statCard('Convidados de convites vendidos', adminConvData.filter(l => l.origem === 'vendido').length, 'var(--pf-gold-dim)') +
+          statCard('Vendidos pela comissão', adminConvData.filter(l => l.origem === 'comissao').length, 'var(--pf-gold-dim)') +
+          statCard('Cadastros antigos a regularizar', adminVendas.length, '#e5c866');
+        renderAdminConv(); renderAdminVendas(); renderAdminVend2(); admContar();
       } catch (e) {
         tbody.innerHTML = '<p class="adm-vazio" style="color:#d9a3a3">Erro ao carregar os convidados. Tente atualizar.</p>';
       }
     }
     function baixarCsvConvidadosAdmin() {
       if (!adminConvData.length) { showToast('Não há convidados para baixar.', 'error'); return; }
-      const cab = ['Turma', 'Formando', 'Camiseta', 'Tipo', 'Convidado', 'CPF', 'Idade', 'Solenidade', 'Baile', 'Policial federal', 'Comprou convite de outro aluno', 'Vendedor do convite', 'Camiseta do vendedor', 'Atendimento especial', 'Detalhe'];
-      const linhas = adminConvData.map(l => [l.turma ? normalizarTurma(l.turma) : '', l.aluno, l.camiseta, l.tipo === 'crianca' ? 'Criança' : 'Adulto', l.nome, cpfFmt(l.cpf), l.idade, l.solenidade ? 'Sim' : '', l.baile ? 'Sim' : '', l.policial_federal ? 'Sim' : '', l.comprou_convite ? 'Sim' : '', vendedorNomeCsv(l), vendedorCamCsv(l), l.atendimento_especial ? 'Sim' : '', l.detalhe]);
+      const cab = ['Turma', 'Formando responsável', 'Camiseta', 'Tipo', 'Convidado', 'CPF', 'Idade', 'Solenidade', 'Baile', 'Policial federal', 'Convite', 'Comprador', 'Camiseta do comprador', 'Turma do comprador', 'Cadastro antigo a regularizar', 'Atendimento especial', 'Detalhe'];
+      const linhas = adminConvData.map(l => [l.turma ? normalizarTurma(l.turma) : '', l.aluno, l.camiseta, l.tipo === 'crianca' ? 'Criança' : 'Adulto', l.nome, cpfFmt(l.cpf), l.idade, l.solenidade ? 'Sim' : '', l.baile ? 'Sim' : '', l.policial_federal ? 'Sim' : '', origemCsv(l), l.comprador_nome || '', l.comprador_camiseta || '', l.comprador_turma ? normalizarTurma(l.comprador_turma) : '', l.comprou_convite ? 'Sim' : '', l.atendimento_especial ? 'Sim' : '', l.detalhe]);
       const csv = '\uFEFF' + [cab].concat(linhas).map(r2 => r2.map(cvCsvCelula).join(';')).join('\r\n');
       const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
       const a = document.createElement('a'); a.href = url; a.download = 'convidados-formatura.csv';
