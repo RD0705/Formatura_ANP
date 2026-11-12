@@ -400,6 +400,8 @@
     #view-convidados .card .hint.mb-16 { margin-bottom: 10px; }
     .cv-topo { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
     .cv-contagem { font-size: 13px; color: var(--pf-gold); font-weight: 600; white-space: nowrap; }
+    .cv-contagem.acima { color: #e8a0a0; }
+    .cv-acima { color: #e8a0a0; font-weight: 600; }
     .cv-add { margin-top: 8px; min-height: 40px; padding: 8px 14px; font-size: 13px; }
     .cv-dados { display: grid; grid-template-columns: minmax(0, 1fr) 200px; gap: 10px; align-items: end; margin-top: 10px; }
     .cv-dados .hint-small { grid-column: 1 / -1; margin: 0; }
@@ -1429,6 +1431,7 @@
           <p class="hint" id="conv-sol-hint"></p>
           <div id="conv-lista-sol"></div>
           <button type="button" id="btn-conv-add-sol" class="btn btn-secondary cv-add">Adicionar convidado</button>
+          <button type="button" id="btn-conv-add-sol-pf" class="btn btn-secondary cv-add" hidden>Adicionar policial federal</button>
           <hr class="cv-div">
           <div class="cv-topo"><h3>Baile</h3><span class="cv-contagem" id="conv-bai-cont"></span></div>
           <p class="hint" id="conv-bai-hint"></p>
@@ -2586,11 +2589,17 @@
         const add = document.getElementById('btn-conv-add-' + l);
         const lim = cvLimite(l);
         const usados = cvConta(l), nPf = l === 'sol' ? CV.sol.length - usados : 0;
-        // policiais federais não entram no limite da solenidade: o botão só trava no teto da lista (80)
-        const cheio = l === 'sol' ? CV.sol.length >= 80 : usados >= lim;
+        // solenidade: trava ao chegar no limite; policiais federais (fora da conta) entram pelo botão próprio
+        const cheio = l === 'sol' ? (usados >= lim || CV.sol.length >= 80) : usados >= lim;
         add.disabled = cheio;
-        add.textContent = cheio && l !== 'cri' ? 'Limite atingido' : (l === 'cri' ? 'Adicionar criança' : 'Adicionar convidado');
+        add.textContent = !cheio ? (l === 'cri' ? 'Adicionar criança' : 'Adicionar convidado')
+          : l === 'sol' ? (lim ? 'Seus ' + lim + ' convites já foram usados' : 'Sem convites disponíveis') : l === 'cri' ? 'Limite atingido' : 'Limite atingido';
+        if (l === 'sol') {
+          const addPf = document.getElementById('btn-conv-add-sol-pf');
+          addPf.hidden = !(cheio && CV.sol.length < 80);
+        }
         const cont = document.getElementById('conv-' + l + '-cont');
+        if (cont) cont.classList.toggle('acima', l === 'sol' && usados > lim);
         if (cont) cont.textContent = (lim && l !== 'bai' ? usados + ' de ' + lim : usados + ' cadastrado' + (usados === 1 ? '' : 's')) + (nPf ? ' + ' + nPf + (nPf === 1 ? ' policial federal' : ' policiais federais') : '');
       });
       const a = CV.aluno;
@@ -2598,6 +2607,12 @@
       const nv = cvVendidosConta();
       sh.textContent = !a.solenidade ? 'Você não está inscrito na solenidade. Atualize o Registro para cadastrar convidados.'
         : 'Até 4 convidados por formando' + (nv ? ' (você vendeu ' + nv + ', então sobram ' + Math.max(0, 4 - nv) + ' para os seus)' : '') + '. Convidados que já são policiais federais não entram nesse limite: marque a opção na linha deles.';
+      const acima = cvConta('sol') - cvLimite('sol');
+      if (a.solenidade && acima > 0) {
+        const w = document.createElement('span'); w.className = 'cv-acima'; w.style.display = 'block'; w.style.marginTop = '4px';
+        w.textContent = 'Você está ' + acima + (acima === 1 ? ' convidado' : ' convidados') + ' acima do limite. Remova antes de salvar.';
+        sh.appendChild(w);
+      }
       cvDesenharVendidos();
       bh.textContent = 'Cadastre quantos convidados quiser: os convites do baile são vendidos à parte.';
       document.getElementById('btn-conv-copiar').disabled = !CV.sol.length || CV.bai.length >= cvLimite('bai');
@@ -2887,7 +2902,8 @@
       on('btn-conv-turma', 'click', cvSalvarTurma);
       on('btn-conv-salvar', 'click', cvSalvar);
       on('btn-conv-export', 'click', cvExportar);
-      on('btn-conv-add-sol', 'click', () => { if (CV.sol.length < 80) { const it = cvNovo('sol'); cvDesenhar(); const el = document.getElementById('cv-sol-' + it.k + '-nome'); if (el) el.focus(); } });
+      on('btn-conv-add-sol-pf', 'click', () => { if (CV.sol.length < 80) { const it = cvNovo('sol', { pf: true }); cvDesenhar(); const el = document.getElementById('cv-sol-' + it.k + '-nome'); if (el) el.focus(); } });
+      on('btn-conv-add-sol', 'click', () => { if (CV.sol.length < 80 && cvConta('sol') < cvLimite('sol')) { const it = cvNovo('sol'); cvDesenhar(); const el = document.getElementById('cv-sol-' + it.k + '-nome'); if (el) el.focus(); } });
       on('btn-conv-add-bai', 'click', () => { if (CV.bai.length < cvLimite('bai')) { const it = cvNovo('bai'); cvDesenhar(); const el = document.getElementById('cv-bai-' + it.k + '-nome'); if (el) el.focus(); } });
       on('btn-conv-add-cri', 'click', () => { if (CV.cri.length < cvLimite('cri')) { const it = cvNovo('cri'); cvDesenhar(); const el = document.getElementById('cv-cri-' + it.k + '-nome'); if (el) el.focus(); } });
       on('btn-conv-copiar', 'click', () => {
