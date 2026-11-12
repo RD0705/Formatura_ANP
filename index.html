@@ -1449,7 +1449,7 @@
               <input type="text" id="conv-comprador" autocomplete="off" inputmode="numeric" placeholder="Ex: 123" style="max-width: 200px;">
               <button type="button" id="btn-conv-add-comp" class="btn btn-secondary">Adicionar comprador</button>
             </div>
-            <label class="cv-check mt-12"><input type="checkbox" id="conv-comp-comissao"> <span>Convite vendido pela comissão <span class="hint-small" style="display:block;">Só para membros da comissão. Não conta nos seus 4 convites e pede o código da comissão.</span></span></label>
+            <label class="cv-check mt-12"><input type="checkbox" id="conv-comp-comissao"> <span>Convite vendido pela comissão <span class="hint-small" style="display:block;">Só para membros da comissão. Não conta nos seus 4 convites e pede o código da comissão no campo próprio, abaixo. No campo da camiseta vai sempre a camiseta de quem comprou; se o convite extra é seu, use a sua própria camiseta.</span></span></label>
           </div>
           <div id="conv-codigo-box" class="cv-vendedor" hidden>
             <label for="conv-codigo" class="rotulo rotulo-p">Código da comissão</label>
@@ -2470,7 +2470,9 @@
       limite_solenidade: 'Passou dos seus 4 convites da solenidade: seus convidados mais os convites que você vendeu somam mais de 4.',
       turma_obrigatoria: 'Selecione e salve a sua turma antes de salvar os convidados.',
       comprador_obrigatorio: 'Informe a camiseta de quem comprou.',
-      comprador_proprio: 'A camiseta de quem comprou não pode ser a sua.',
+      comprador_proprio: 'A camiseta de quem comprou não pode ser a sua. Se for um convite extra da comissão para você, marque "Convite vendido pela comissão".',
+      comprador_e_codigo: 'Esse é o código da comissão. Aqui vai a camiseta de quem comprou; o código vai no campo "Código da comissão".',
+      cpf_repetido_solenidade: 'Este convidado já está na sua solenidade. Um convidado só pode ter um convite da solenidade.',
       comprador_invalido: 'Não encontramos essa camiseta de comprador no cadastro (ou a inscrição está cancelada).',
       comprador_repetido: 'Esse comprador já está na lista.',
       codigo_comissao_invalido: 'Código da comissão incorreto.',
@@ -2654,7 +2656,7 @@
       if (!CV.ven.length) { const p = document.createElement('p'); p.className = 'hint-small cv-vazio'; p.textContent = 'Nenhum convite vendido registrado.'; box.appendChild(p); }
       const nTot = CV.ven.reduce((n, b) => n + b.itens.length, 0), nv = cvVendidosConta();
       document.getElementById('conv-ven-cont').textContent = nTot ? nTot + (nTot === 1 ? ' convidado' : ' convidados') + (nv ? ' · usa ' + nv + ' dos seus 4' : '') : '';
-      document.getElementById('conv-codigo-box').hidden = !CV.ven.some(b => b.comissao);
+      document.getElementById('conv-codigo-box').hidden = !(CV.ven.some(b => b.comissao) || document.getElementById('conv-comp-comissao').checked);
       const rec = CV.rec || [];
       document.getElementById('conv-card-recebidos').hidden = !rec.length;
       const rbox = document.getElementById('conv-lista-rec'); rbox.textContent = '';
@@ -2682,7 +2684,8 @@
         if (!r || r.erro) { erroCampo('conv-comprador', ERROS_CV[r && r.erro] || 'Não foi possível conferir o comprador.'); return; }
         if (CV.ven.some(b => b.comprador === r.camiseta)) { erroCampo('conv-comprador', ERROS_CV.comprador_repetido); return; }
         const comissao = document.getElementById('conv-comp-comissao').checked;
-        const b = { comprador: r.camiseta, nome: r.nome, turma: r.turma, comissao: comissao, itens: [] };
+        if (r.proprio && !comissao) { erroCampo('conv-comprador', ERROS_CV.comprador_proprio); return; }
+        const b = { comprador: r.camiseta, nome: r.proprio ? 'Você (convite extra da comissão)' : r.nome, turma: r.turma, comissao: comissao, itens: [] };
         CV.ven.push(b);
         const it = cvNovoVend(b);
         inp.value = ''; document.getElementById('conv-comp-comissao').checked = false;
@@ -2809,6 +2812,7 @@
       if (!CV.aluno.turma) { erroCampo('conv-turma', ERROS_CV.turma_obrigatoria); return; }
       // convites da solenidade vendidos
       const vendidos = [];
+      const cpfsVend = {};
       CV.ven.forEach(b => {
         if (erro) return;
         const conv = [];
@@ -2819,7 +2823,9 @@
           if (!it.id && !String(it.nome || '').trim() && !digitos) return;
           if (String(it.nome || '').trim().length < 2) { erro = [pref + '-nome', 'Informe o nome do convidado.']; return; }
           if (!it.id && !cpfValido(digitos)) { erro = [pref + '-cpf', 'CPF inválido. Confira os números.']; return; }
-          if (!it.id && porChave[digitos]) { erro = [pref + '-cpf', 'Este CPF já está na sua lista.']; return; }
+          if (!it.id && porChave[digitos] && porChave[digitos].solenidade) { erro = [pref + '-cpf', ERROS_CV.cpf_repetido_solenidade]; return; }
+          if (!it.id && cpfsVend[digitos]) { erro = [pref + '-cpf', 'Este CPF já está em outro convite vendido.']; return; }
+          if (!it.id) cpfsVend[digitos] = true;
           conv.push({ id: it.id || undefined, nome: String(it.nome).trim(), cpf: it.id ? undefined : digitos, pf: !!it.pf });
         });
         vendidos.push({ comprador: b.comprador, comissao: !!b.comissao, convidados: conv });
@@ -2894,6 +2900,7 @@
         cvDesenhar();
       });
       on('btn-conv-add-comp', 'click', cvAddComprador);
+      on('conv-comp-comissao', 'change', () => { document.getElementById('conv-codigo-box').hidden = !(document.getElementById('conv-comp-comissao').checked || CV.ven.some(b => b.comissao)); });
       on('conv-comprador', 'keydown', e => { if (e.key === 'Enter') { e.preventDefault(); cvAddComprador(); } });
       on('permuta-busca', 'input', () => { if (permutaCache.length) desenharPermuta(); });
       document.querySelectorAll('#permuta-filtros .chip').forEach(c => c.addEventListener('click', () => {
