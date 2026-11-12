@@ -1457,9 +1457,9 @@
           </div>
         </div>
 
-        <div class="card" id="conv-card-recebidos" hidden>
+        <div class="card" id="conv-card-recebidos">
           <h3>Convites que você comprou</h3>
-          <p class="hint">Estes convidados da solenidade foram registrados por quem vendeu o convite para você. Para corrigir algo, fale com essa pessoa.</p>
+          <p class="hint">Comprou convite da solenidade de outro aluno? Aqui aparecem os convidados que quem vendeu já registrou para você. Para incluir ou corrigir alguém, fale com essa pessoa.</p>
           <div id="conv-lista-rec"></div>
         </div>
 
@@ -2658,8 +2658,8 @@
       document.getElementById('conv-ven-cont').textContent = nTot ? nTot + (nTot === 1 ? ' convidado' : ' convidados') + (nv ? ' · usa ' + nv + ' dos seus 4' : '') : '';
       document.getElementById('conv-codigo-box').hidden = !(CV.ven.some(b => b.comissao) || document.getElementById('conv-comp-comissao').checked);
       const rec = CV.rec || [];
-      document.getElementById('conv-card-recebidos').hidden = !rec.length;
       const rbox = document.getElementById('conv-lista-rec'); rbox.textContent = '';
+      if (!rec.length) { const p = document.createElement('p'); p.className = 'hint-small cv-vazio'; p.textContent = 'Nenhum convidado registrado para você até agora. Se você comprou convite, quem vendeu ainda não cadastrou: peça para ele registrar na aba Convidados dele, em "Convites da solenidade que vendi", com a sua camiseta.'; rbox.appendChild(p); }
       rec.forEach(x => {
         const d = document.createElement('div'); d.className = 'cv-rec';
         d.textContent = x.nome + ' · CPF ' + x.cpf_mascarado + (x.pf ? ' · policial federal' : '');
