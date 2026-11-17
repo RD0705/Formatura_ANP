@@ -1687,8 +1687,8 @@
             <div id="adm-turma-kpis" class="adm-kpis"></div>
             <div class="adm-rolagem">
               <table class="admin-table">
-                <thead><tr><th>Formando</th><th>Camiseta</th><th>Turma</th><th>Situação</th><th>Solenidade</th><th>Baile</th><th>Crianças</th><th>Vendidos</th><th>Comprados</th></tr></thead>
-                <tbody id="adm-turma-tbody"><tr><td colspan="9" style="text-align:center;padding:24px;color:#8e9bb0">Carregando...</td></tr></tbody>
+                <thead><tr><th>Formando</th><th>Camiseta</th><th>Turma</th><th>Situação</th><th>Ingressos solenidade</th><th>Ingressos baile</th></tr></thead>
+                <tbody id="adm-turma-tbody"><tr><td colspan="6" style="text-align:center;padding:24px;color:#8e9bb0">Carregando...</td></tr></tbody>
               </table>
             </div>
           </section>
@@ -3971,18 +3971,17 @@
         statCard('Formandos', lista.length, 'var(--pf-gold)') +
         statCard('Já cadastraram', feitos, 'var(--pf-gold-bright)') +
         statCard('Pendentes', pend, '#e5c866') +
-        statCard('Convidados solenidade', soma('sol') + soma('vendidos'), 'var(--pf-gold)') +
-        statCard('Convidados baile', soma('bai'), 'var(--pf-gold)') +
-        statCard('Crianças', soma('cri'), 'var(--pf-gold)');
+        statCard('Ingressos solenidade', soma('sol') + soma('vendidos'), 'var(--pf-gold)') +
+        statCard('Ingressos baile', soma('bai'), 'var(--pf-gold)');
       const tb = document.getElementById('adm-turma-tbody');
-      if (!lista.length) { tb.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:24px;color:#8e9bb0">Nenhum formando nesta seleção.</td></tr>'; return; }
+      if (!lista.length) { tb.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:#8e9bb0">Nenhum formando nesta seleção.</td></tr>'; return; }
       const ordem = lista.slice().sort((x, y) => (x.salvou - y.salvou) || String(x.nome).localeCompare(String(y.nome), 'pt-BR'));
       tb.innerHTML = ordem.map(a => {
         const turma = a.turma ? escXml(a.turma) : '<span class="adm-turma-def"><label class="sr-only" for="adm-def-' + escXml(a.camiseta) + '">Turma de ' + escXml(a.nome) + '</label><select class="campo-select" id="adm-def-' + escXml(a.camiseta) + '"><option value="">—</option>' + TURMAS.map(t => '<option>' + t + '</option>').join('') + '</select><button type="button" class="adm-mini" data-def-turma="' + escXml(a.camiseta) + '">Salvar</button></span>';
         const sit = admTurmaSituacao(a);
         return '<tr><td style="font-weight:600">' + escXml(a.nome) + '</td><td>' + escXml(a.camiseta) + '</td><td>' + turma + '</td>' +
           '<td>' + (a.salvou ? '<span class="badge-sim">' + escXml(sit) + '</span>' : '<span class="badge-nao">Pendente</span>') + '</td>' +
-          '<td>' + Number(a.sol || 0) + (a.pf ? ' <small style="color:#8e9bb0">+' + a.pf + ' PF</small>' : '') + '</td><td>' + Number(a.bai || 0) + '</td><td>' + Number(a.cri || 0) + '</td><td>' + Number(a.vendidos || 0) + '</td><td>' + Number(a.recebidos || 0) + '</td></tr>';
+          '<td>' + (Number(a.sol || 0) + Number(a.vendidos || 0)) + '</td><td>' + Number(a.bai || 0) + '</td></tr>';
       }).join('');
     }
     async function loadAdminTurma() {
@@ -3992,7 +3991,7 @@
         adminTurmaData = r.linhas || [];
         renderAdminTurma();
       } catch (e) {
-        document.getElementById('adm-turma-tbody').innerHTML = '<tr><td colspan="9" style="text-align:center;padding:24px;color:#d9a3a3">Não foi possível carregar. Tente atualizar.</td></tr>';
+        document.getElementById('adm-turma-tbody').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:#d9a3a3">Não foi possível carregar. Tente atualizar.</td></tr>';
       }
     }
     async function admCopiarTexto(txt) {
@@ -4016,8 +4015,10 @@
       }
       if (t.id === 'btn-adm-turma-csv') {
         if (!lista.length) { showToast('Nenhum formando nesta seleção.', 'error'); return; }
-        const cab = ['Turma', 'Formando', 'Camiseta', 'Situação', 'Convidados solenidade', 'Policiais federais', 'Convidados baile', 'Crianças', 'Convidados de convites vendidos', 'Convidados recebidos (comprou)', 'Última atualização'];
-        const linhas = lista.map(a => [a.turma || 'Sem turma', a.nome, a.camiseta, admTurmaSituacao(a), a.sol, a.pf, a.bai, a.cri, a.vendidos, a.recebidos, a.atualizado_em ? new Date(a.atualizado_em).toLocaleString('pt-BR') : '']);
+        const cab = ['Turma', 'Formando', 'Camiseta', 'Situação', 'Ingressos solenidade', 'Ingressos baile'];
+        const linhas = lista.map(a => [a.turma || 'Sem turma', a.nome, a.camiseta, admTurmaSituacao(a), Number(a.sol || 0) + Number(a.vendidos || 0), Number(a.bai || 0)]);
+        const tot = ['Total', lista.length + ' formandos', '', '', linhas.reduce((n, l) => n + l[4], 0), linhas.reduce((n, l) => n + l[5], 0)];
+        linhas.push(tot);
         const csv = '﻿' + [cab].concat(linhas).map(r2 => r2.map(cvCsvCelula).join(';')).join('\r\n');
         const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
         const a = document.createElement('a'); a.href = url; a.download = 'convidados-' + admTurmaNomeSel().toLowerCase().replace(/\s+/g, '-') + '.csv';
