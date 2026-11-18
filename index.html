@@ -4342,19 +4342,26 @@
     async function loadAdminVotacao() {
       const tbody = document.getElementById('admin-tbody-vot');
       try {
-        const data = (await rpcOk('admin_listar_votacao_musical', { p_user: adminCred && adminCred.user, p_hash: adminCred && adminCred.hash })).linhas;
+        const resp = await rpcOk('admin_listar_votacao_musical', { p_user: adminCred && adminCred.user, p_hash: adminCred && adminCred.hash });
+        const data = resp.linhas;
+        // ajustes manuais (só no painel): votos somados por estilo, além dos votos registrados no site
+        const ajustes = Array.isArray(resp.ajustes) ? resp.ajustes : [];
         adminVotacaoData = data || [];
         admContar();
-        { const ct = {}; adminVotacaoData.forEach(d => { ct[d.estilo_musical] = (ct[d.estilo_musical] || 0) + 1; }); const top = Object.entries(ct).sort((a, b) => b[1] - a[1])[0];
-          document.getElementById('admin-stats-vot').innerHTML = statCard('Votos', adminVotacaoData.length, 'var(--pf-gold)') + statCard('Estilos votados', Object.keys(ct).length, 'var(--pf-gold)') + (top ? statCard('Mais votado', escXml(top[0]), 'var(--pf-gold-bright)') : ''); }
+        const estilos = {};
+        adminVotacaoData.forEach(d => { estilos[d.estilo_musical] = (estilos[d.estilo_musical] || 0) + 1; });
+        let totalAj = 0;
+        ajustes.forEach(a => { const v = Number(a.votos) || 0; estilos[a.estilo_musical] = (estilos[a.estilo_musical] || 0) + v; totalAj += v; });
+        const totalVot = adminVotacaoData.length + totalAj;
+        { const top = Object.entries(estilos).sort((a, b) => b[1] - a[1])[0];
+          document.getElementById('admin-stats-vot').innerHTML = statCard('Votos', totalVot, 'var(--pf-gold)') + statCard('Estilos votados', Object.keys(estilos).length, 'var(--pf-gold)') + (top ? statCard('Mais votado', escXml(top[0]), 'var(--pf-gold-bright)') : ''); }
 
         // Votos Chart
-        const estilos = {};
-        adminVotacaoData.forEach(d => {
-          const e = d.estilo_musical;
-          estilos[e] = (estilos[e] || 0) + 1;
-        });
-        renderBarChart('admin-chart-votacao', estilos, 'var(--pf-gold)', adminVotacaoData.length);
+        renderBarChart('admin-chart-votacao', estilos, 'var(--pf-gold)', totalVot);
+        { let nota = document.getElementById('admin-vot-ajuste');
+          if (!nota) { nota = document.createElement('p'); nota.id = 'admin-vot-ajuste'; nota.className = 'hint-small'; document.getElementById('admin-chart-votacao').insertAdjacentElement('afterend', nota); }
+          nota.textContent = ajustes.length ? 'Inclui votos somados manualmente: ' + ajustes.map(a => a.estilo_musical + ' +' + a.votos).join(', ') + '.' : '';
+          nota.hidden = !ajustes.length; }
 
         // Table
         if (adminVotacaoData.length === 0) {
