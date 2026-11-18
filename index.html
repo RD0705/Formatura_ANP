@@ -423,6 +423,7 @@
     .cv-bloco-topo strong { color: var(--pf-text); font-size: 14px; }
     .cv-bloco-topo small { color: var(--pf-muted); font-size: 12px; display: block; font-weight: 400; }
     .cv-bloco-com { margin: 2px 0 8px; font-size: 13px; }
+    .cv-comp-botoes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
     .cv-tag { display: inline-block; font-size: 11px; font-weight: 700; color: var(--pf-gold-bright); border: 1px solid var(--pf-gold-dim); border-radius: 999px; padding: 1px 8px; margin-left: 6px; vertical-align: middle; }
     .cv-rec { padding: 8px 0; border-top: 1px solid var(--pf-border); font-size: 14px; }
     .cv-rec:first-child { border-top: 0; }
@@ -1447,17 +1448,18 @@
           <div class="cv-topo"><h3>Convites da solenidade que vendi</h3><span class="cv-contagem" id="conv-ven-cont"></span></div>
           <p class="hint">Vendeu convite da solenidade para outro aluno? Registre aqui os convidados dele: você fica responsável por eles na lista enviada à ANP. Cada convite vendido sai dos seus 4.</p>
           <div id="conv-lista-ven"></div>
-          <div class="cv-novo-comp">
-            <label for="conv-comprador" class="rotulo rotulo-p">Camiseta de quem comprou</label>
-            <div class="cer-linha" style="gap: 8px;">
-              <input type="text" id="conv-comprador" autocomplete="off" inputmode="numeric" placeholder="Ex: 123" style="max-width: 200px;">
-              <button type="button" id="btn-conv-add-comp" class="btn btn-secondary">Adicionar comprador</button>
-            </div>
-            <label class="cv-check mt-12"><input type="checkbox" id="conv-comp-comissao"> <span>Convite vendido pela comissão <span class="hint-small" style="display:block;">Só para membros da comissão. Não conta nos seus 4 convites e pede o código da comissão no campo próprio, abaixo. Esqueceu de marcar? Dá para marcar depois, no próprio comprador. No campo da camiseta vai sempre a camiseta de quem comprou; se o convite extra é seu, use a sua própria camiseta.</span></span></label>
-          </div>
           <div id="conv-codigo-box" class="cv-vendedor" hidden>
             <label for="conv-codigo" class="rotulo rotulo-p">Código da comissão</label>
             <input type="password" id="conv-codigo" autocomplete="off" placeholder="Informe a cada vez que salvar">
+          </div>
+          <div class="cv-novo-comp">
+            <label for="conv-comprador" class="rotulo rotulo-p">Camiseta de quem comprou</label>
+            <input type="text" id="conv-comprador" autocomplete="off" inputmode="numeric" placeholder="Ex: 123" style="max-width: 200px;">
+            <div class="cv-comp-botoes">
+              <button type="button" id="btn-conv-add-comp" class="btn btn-secondary">Vendi um dos meus 4</button>
+              <button type="button" id="btn-conv-add-com" class="btn btn-secondary">Convite extra da comissão</button>
+            </div>
+            <p class="hint-small mt-12">Convite extra da comissão é só para membros da comissão: não conta nos seus 4 e pede o código da comissão. Se o convite extra é para você mesmo, deixe a camiseta em branco.</p>
           </div>
         </div>
 
@@ -2474,7 +2476,7 @@
       limite_solenidade: 'Passou dos seus 4 convites da solenidade: seus convidados mais os convites que você vendeu somam mais de 4.',
       turma_obrigatoria: 'Selecione e salve a sua turma antes de salvar os convidados.',
       comprador_obrigatorio: 'Informe a camiseta de quem comprou.',
-      comprador_proprio: 'A camiseta de quem comprou não pode ser a sua. Se for um convite extra da comissão para você, marque "Convite vendido pela comissão".',
+      comprador_proprio: 'Essa é a sua camiseta. Se é um convite extra da comissão para você, clique em "Convite extra da comissão".',
       comprador_e_codigo: 'Esse é o código da comissão. Aqui vai a camiseta de quem comprou; o código vai no campo "Código da comissão".',
       cpf_repetido_solenidade: 'Este convidado já está na sua solenidade. Um convidado só pode ter um convite da solenidade.',
       comprador_invalido: 'Não encontramos essa camiseta de comprador no cadastro (ou a inscrição está cancelada).',
@@ -2611,7 +2613,7 @@
       const acima = cvConta('sol') - cvLimite('sol');
       if (a.solenidade && acima > 0) {
         const w = document.createElement('span'); w.className = 'cv-acima'; w.style.display = 'block'; w.style.marginTop = '4px';
-        w.textContent = 'Você está ' + acima + (acima === 1 ? ' convidado' : ' convidados') + ' acima do limite. Remova antes de salvar.';
+        w.textContent = 'Você está ' + acima + (acima === 1 ? ' convidado' : ' convidados') + ' acima do limite. Remova antes de salvar' + (nv ? ', ou, se um convite vendido é da comissão, marque "Convite vendido pela comissão" no comprador, mais abaixo.' : '.');
         sh.appendChild(w);
       }
       cvDesenharVendidos();
@@ -2679,7 +2681,7 @@
       if (!CV.ven.length) { const p = document.createElement('p'); p.className = 'hint-small cv-vazio'; p.textContent = 'Nenhum convite vendido registrado.'; box.appendChild(p); }
       const nTot = CV.ven.reduce((n, b) => n + b.itens.length, 0), nv = cvVendidosConta();
       document.getElementById('conv-ven-cont').textContent = nTot ? nTot + (nTot === 1 ? ' convidado' : ' convidados') + (nv ? ' · usa ' + nv + ' dos seus 4' : '') : '';
-      document.getElementById('conv-codigo-box').hidden = !(CV.ven.some(b => b.comissao) || document.getElementById('conv-comp-comissao').checked);
+      document.getElementById('conv-codigo-box').hidden = !CV.ven.some(b => b.comissao);
       const rec = CV.rec || [];
       const rbox = document.getElementById('conv-lista-rec'); rbox.textContent = '';
       if (!rec.length) { const p = document.createElement('p'); p.className = 'hint-small cv-vazio'; p.textContent = 'Nenhum convidado registrado para você até agora. Se você comprou convite, quem vendeu ainda não cadastrou: peça para ele registrar na aba Convidados dele, em "Convites da solenidade que vendi", com a sua camiseta.'; rbox.appendChild(p); }
@@ -2696,26 +2698,30 @@
       bloco.itens.push(it);
       return it;
     }
-    async function cvAddComprador() {
+    async function cvAddComprador(comissao) {
+      // dois botões em vez de uma caixa para marcar antes: a escolha acontece no próprio clique
       const inp = document.getElementById('conv-comprador');
-      const cam = inp.value.trim();
+      let cam = inp.value.trim();
+      if (!cam && comissao) cam = CV.cam; // convite extra da comissão para o próprio formando
       if (!cam) { erroCampo('conv-comprador', ERROS_CV.comprador_obrigatorio); return; }
+      if (!comissao && !CV.aluno.solenidade) { erroCampo('conv-comprador', ERROS_CV.sem_solenidade); return; }
+      if (!comissao && 4 - cvConta('sol') - cvVendidosConta() <= 0) { erroCampo('conv-comprador', 'Seus 4 convites já estão em uso. Se este é um convite extra da comissão, clique em "Convite extra da comissão".'); return; }
       if (CV.ven.some(b => String(b.comprador).toUpperCase() === cam.toUpperCase())) { erroCampo('conv-comprador', ERROS_CV.comprador_repetido); return; }
-      const btn = document.getElementById('btn-conv-add-comp'); btn.disabled = true;
+      const btns = [document.getElementById('btn-conv-add-comp'), document.getElementById('btn-conv-add-com')];
+      btns.forEach(x => { x.disabled = true; });
       try {
         const r = await supabaseRequest('POST', 'rpc/conferir_comprador', { p_matricula: CV.cam, p_cpf: CV.cpf, p_comprador: cam });
         if (!r || r.erro) { erroCampo('conv-comprador', ERROS_CV[r && r.erro] || 'Não foi possível conferir o comprador.'); return; }
         if (CV.ven.some(b => b.comprador === r.camiseta)) { erroCampo('conv-comprador', ERROS_CV.comprador_repetido); return; }
-        const comissao = document.getElementById('conv-comp-comissao').checked;
         if (r.proprio && !comissao) { erroCampo('conv-comprador', ERROS_CV.comprador_proprio); return; }
         const b = { comprador: r.camiseta, nome: r.proprio ? 'Você (convite extra da comissão)' : r.nome, turma: r.turma, comissao: comissao, itens: [] };
         CV.ven.push(b);
         const it = cvNovoVend(b);
-        inp.value = ''; document.getElementById('conv-comp-comissao').checked = false;
+        inp.value = ''; limparErroCampo(inp);
         cvDesenhar();
         const el = document.getElementById('cv-ven-' + it.k + '-nome'); if (el) el.focus();
       } catch (e) { erroCampo('conv-comprador', 'Não foi possível conferir agora. Tente de novo.'); }
-      finally { btn.disabled = false; }
+      finally { btns.forEach(x => { x.disabled = false; }); }
     }
 
     function cvNovo(lista, dados) {
@@ -2923,8 +2929,8 @@
         });
         cvDesenhar();
       });
-      on('btn-conv-add-comp', 'click', cvAddComprador);
-      on('conv-comp-comissao', 'change', () => { document.getElementById('conv-codigo-box').hidden = !(document.getElementById('conv-comp-comissao').checked || CV.ven.some(b => b.comissao)); });
+      on('btn-conv-add-comp', 'click', () => cvAddComprador(false));
+      on('btn-conv-add-com', 'click', () => cvAddComprador(true));
       on('conv-comprador', 'keydown', e => { if (e.key === 'Enter') { e.preventDefault(); cvAddComprador(); } });
       on('permuta-busca', 'input', () => { if (permutaCache.length) desenharPermuta(); });
       document.querySelectorAll('#permuta-filtros .chip').forEach(c => c.addEventListener('click', () => {
