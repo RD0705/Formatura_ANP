@@ -1434,8 +1434,15 @@
           <div id="conv-lista-sol"></div>
           <button type="button" id="btn-conv-add-sol" class="btn btn-secondary cv-add">Adicionar convidado</button>
           <button type="button" id="btn-conv-add-sol-pf" class="btn btn-secondary cv-add" hidden>Adicionar policial federal</button>
-          <button type="button" id="btn-conv-add-sol-com" class="btn btn-secondary cv-add" hidden>Sou da comissão: adicionar meu 5º convidado</button>
-          <p class="hint-small" id="conv-sol-com-hint" hidden>Membro da comissão tem direito a 5. O 5º convidado fica em "Convites da solenidade que vendi", marcado como convite extra da comissão, e pede o código da comissão ao salvar.</p>
+          <button type="button" id="btn-conv-add-sol-com" class="btn btn-secondary cv-add" hidden>Sou da comissão</button>
+          <div id="conv-sol-com-box" class="cv-vendedor" hidden>
+            <label for="conv-sol-com-cod" class="rotulo rotulo-p">Código da comissão</label>
+            <div class="cer-linha" style="gap: 8px;">
+              <input type="text" id="conv-sol-com-cod" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" data-lpignore="true" data-1p-ignore placeholder="Digite o código" style="max-width: 220px;">
+              <button type="button" id="btn-conv-sol-com-ok" class="btn btn-secondary">Confirmar</button>
+            </div>
+            <p class="hint-small mt-12">Só para membros da comissão. Depois de confirmar, o convidado extra aparece em "Convites da solenidade que vendi".</p>
+          </div>
           <hr class="cv-div">
           <div class="cv-topo"><h3>Baile</h3><span class="cv-contagem" id="conv-bai-cont"></span></div>
           <p class="hint" id="conv-bai-hint"></p>
@@ -2606,7 +2613,7 @@
           const temExtra = (CV.ven || []).some(b => b.comissao && String(b.comprador).toUpperCase() === String(CV.cam).toUpperCase());
           const mostraCom = !!(CV.aluno && CV.aluno.solenidade) && cheio && !temExtra;
           document.getElementById('btn-conv-add-sol-com').hidden = !mostraCom;
-          document.getElementById('conv-sol-com-hint').hidden = !mostraCom;
+          if (!mostraCom) document.getElementById('conv-sol-com-box').hidden = true;
         }
         const cont = document.getElementById('conv-' + l + '-cont');
         if (cont) cont.classList.toggle('acima', l === 'sol' && usados > lim);
@@ -2926,13 +2933,33 @@
       on('btn-conv-salvar', 'click', cvSalvar);
       on('btn-conv-export', 'click', cvExportar);
       on('btn-conv-add-sol-com', 'click', () => {
-        let b = CV.ven.find(x => String(x.comprador).toUpperCase() === String(CV.cam).toUpperCase());
-        if (!b) { b = { comprador: CV.cam, nome: 'Você (convite extra da comissão)', turma: CV.aluno.turma, comissao: true, itens: [] }; CV.ven.push(b); }
-        b.comissao = true;
-        const it = cvNovoVend(b); cvDesenhar();
-        const el = document.getElementById('cv-ven-' + it.k + '-nome');
-        if (el) { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); el.focus({ preventScroll: true }); }
+        // pede o código antes: só a comissão libera o convidado extra
+        const box = document.getElementById('conv-sol-com-box');
+        box.hidden = !box.hidden;
+        if (!box.hidden) document.getElementById('conv-sol-com-cod').focus();
       });
+      const cvSolComOk = async () => {
+        const inp = document.getElementById('conv-sol-com-cod');
+        const cod = inp.value.normalize('NFKC').replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+        if (!cod) { erroCampo('conv-sol-com-cod', 'Digite o código da comissão.'); return; }
+        const btn = document.getElementById('btn-conv-sol-com-ok'); btn.disabled = true;
+        try {
+          const r = await supabaseRequest('POST', 'rpc/conferir_codigo_comissao', { p_matricula: CV.cam, p_cpf: CV.cpf, p_codigo: cod });
+          if (!r || !r.ok) { erroCampo('conv-sol-com-cod', ERROS_CV[r && r.erro] || 'Não foi possível conferir o código.'); return; }
+          limparErroCampo(inp); inp.value = '';
+          document.getElementById('conv-sol-com-box').hidden = true;
+          document.getElementById('conv-codigo').value = cod;
+          let b = CV.ven.find(x => String(x.comprador).toUpperCase() === String(CV.cam).toUpperCase());
+          if (!b) { b = { comprador: CV.cam, nome: 'Você (convite extra da comissão)', turma: CV.aluno.turma, comissao: true, itens: [] }; CV.ven.push(b); }
+          b.comissao = true;
+          const it = cvNovoVend(b); cvDesenhar();
+          const el = document.getElementById('cv-ven-' + it.k + '-nome');
+          if (el) { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); el.focus({ preventScroll: true }); }
+        } catch (e) { erroCampo('conv-sol-com-cod', 'Não foi possível conferir agora. Tente de novo.'); }
+        finally { btn.disabled = false; }
+      };
+      on('btn-conv-sol-com-ok', 'click', cvSolComOk);
+      on('conv-sol-com-cod', 'keydown', ev => { if (ev.key === 'Enter') { ev.preventDefault(); cvSolComOk(); } });
       on('btn-conv-add-sol-pf', 'click', () => { if (CV.sol.length < 80) { const it = cvNovo('sol', { pf: true }); cvDesenhar(); const el = document.getElementById('cv-sol-' + it.k + '-nome'); if (el) el.focus(); } });
       on('btn-conv-add-sol', 'click', () => { if (CV.sol.length < 80 && cvConta('sol') < cvLimite('sol')) { const it = cvNovo('sol'); cvDesenhar(); const el = document.getElementById('cv-sol-' + it.k + '-nome'); if (el) el.focus(); } });
       on('btn-conv-add-bai', 'click', () => { if (CV.bai.length < cvLimite('bai')) { const it = cvNovo('bai'); cvDesenhar(); const el = document.getElementById('cv-bai-' + it.k + '-nome'); if (el) el.focus(); } });
