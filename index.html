@@ -1450,7 +1450,7 @@
           <div id="conv-lista-ven"></div>
           <div id="conv-codigo-box" class="cv-vendedor" hidden>
             <label for="conv-codigo" class="rotulo rotulo-p">Código da comissão</label>
-            <input type="password" id="conv-codigo" autocomplete="off" placeholder="Informe a cada vez que salvar">
+            <input type="text" id="conv-codigo" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" data-lpignore="true" data-1p-ignore placeholder="Informe a cada vez que salvar">
           </div>
           <div class="cv-novo-comp">
             <label for="conv-comprador" class="rotulo rotulo-p">Camiseta de quem comprou</label>
@@ -2860,7 +2860,8 @@
         vendidos.push({ comprador: b.comprador, comissao: !!b.comissao, convidados: conv });
       });
       if (erro) { erroCampo(erro[0], erro[1]); return; }
-      const codigo = document.getElementById('conv-codigo').value.trim();
+      // texto visível e sem corretor: no celular, campo de senha recebia senha sugerida ou salva pelo navegador
+      const codigo = document.getElementById('conv-codigo').value.normalize('NFKC').replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
       if (vendidos.some(b => b.comissao) && !codigo) { erroCampo('conv-codigo', 'Informe o código da comissão para salvar os convites da comissão.'); return; }
       const nSol = lista.filter(x => x.solenidade && !x.pf).length;
       const nVend = vendidos.filter(b => !b.comissao).reduce((n, b) => n + b.convidados.filter(c => !c.pf).length, 0);
