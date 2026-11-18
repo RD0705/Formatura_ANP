@@ -1434,6 +1434,8 @@
           <div id="conv-lista-sol"></div>
           <button type="button" id="btn-conv-add-sol" class="btn btn-secondary cv-add">Adicionar convidado</button>
           <button type="button" id="btn-conv-add-sol-pf" class="btn btn-secondary cv-add" hidden>Adicionar policial federal</button>
+          <button type="button" id="btn-conv-add-sol-com" class="btn btn-secondary cv-add" hidden>Sou da comissão: adicionar meu 5º convidado</button>
+          <p class="hint-small" id="conv-sol-com-hint" hidden>Membro da comissão tem direito a 5. O 5º convidado fica em "Convites da solenidade que vendi", marcado como convite extra da comissão, e pede o código da comissão ao salvar.</p>
           <hr class="cv-div">
           <div class="cv-topo"><h3>Baile</h3><span class="cv-contagem" id="conv-bai-cont"></span></div>
           <p class="hint" id="conv-bai-hint"></p>
@@ -2600,6 +2602,11 @@
         if (l === 'sol') {
           const addPf = document.getElementById('btn-conv-add-sol-pf');
           addPf.hidden = !(cheio && CV.sol.length < 80);
+          // membro da comissão: o 5º convite é um convite extra da comissão na própria camiseta
+          const temExtra = (CV.ven || []).some(b => b.comissao && String(b.comprador).toUpperCase() === String(CV.cam).toUpperCase());
+          const mostraCom = !!(CV.aluno && CV.aluno.solenidade) && cheio && !temExtra;
+          document.getElementById('btn-conv-add-sol-com').hidden = !mostraCom;
+          document.getElementById('conv-sol-com-hint').hidden = !mostraCom;
         }
         const cont = document.getElementById('conv-' + l + '-cont');
         if (cont) cont.classList.toggle('acima', l === 'sol' && usados > lim);
@@ -2631,7 +2638,8 @@
         const t = document.createElement('strong');
         t.textContent = b.nome || ('Camiseta ' + b.comprador);
         if (b.comissao) { const tg = document.createElement('span'); tg.className = 'cv-tag'; tg.textContent = 'Comissão'; t.appendChild(tg); }
-        const sm = document.createElement('small'); sm.textContent = 'Comprou o convite · Camiseta ' + b.comprador + (b.turma ? ' · Turma ' + normalizarTurma(b.turma) : '');
+        const ehMeu = String(b.comprador).toUpperCase() === String(CV.cam).toUpperCase();
+        const sm = document.createElement('small'); sm.textContent = (ehMeu ? 'Seu convite extra · Camiseta ' : 'Comprou o convite · Camiseta ') + b.comprador + (b.turma ? ' · Turma ' + normalizarTurma(b.turma) : '');
         t.appendChild(sm);
         const rmb = document.createElement('button'); rmb.type = 'button'; rmb.className = 'btn btn-secondary cv-rm'; rmb.textContent = 'Remover comprador';
         rmb.addEventListener('click', () => { CV.ven.splice(CV.ven.indexOf(b), 1); cvDesenhar(); });
@@ -2673,7 +2681,7 @@
         const add = document.createElement('button'); add.type = 'button'; add.className = 'btn btn-secondary cv-add';
         const cheio = !b.comissao && livres() <= 0;
         add.disabled = cheio || b.itens.length >= 40;
-        add.textContent = cheio ? 'Seus 4 convites já foram usados' : 'Adicionar convidado de ' + (String(b.nome || '').split(/\s+/)[0] || 'quem comprou');
+        add.textContent = cheio ? 'Seus 4 convites já foram usados' : ehMeu ? 'Adicionar outro convidado extra' : 'Adicionar convidado de ' + (String(b.nome || '').split(/\s+/)[0] || 'quem comprou');
         add.addEventListener('click', () => { const it = cvNovoVend(b); cvDesenhar(); const el = document.getElementById('cv-ven-' + it.k + '-nome'); if (el) el.focus(); });
         blk.appendChild(add);
         box.appendChild(blk);
@@ -2917,6 +2925,14 @@
       on('btn-conv-turma', 'click', cvSalvarTurma);
       on('btn-conv-salvar', 'click', cvSalvar);
       on('btn-conv-export', 'click', cvExportar);
+      on('btn-conv-add-sol-com', 'click', () => {
+        let b = CV.ven.find(x => String(x.comprador).toUpperCase() === String(CV.cam).toUpperCase());
+        if (!b) { b = { comprador: CV.cam, nome: 'Você (convite extra da comissão)', turma: CV.aluno.turma, comissao: true, itens: [] }; CV.ven.push(b); }
+        b.comissao = true;
+        const it = cvNovoVend(b); cvDesenhar();
+        const el = document.getElementById('cv-ven-' + it.k + '-nome');
+        if (el) { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); el.focus({ preventScroll: true }); }
+      });
       on('btn-conv-add-sol-pf', 'click', () => { if (CV.sol.length < 80) { const it = cvNovo('sol', { pf: true }); cvDesenhar(); const el = document.getElementById('cv-sol-' + it.k + '-nome'); if (el) el.focus(); } });
       on('btn-conv-add-sol', 'click', () => { if (CV.sol.length < 80 && cvConta('sol') < cvLimite('sol')) { const it = cvNovo('sol'); cvDesenhar(); const el = document.getElementById('cv-sol-' + it.k + '-nome'); if (el) el.focus(); } });
       on('btn-conv-add-bai', 'click', () => { if (CV.bai.length < cvLimite('bai')) { const it = cvNovo('bai'); cvDesenhar(); const el = document.getElementById('cv-bai-' + it.k + '-nome'); if (el) el.focus(); } });
