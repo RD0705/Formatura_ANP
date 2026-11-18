@@ -422,6 +422,7 @@
     .cv-bloco-topo { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
     .cv-bloco-topo strong { color: var(--pf-text); font-size: 14px; }
     .cv-bloco-topo small { color: var(--pf-muted); font-size: 12px; display: block; font-weight: 400; }
+    .cv-bloco-com { margin: 2px 0 8px; font-size: 13px; }
     .cv-tag { display: inline-block; font-size: 11px; font-weight: 700; color: var(--pf-gold-bright); border: 1px solid var(--pf-gold-dim); border-radius: 999px; padding: 1px 8px; margin-left: 6px; vertical-align: middle; }
     .cv-rec { padding: 8px 0; border-top: 1px solid var(--pf-border); font-size: 14px; }
     .cv-rec:first-child { border-top: 0; }
@@ -1452,7 +1453,7 @@
               <input type="text" id="conv-comprador" autocomplete="off" inputmode="numeric" placeholder="Ex: 123" style="max-width: 200px;">
               <button type="button" id="btn-conv-add-comp" class="btn btn-secondary">Adicionar comprador</button>
             </div>
-            <label class="cv-check mt-12"><input type="checkbox" id="conv-comp-comissao"> <span>Convite vendido pela comissão <span class="hint-small" style="display:block;">Só para membros da comissão. Não conta nos seus 4 convites e pede o código da comissão no campo próprio, abaixo. No campo da camiseta vai sempre a camiseta de quem comprou; se o convite extra é seu, use a sua própria camiseta.</span></span></label>
+            <label class="cv-check mt-12"><input type="checkbox" id="conv-comp-comissao"> <span>Convite vendido pela comissão <span class="hint-small" style="display:block;">Só para membros da comissão. Não conta nos seus 4 convites e pede o código da comissão no campo próprio, abaixo. Esqueceu de marcar? Dá para marcar depois, no próprio comprador. No campo da camiseta vai sempre a camiseta de quem comprou; se o convite extra é seu, use a sua própria camiseta.</span></span></label>
           </div>
           <div id="conv-codigo-box" class="cv-vendedor" hidden>
             <label for="conv-codigo" class="rotulo rotulo-p">Código da comissão</label>
@@ -2633,6 +2634,13 @@
         const rmb = document.createElement('button'); rmb.type = 'button'; rmb.className = 'btn btn-secondary cv-rm'; rmb.textContent = 'Remover comprador';
         rmb.addEventListener('click', () => { CV.ven.splice(CV.ven.indexOf(b), 1); cvDesenhar(); });
         topo.appendChild(t); topo.appendChild(rmb); blk.appendChild(topo);
+        // a marcação da comissão fica em cada comprador, para poder corrigir depois de adicionado
+        const proprio = String(b.comprador).toUpperCase() === String(CV.cam).toUpperCase();
+        const cw = document.createElement('label'); cw.className = 'cv-check cv-bloco-com';
+        const cb = document.createElement('input'); cb.type = 'checkbox'; cb.id = 'cv-ven-com-' + CV.ven.indexOf(b); cb.checked = !!b.comissao || proprio; cb.disabled = proprio;
+        cb.addEventListener('change', () => { b.comissao = cb.checked; cvDesenhar(); if (cb.checked) { const c = document.getElementById('conv-codigo'); if (c && !c.value) c.focus(); } });
+        const cs = document.createElement('span'); cs.textContent = proprio ? 'Convite extra da comissão (não conta nos seus 4)' : 'Convite vendido pela comissão (não conta nos seus 4)';
+        cw.appendChild(cb); cw.appendChild(cs); blk.appendChild(cw);
         if (b.itens.some(x => x.transferido)) {
           const nt = document.createElement('p'); nt.className = 'hint-small';
           nt.textContent = 'Estes convidados foram cadastrados antes por quem comprou e passaram para você, que vendeu o convite. Confira os nomes e salve.';
@@ -2850,7 +2858,7 @@
       if (vendidos.some(b => b.comissao) && !codigo) { erroCampo('conv-codigo', 'Informe o código da comissão para salvar os convites da comissão.'); return; }
       const nSol = lista.filter(x => x.solenidade && !x.pf).length;
       const nVend = vendidos.filter(b => !b.comissao).reduce((n, b) => n + b.convidados.filter(c => !c.pf).length, 0);
-      if (nSol + nVend > 4) { showToast(ERROS_CV.limite_solenidade, 'error'); return; }
+      if (nSol + nVend > 4) { showToast(ERROS_CV.limite_solenidade + (nVend ? ' Se o convite que você registrou é da comissão, marque "Convite vendido pela comissão" no comprador.' : ''), 'error'); return; }
       if (nSol + nVend > 0 && !CV.aluno.solenidade) { showToast(ERROS_CV.sem_solenidade, 'error'); return; }
       const especial = document.getElementById('conv-especial').checked;
       const detalhe = document.getElementById('conv-detalhe').value.trim();
